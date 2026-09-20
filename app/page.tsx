@@ -44,7 +44,11 @@ export default async function Home() {
             title="Search Items"
             description="Search published lost and found items."
           />
-
+          <MenuCard
+            href="/matching"
+            title="Find Potential Matches"
+            description="Compare your lost reports with published found items."
+          />
           <MenuCard
             href="/claims"
             title="My Claims"
