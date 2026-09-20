@@ -1,11 +1,20 @@
 import { requireUser } from "@/lib/auth/guards";
+import AppNavigation from "@/components/navigation/AppNavigation";
 
 export default async function LostLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    await requireUser();
+    const profile = await requireUser();
 
-    return <>{children}</>;
+    return (
+        <>
+            <AppNavigation
+                fullName={profile.full_name}
+                role={profile.role}
+            />
+            {children}
+        </>
+    );
 }

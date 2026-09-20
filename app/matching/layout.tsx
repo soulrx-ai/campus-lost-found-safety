@@ -1,7 +1,7 @@
 import { requireUser } from "@/lib/auth/guards";
 import AppNavigation from "@/components/navigation/AppNavigation";
 
-export default async function FoundLayout({
+export default async function MatchingLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
