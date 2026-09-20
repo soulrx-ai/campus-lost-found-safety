@@ -1,11 +1,22 @@
+import AdminNavigation from "@/components/admin/AdminNavigation";
 import { requireAdmin } from "@/lib/auth/guards";
 
 export default async function AdminLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    await requireAdmin();
+  await requireAdmin();
 
-    return <>{children}</>;
+  return (
+    <>
+      <div className="bg-stone-50 px-4 pt-6">
+        <div className="mx-auto max-w-6xl">
+          <AdminNavigation />
+        </div>
+      </div>
+
+      {children}
+    </>
+  );
 }
