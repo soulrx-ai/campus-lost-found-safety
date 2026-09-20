@@ -1,0 +1,302 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+
+type ClaimStatus =
+  | "PENDING_REVIEW"
+  | "APPROVED"
+  | "REJECTED"
+  | "COMPLETED";
+
+type Claim = {
+  id: string;
+  item_id: string;
+  claimant_id: string;
+  claim_reason: string;
+  evidence: string | null;
+  status: ClaimStatus;
+  staff_note: string | null;
+  created_at: string;
+};
+
+type Props = {
+  claim: Claim;
+  staffId: string;
+};
+
+export default function StaffClaimCard({
+  claim,
+  staffId,
+}: Props) {
+  const router = useRouter();
+  const supabase = createClient();
+
+  const [staffNote, setStaffNote] = useState(
+    claim.staff_note ?? ""
+  );
+
+  const [handoverPhoto, setHandoverPhoto] =
+    useState<File | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  async function reviewClaim(
+    newStatus: "APPROVED" | "REJECTED"
+  ) {
+    setLoading(true);
+    setErrorMessage("");
+
+    const { error } = await supabase
+      .from("claims")
+      .update({
+        status: newStatus,
+        reviewed_by: staffId,
+        reviewed_at: new Date().toISOString(),
+        staff_note: staffNote.trim() || null,
+      })
+      .eq("id", claim.id)
+      .eq("status", "PENDING_REVIEW");
+
+    if (error) {
+      setErrorMessage(error.message);
+      setLoading(false);
+      return;
+    }
+
+    router.refresh();
+  }
+
+  async function completeHandover() {
+    if (!handoverPhoto) {
+      setErrorMessage(
+        "Please select a handover photo before completing the handover."
+      );
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage("");
+
+    const extension =
+      handoverPhoto.name.split(".").pop()?.toLowerCase() || "jpg";
+
+    const filePath =
+      `${staffId}/${claim.id}/${crypto.randomUUID()}.${extension}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("handover")
+      .upload(filePath, handoverPhoto, {
+        upsert: false,
+      });
+
+    if (uploadError) {
+      setErrorMessage(uploadError.message);
+      setLoading(false);
+      return;
+    }
+
+    const handoverTime = new Date().toISOString();
+
+    const { error: claimError } = await supabase
+      .from("claims")
+      .update({
+        status: "COMPLETED",
+        handover_photo_url: filePath,
+        handover_at: handoverTime,
+        handover_confirmed_by: staffId,
+      })
+      .eq("id", claim.id)
+      .eq("status", "APPROVED");
+
+    if (claimError) {
+      await supabase.storage
+        .from("handover")
+        .remove([filePath]);
+
+      setErrorMessage(claimError.message);
+      setLoading(false);
+      return;
+    }
+
+    const { error: itemError } = await supabase
+      .from("items")
+      .update({
+        status: "RETURNED",
+      })
+      .eq("id", claim.item_id);
+
+    if (itemError) {
+      setErrorMessage(
+        `Claim was completed, but the item status could not be updated: ${itemError.message}`
+      );
+      setLoading(false);
+      return;
+    }
+
+    router.refresh();
+  }
+
+  return (
+    <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-stone-500">
+            Claim
+          </p>
+
+          <h2 className="mt-1 font-semibold text-stone-900">
+            Claim ID: {claim.id}
+          </h2>
+
+          <p className="mt-1 text-sm text-stone-500">
+            Submitted{" "}
+            {new Date(claim.created_at).toLocaleString()}
+          </p>
+        </div>
+
+        <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700">
+          {claim.status}
+        </span>
+      </div>
+
+      <div className="mt-5 space-y-3 text-sm">
+        <div>
+          <p className="font-medium text-stone-700">
+            Item ID
+          </p>
+          <p className="break-all text-stone-600">
+            {claim.item_id}
+          </p>
+        </div>
+
+        <div>
+          <p className="font-medium text-stone-700">
+            Claimant ID
+          </p>
+          <p className="break-all text-stone-600">
+            {claim.claimant_id}
+          </p>
+        </div>
+
+        <div>
+          <p className="font-medium text-stone-700">
+            Claim Reason
+          </p>
+          <p className="mt-1 whitespace-pre-wrap text-stone-600">
+            {claim.claim_reason}
+          </p>
+        </div>
+
+        <div>
+          <p className="font-medium text-stone-700">
+            Evidence
+          </p>
+
+          <p className="text-stone-600">
+            {claim.evidence
+              ? "Evidence submitted"
+              : "No evidence submitted"}
+          </p>
+        </div>
+      </div>
+
+      {claim.status === "PENDING_REVIEW" && (
+        <div className="mt-5">
+          <label
+            htmlFor={`note-${claim.id}`}
+            className="mb-1 block text-sm font-medium text-stone-700"
+          >
+            Staff Note
+          </label>
+
+          <textarea
+            id={`note-${claim.id}`}
+            rows={3}
+            value={staffNote}
+            onChange={(event) =>
+              setStaffNote(event.target.value)
+            }
+            className="w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-stone-500"
+            placeholder="Optional note"
+          />
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => reviewClaim("APPROVED")}
+              className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
+            >
+              {loading ? "Processing..." : "Approve"}
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => reviewClaim("REJECTED")}
+              className="rounded-xl border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
+      )}
+
+      {claim.status === "APPROVED" && (
+        <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
+          <h3 className="font-semibold text-stone-900">
+            Handover
+          </h3>
+
+          <p className="mt-1 text-sm text-stone-600">
+            Upload a handover photo when the item is returned to
+            the claimant.
+          </p>
+
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(event) =>
+              setHandoverPhoto(
+                event.target.files?.[0] ?? null
+              )
+            }
+            className="mt-4 block w-full text-sm text-stone-600"
+          />
+
+          <button
+            type="button"
+            disabled={loading}
+            onClick={completeHandover}
+            className="mt-4 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
+          >
+            {loading
+              ? "Completing..."
+              : "Confirm Handover"}
+          </button>
+        </div>
+      )}
+
+      {claim.status === "REJECTED" && (
+        <div className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          This claim was rejected.
+        </div>
+      )}
+
+      {claim.status === "COMPLETED" && (
+        <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+          Handover completed. The item has been returned.
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      )}
+    </article>
+  );
+}
