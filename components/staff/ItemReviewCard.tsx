@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 type ReviewItem = {
     id: string;
-    report_type: "LOST" | "FOUND";
+    report_type: string;
     name: string;
     category: string;
     brand: string | null;
@@ -64,8 +64,8 @@ export default function ItemReviewCard({
                 <div>
                     <span
                         className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${item.report_type === "LOST"
-                                ? "bg-amber-100 text-amber-800"
-                                : "bg-emerald-100 text-emerald-800"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-emerald-100 text-emerald-800"
                             }`}
                     >
                         {item.report_type}
