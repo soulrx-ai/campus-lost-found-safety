@@ -2,9 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const supabase = createClient();
 
   const [fullName, setFullName] = useState("");
@@ -56,16 +58,10 @@ export default function RegisterPage() {
       return;
     }
 
-    setSuccessMessage(
-      "Account created successfully. Check your email if confirmation is required, then sign in."
-    );
-
-    setFullName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-
     setLoading(false);
+
+router.push("/login");
+router.refresh();
   }
 
   return (
