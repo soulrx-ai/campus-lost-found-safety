@@ -15,10 +15,18 @@ type UserProfile = {
 // สร้าง Supabase client ครั้งเดียว
 const supabase = createClient();
 
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeZone: "Asia/Bangkok",
+  }).format(new Date(value));
+}
+
 export default function UserTable() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
 
   // ดึงข้อมูลจาก Supabase โดยไม่แก้ state
   const fetchUsers = useCallback(async () => {
@@ -70,37 +78,65 @@ export default function UserTable() {
   // เปลี่ยน Role
   async function updateRole(userId: string, role: string) {
     setMessage("");
+    setUpdatingUserId(userId);
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ role })
-      .eq("id", userId);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ role })
+        .eq("id", userId)
+        .select("id")
+        .maybeSingle();
 
-    if (error) {
-      setMessage(error.message);
-      return;
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
+      if (!data) {
+        setMessage("User was not found or could not be updated.");
+        return;
+      }
+
+      setMessage("User role updated successfully.");
+      await loadUsers();
+    } catch {
+      setMessage("Unable to update user role. Please try again.");
+    } finally {
+      setUpdatingUserId(null);
     }
-
-    setMessage("User role updated successfully.");
-    await loadUsers();
   }
 
   // เปลี่ยน Status
   async function updateStatus(userId: string, status: string) {
     setMessage("");
+    setUpdatingUserId(userId);
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ status })
-      .eq("id", userId);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ status })
+        .eq("id", userId)
+        .select("id")
+        .maybeSingle();
 
-    if (error) {
-      setMessage(error.message);
-      return;
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
+      if (!data) {
+        setMessage("User was not found or could not be updated.");
+        return;
+      }
+
+      setMessage("User status updated successfully.");
+      await loadUsers();
+    } catch {
+      setMessage("Unable to update user status. Please try again.");
+    } finally {
+      setUpdatingUserId(null);
     }
-
-    setMessage("User status updated successfully.");
-    await loadUsers();
   }
 
   if (loading) {
@@ -110,9 +146,7 @@ export default function UserTable() {
   return (
     <div>
       {message && (
-        <div className="mb-4 rounded-lg bg-white p-4 text-sm">
-          {message}
-        </div>
+        <div className="mb-4 rounded-lg bg-white p-4 text-sm">{message}</div>
       )}
 
       <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
@@ -129,23 +163,17 @@ export default function UserTable() {
 
           <tbody>
             {users.map((user) => (
-              <tr
-                key={user.id}
-                className="border-b last:border-b-0"
-              >
+              <tr key={user.id} className="border-b last:border-b-0">
                 <td className="p-4">{user.full_name}</td>
 
-                <td className="p-4">
-                  {user.phone ?? "-"}
-                </td>
+                <td className="p-4">{user.phone ?? "-"}</td>
 
                 <td className="p-4">
                   <select
                     value={user.role}
-                    onChange={(e) =>
-                      updateRole(user.id, e.target.value)
-                    }
-                    className="rounded-lg border px-2 py-1"
+                    disabled={updatingUserId === user.id}
+                    onChange={(e) => updateRole(user.id, e.target.value)}
+                    className="rounded-lg border px-2 py-1 disabled:opacity-50"
                   >
                     <option value="USER">USER</option>
                     <option value="STAFF">STAFF</option>
@@ -156,10 +184,9 @@ export default function UserTable() {
                 <td className="p-4">
                   <select
                     value={user.status}
-                    onChange={(e) =>
-                      updateStatus(user.id, e.target.value)
-                    }
-                    className="rounded-lg border px-2 py-1"
+                    disabled={updatingUserId === user.id}
+                    onChange={(e) => updateStatus(user.id, e.target.value)}
+                    className="rounded-lg border px-2 py-1 disabled:opacity-50"
                   >
                     <option value="ACTIVE">ACTIVE</option>
                     <option value="INACTIVE">INACTIVE</option>
@@ -167,7 +194,7 @@ export default function UserTable() {
                 </td>
 
                 <td className="p-4">
-                  {new Date(user.created_at).toLocaleDateString()}
+                  {formatDate(user.created_at)}
                 </td>
               </tr>
             ))}
