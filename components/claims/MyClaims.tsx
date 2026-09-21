@@ -3,6 +3,14 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+const supabase = createClient();
+
+type ClaimStatus =
+  | "PENDING_REVIEW"
+  | "APPROVED"
+  | "REJECTED"
+  | "COMPLETED";
+
 type Claim = {
   id: string;
   item_id: string;
@@ -13,9 +21,49 @@ type Claim = {
   handover_at: string | null;
 };
 
-export default function MyClaims() {
-  const supabase = createClient();
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Bangkok",
+  }).format(new Date(value));
+}
 
+function getStatusLabel(status: string) {
+  switch (status as ClaimStatus) {
+    case "PENDING_REVIEW":
+      return "Pending Review";
+    case "APPROVED":
+      return "Approved";
+    case "REJECTED":
+      return "Rejected";
+    case "COMPLETED":
+      return "Completed";
+    default:
+      return status;
+  }
+}
+
+function getStatusClasses(status: string) {
+  switch (status as ClaimStatus) {
+    case "PENDING_REVIEW":
+      return "border-amber-200 bg-amber-50 text-amber-800";
+
+    case "APPROVED":
+      return "border-emerald-200 bg-emerald-50 text-emerald-800";
+
+    case "REJECTED":
+      return "border-red-200 bg-red-50 text-red-800";
+
+    case "COMPLETED":
+      return "border-stone-300 bg-stone-100 text-stone-800";
+
+    default:
+      return "border-stone-200 bg-stone-50 text-stone-700";
+  }
+}
+
+export default function MyClaims() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -50,63 +98,103 @@ export default function MyClaims() {
     }
 
     loadClaims();
-  }, [supabase]);
+  }, []);
 
   if (loading) {
-    return <p>Loading claims...</p>;
+    return (
+      <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+        <p className="text-sm text-stone-600">Loading claims...</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       {message && (
-        <div className="rounded-lg bg-white p-4 text-sm">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           {message}
         </div>
       )}
 
       {!message && claims.length === 0 && (
-        <div className="rounded-lg bg-white p-4">
-          You have not submitted any claims.
+        <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+          <h2 className="text-lg font-semibold text-stone-900">
+            No claims yet
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-stone-600">
+            You have not submitted any ownership claims.
+          </p>
         </div>
       )}
 
       {claims.map((claim) => (
         <article
           key={claim.id}
-          className="rounded-2xl bg-white p-5 shadow-sm"
+          className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6"
         >
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="font-semibold">
-              Claim #{claim.id.slice(0, 8)}
-            </h2>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                Claim
+              </p>
 
-            <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium">
-              {claim.status}
+              <h2 className="mt-1 break-all text-lg font-semibold text-stone-900">
+                #{claim.id.slice(0, 8)}
+              </h2>
+
+              <p className="mt-1 text-xs text-stone-500">
+                Item ID: {claim.item_id}
+              </p>
+            </div>
+
+            <span
+              className={`inline-flex w-fit shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClasses(
+                claim.status
+              )}`}
+            >
+              {getStatusLabel(claim.status)}
             </span>
           </div>
 
-          <p className="mt-3 text-sm text-stone-700">
-            {claim.claim_reason}
-          </p>
+          <div className="mt-5 border-t border-stone-100 pt-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Claim reason
+            </p>
+
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-700">
+              {claim.claim_reason}
+            </p>
+          </div>
 
           {claim.staff_note && (
-            <p className="mt-3 text-sm">
-              <strong>Staff note:</strong>{" "}
-              {claim.staff_note}
-            </p>
+            <div className="mt-5 rounded-2xl bg-stone-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                Staff note
+              </p>
+
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-700">
+                {claim.staff_note}
+              </p>
+            </div>
           )}
 
           {claim.handover_at && (
-            <p className="mt-2 text-sm">
-              <strong>Handover:</strong>{" "}
-              {new Date(claim.handover_at).toLocaleString()}
-            </p>
+            <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+                Handover completed
+              </p>
+
+              <p className="mt-1 text-sm text-emerald-900">
+                {formatDateTime(claim.handover_at)}
+              </p>
+            </div>
           )}
 
-          <p className="mt-3 text-xs text-stone-500">
-            Submitted{" "}
-            {new Date(claim.created_at).toLocaleString()}
-          </p>
+          <div className="mt-5 border-t border-stone-100 pt-4">
+            <p className="text-xs text-stone-500">
+              Submitted {formatDateTime(claim.created_at)}
+            </p>
+          </div>
         </article>
       ))}
     </div>

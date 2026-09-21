@@ -14,9 +14,9 @@ type Claim = {
   created_at: string;
 };
 
-export default function ClaimReviewCard() {
-  const supabase = createClient();
+const supabase = createClient();
 
+export default function ClaimReviewCard() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [photos, setPhotos] =
@@ -44,11 +44,42 @@ export default function ClaimReviewCard() {
     }
 
     setLoading(false);
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
-    loadClaims();
-  }, [loadClaims]);
+  let cancelled = false;
+
+  async function fetchClaims() {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("claims")
+      .select(
+        "id, item_id, claimant_id, claim_reason, evidence, status, staff_note, created_at"
+      )
+      .in("status", ["PENDING_REVIEW", "APPROVED"])
+      .order("created_at", { ascending: true });
+
+    if (cancelled) {
+      return;
+    }
+
+    if (error) {
+      setMessage(error.message);
+      setClaims([]);
+    } else {
+      setClaims((data ?? []) as Claim[]);
+    }
+
+    setLoading(false);
+  }
+
+  void fetchClaims();
+
+  return () => {
+    cancelled = true;
+  };
+}, []);
 
   async function reviewClaim(
     claimId: string,

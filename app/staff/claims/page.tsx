@@ -28,50 +28,55 @@ export default async function StaffClaimsPage() {
     });
 
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
+    <main className="min-h-screen bg-stone-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-5xl">
-        <div className="mb-8">
-          <p className="text-sm font-medium text-stone-500">
-            Staff Operations
-          </p>
+        <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-wide text-stone-500">
+              Staff Operations
+            </p>
 
-          <h1 className="mt-1 text-3xl font-bold text-stone-900">
-            Claim Review & Handover
-          </h1>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+              Claim Review & Handover
+            </h1>
 
-          <p className="mt-2 text-stone-600">
-            Review ownership claims and confirm item handovers.
-          </p>
-        </div>
-
-        {error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
-            Unable to load claims: {error.message}
-          </div>
-        ) : !claims || claims.length === 0 ? (
-          <div className="rounded-2xl border border-stone-200 bg-white p-6">
-            <h2 className="font-semibold text-stone-900">
-              No claims
-            </h2>
-
-            <p className="mt-2 text-sm text-stone-600">
-              There are currently no claims to review.
+            <p className="mt-3 text-sm leading-6 text-stone-600 sm:text-base">
+              Review ownership claims and confirm item handovers.
             </p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {claims.map((claim) => (
-              <StaffClaimCard
-                key={claim.id}
-                claim={{
-                  ...claim,
-                  status: claim.status as ClaimStatus,
-                }}
-                staffId={staff.id}
-              />
-            ))}
-          </div>
-        )}
+        </section>
+
+        <section className="mt-6">
+          {error ? (
+            <div className="rounded-3xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 shadow-sm">
+              <p className="font-semibold">Unable to load claims</p>
+              <p className="mt-1">{error.message}</p>
+            </div>
+          ) : !claims || claims.length === 0 ? (
+            <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+              <h2 className="text-lg font-semibold text-stone-900">
+                No claims
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-stone-600">
+                There are currently no claims to review.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {claims.map((claim) => (
+                <StaffClaimCard
+                  key={claim.id}
+                  claim={{
+                    ...claim,
+                    status: claim.status as ClaimStatus,
+                  }}
+                  staffId={staff.id}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );

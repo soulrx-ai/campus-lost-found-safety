@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+const supabase = createClient();
+
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
     dateStyle: "medium",
@@ -34,11 +36,36 @@ type Props = {
   staffId: string;
 };
 
+function getStatusLabel(status: ClaimStatus) {
+  switch (status) {
+    case "PENDING_REVIEW":
+      return "Pending Review";
+    case "APPROVED":
+      return "Approved";
+    case "REJECTED":
+      return "Rejected";
+    case "COMPLETED":
+      return "Completed";
+  }
+}
+
+function getStatusClasses(status: ClaimStatus) {
+  switch (status) {
+    case "PENDING_REVIEW":
+      return "border-amber-200 bg-amber-50 text-amber-800";
+    case "APPROVED":
+      return "border-emerald-200 bg-emerald-50 text-emerald-800";
+    case "REJECTED":
+      return "border-red-200 bg-red-50 text-red-800";
+    case "COMPLETED":
+      return "border-stone-300 bg-stone-100 text-stone-800";
+  }
+}
+
 export default function StaffClaimCard({
   claim,
 }: Props) {
   const router = useRouter();
-  const supabase = createClient();
 
   const [staffNote, setStaffNote] = useState(
     claim.staff_note ?? ""
@@ -48,44 +75,44 @@ export default function StaffClaimCard({
     useState<File | null>(null);
 
   const [evidenceUrl, setEvidenceUrl] =
-  useState<string | null>(null);
+    useState<string | null>(null);
 
   const [evidenceLoading, setEvidenceLoading] =
-  useState(false);
+    useState(false);
+
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] =
-    useState("");
-  
+  const [errorMessage, setErrorMessage] = useState("");
+
   async function viewEvidence() {
-  if (!claim.evidence) {
-    return;
-  }
-
-  setEvidenceLoading(true);
-  setErrorMessage("");
-
-  try {
-    const { data, error } = await supabase.storage
-      .from("claim-evidence")
-      .createSignedUrl(claim.evidence, 60 * 5);
-
-    if (error || !data?.signedUrl) {
-      setErrorMessage(
-        error?.message ?? "Unable to load claim evidence."
-      );
+    if (!claim.evidence) {
       return;
     }
 
-    setEvidenceUrl(data.signedUrl);
-  } catch {
-    setErrorMessage(
-      "Unable to load claim evidence. Please try again."
-    );
-  } finally {
-    setEvidenceLoading(false);
+    setEvidenceLoading(true);
+    setErrorMessage("");
+
+    try {
+      const { data, error } = await supabase.storage
+        .from("claim-evidence")
+        .createSignedUrl(claim.evidence, 60 * 5);
+
+      if (error || !data?.signedUrl) {
+        setErrorMessage(
+          error?.message ?? "Unable to load claim evidence."
+        );
+        return;
+      }
+
+      setEvidenceUrl(data.signedUrl);
+    } catch {
+      setErrorMessage(
+        "Unable to load claim evidence. Please try again."
+      );
+    } finally {
+      setEvidenceLoading(false);
+    }
   }
-}
-  
+
   async function reviewClaim(
     newStatus: "APPROVED" | "REJECTED"
   ) {
@@ -233,121 +260,138 @@ export default function StaffClaimCard({
   }
 
   return (
-    <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-stone-500">
-            Claim
+    <article className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+            Ownership Claim
           </p>
 
-          <h2 className="mt-1 font-semibold text-stone-900">
-            Claim ID: {claim.id}
+          <h2 className="mt-1 break-all text-lg font-semibold text-stone-900">
+            Claim #{claim.id.slice(0, 8)}
           </h2>
 
-          <p className="mt-1 text-sm text-stone-500">
-            Submitted{" "}
-            {formatDateTime(claim.created_at)}
+          <p className="mt-1 text-xs text-stone-500">
+            Submitted {formatDateTime(claim.created_at)}
           </p>
         </div>
 
-        <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700">
-          {claim.status}
+        <span
+          className={`inline-flex w-fit shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClasses(
+            claim.status
+          )}`}
+        >
+          {getStatusLabel(claim.status)}
         </span>
       </div>
 
-      <div className="mt-5 space-y-3 text-sm">
+      <div className="mt-6 grid gap-5 border-t border-stone-100 pt-5 sm:grid-cols-2">
         <div>
-          <p className="font-medium text-stone-700">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
             Item ID
           </p>
 
-          <p className="break-all text-stone-600">
+          <p className="mt-1 break-all text-sm text-stone-700">
             {claim.item_id}
           </p>
         </div>
 
         <div>
-          <p className="font-medium text-stone-700">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
             Claimant ID
           </p>
 
-          <p className="break-all text-stone-600">
+          <p className="mt-1 break-all text-sm text-stone-700">
             {claim.claimant_id}
           </p>
         </div>
+      </div>
 
-        <div>
-          <p className="font-medium text-stone-700">
-            Claim Reason
+      <div className="mt-5 rounded-2xl bg-stone-50 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+          Claim reason
+        </p>
+
+        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-700">
+          {claim.claim_reason}
+        </p>
+      </div>
+
+      <div className="mt-5 rounded-2xl border border-stone-200 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+          Supporting evidence
+        </p>
+
+        {!claim.evidence ? (
+          <p className="mt-2 text-sm text-stone-500">
+            No evidence submitted.
           </p>
-
-          <p className="mt-1 whitespace-pre-wrap text-stone-600">
-            {claim.claim_reason}
-          </p>
-        </div>
-
-        <div>
-  <p className="font-medium text-stone-700">
-    Evidence
-  </p>
-
-  {!claim.evidence ? (
-    <p className="text-stone-600">
-      No evidence submitted
-    </p>
-  ) : !evidenceUrl ? (
-    <button
-      type="button"
-      disabled={evidenceLoading}
-      onClick={viewEvidence}
-      className="mt-2 rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
-    >
-      {evidenceLoading
-        ? "Loading..."
-        : "View Evidence"}
-    </button>
-  ) : (
-    <img
-      src={evidenceUrl}
-      alt="Claim ownership evidence"
-      className="mt-2 max-h-96 rounded-xl border border-stone-200 object-contain"
-    />
-  )}
-</div>
+        ) : !evidenceUrl ? (
+          <button
+            type="button"
+            disabled={evidenceLoading}
+            onClick={viewEvidence}
+            className="mt-3 rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {evidenceLoading
+              ? "Loading evidence..."
+              : "View Evidence"}
+          </button>
+        ) : (
+          <div className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
+            <img
+              src={evidenceUrl}
+              alt="Claim ownership evidence"
+              className="max-h-[28rem] w-full object-contain"
+            />
+          </div>
+        )}
       </div>
 
       {claim.status === "PENDING_REVIEW" && (
-        <div className="mt-5">
-          <label
-            htmlFor={`note-${claim.id}`}
-            className="mb-1 block text-sm font-medium text-stone-700"
-          >
-            Staff Note
-          </label>
+        <div className="mt-6 rounded-2xl border border-stone-200 bg-stone-50 p-5">
+          <div>
+            <p className="text-sm font-semibold text-stone-900">
+              Review this claim
+            </p>
 
-          <textarea
-            id={`note-${claim.id}`}
-            rows={3}
-            value={staffNote}
-            onChange={(event) =>
-              setStaffNote(event.target.value)
-            }
-            className="w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-stone-500"
-            placeholder="Optional note"
-          />
+            <p className="mt-1 text-xs leading-5 text-stone-500">
+              Add an optional note before approving or rejecting the claim.
+            </p>
+          </div>
 
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-4">
+            <label
+              htmlFor={`note-${claim.id}`}
+              className="mb-2 block text-sm font-semibold text-stone-800"
+            >
+              Staff note
+            </label>
+
+            <textarea
+              id={`note-${claim.id}`}
+              rows={4}
+              value={staffNote}
+              onChange={(event) =>
+                setStaffNote(event.target.value)
+              }
+              className="w-full resize-y rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm leading-6 text-stone-900 outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-200"
+              placeholder="Optional note for the claimant"
+            />
+          </div>
+
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               disabled={loading}
               onClick={() =>
                 reviewClaim("APPROVED")
               }
-              className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
+              className="flex-1 rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading
                 ? "Processing..."
-                : "Approve"}
+                : "Approve Claim"}
             </button>
 
             <button
@@ -356,68 +400,101 @@ export default function StaffClaimCard({
               onClick={() =>
                 reviewClaim("REJECTED")
               }
-              className="rounded-xl border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+              className="flex-1 rounded-xl border border-red-300 bg-white px-4 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Reject
+              Reject Claim
             </button>
           </div>
         </div>
       )}
 
       {claim.status === "APPROVED" && (
-        <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
-          <h3 className="font-semibold text-stone-900">
-            Handover
-          </h3>
-
-          <p className="mt-1 text-sm text-stone-600">
-            Upload a handover photo when the item is
-            returned to the claimant.
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+          <p className="text-sm font-semibold text-emerald-900">
+            Claim approved — Handover required
           </p>
 
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            disabled={loading}
-            onChange={(event) =>
-              setHandoverPhoto(
-                event.target.files?.[0] ?? null
-              )
-            }
-            className="mt-4 block w-full text-sm text-stone-600"
-          />
+          <p className="mt-1 text-sm leading-6 text-emerald-800">
+            Upload a photo documenting the handover before completing the return.
+          </p>
 
-          <button
-            type="button"
-            disabled={loading}
-            onClick={completeHandover}
-            className="mt-4 rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
-          >
-            {loading
-              ? "Completing..."
-              : "Confirm Handover"}
-          </button>
+          <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4">
+            <label
+              htmlFor={`handover-${claim.id}`}
+              className="mb-2 block text-sm font-semibold text-stone-800"
+            >
+              Handover photo
+            </label>
+
+            <input
+              id={`handover-${claim.id}`}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={loading}
+              onChange={(event) =>
+                setHandoverPhoto(
+                  event.target.files?.[0] ?? null
+                )
+              }
+              className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-lg file:border-0 file:bg-stone-800 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-stone-700"
+            />
+
+            <p className="mt-2 text-xs text-stone-500">
+              JPG, PNG, or WEBP. Maximum 5 MB.
+            </p>
+
+            {handoverPhoto && (
+              <p className="mt-2 break-all text-xs font-medium text-stone-700">
+                Selected: {handoverPhoto.name}
+              </p>
+            )}
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={completeHandover}
+              className="mt-4 w-full rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading
+                ? "Completing handover..."
+                : "Confirm Handover"}
+            </button>
+          </div>
         </div>
       )}
 
       {claim.status === "REJECTED" && (
-        <div className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          This claim was rejected.
+        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-5">
+          <p className="text-sm font-semibold text-red-900">
+            Claim rejected
+          </p>
+
+          <p className="mt-1 text-sm leading-6 text-red-800">
+            This ownership claim was rejected by Staff.
+          </p>
         </div>
       )}
 
       {claim.status === "COMPLETED" && (
-        <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
-          Handover completed. The item has been
-          returned.
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+          <p className="text-sm font-semibold text-emerald-900">
+            Handover completed
+          </p>
+
+          <p className="mt-1 text-sm leading-6 text-emerald-800">
+            The claim is completed and the item has been returned to the claimant.
+          </p>
         </div>
       )}
 
       {errorMessage && (
-        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div
+          role="alert"
+          className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-800"
+        >
           {errorMessage}
         </div>
       )}
     </article>
   );
-} 
+}
