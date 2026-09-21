@@ -25,8 +25,9 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-export default function ActivityLogTable() {
   const supabase = createClient();
+export default function ActivityLogTable() {
+  
 
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
@@ -84,7 +85,7 @@ export default function ActivityLogTable() {
     }
 
     loadLogs();
-  }, [supabase]);
+  }, []);
 
   if (loading) {
     return <p>Loading activity logs...</p>;
