@@ -14,24 +14,45 @@ export default function NotificationForm() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setMessage("");
     setLoading(true);
 
     try {
-      const { error } = await supabase
-        .from("notifications")
-        .insert({
-          user_id: userId.trim(),
-          title: title.trim(),
-          message: messageText.trim(),
-          type,
-          is_read: false,
-        });
+      const cleanedUserId = userId.trim();
+      const cleanedTitle = title.trim();
+      const cleanedMessage = messageText.trim();
+
+      if (!cleanedUserId || !cleanedTitle || !cleanedMessage) {
+        setMessage("Please fill in all required fields.");
+        return;
+      }
+
+      const { data: recipient, error: recipientError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", cleanedUserId)
+        .maybeSingle();
+
+      if (recipientError) {
+        setMessage(recipientError.message);
+        return;
+      }
+
+      if (!recipient) {
+        setMessage("The selected user does not exist.");
+        return;
+      }
+
+      const { error } = await supabase.from("notifications").insert({
+        user_id: cleanedUserId,
+        title: cleanedTitle,
+        message: cleanedMessage,
+        type,
+        is_read: false,
+      });
 
       if (error) {
         setMessage(error.message);
@@ -57,9 +78,7 @@ export default function NotificationForm() {
       className="space-y-5 rounded-2xl bg-white p-6 shadow-sm"
     >
       <div>
-        <label className="mb-1 block text-sm font-medium">
-          User ID *
-        </label>
+        <label className="mb-1 block text-sm font-medium">User ID *</label>
 
         <input
           required
@@ -86,16 +105,12 @@ export default function NotificationForm() {
           <option value="ITEM">ITEM</option>
           <option value="CLAIM">CLAIM</option>
           <option value="SAFETY">SAFETY</option>
-          <option value="SERVICE_TICKET">
-            SERVICE_TICKET
-          </option>
+          <option value="SERVICE_TICKET">SERVICE_TICKET</option>
         </select>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium">
-          Title *
-        </label>
+        <label className="mb-1 block text-sm font-medium">Title *</label>
 
         <input
           required
@@ -107,25 +122,19 @@ export default function NotificationForm() {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium">
-          Message *
-        </label>
+        <label className="mb-1 block text-sm font-medium">Message *</label>
 
         <textarea
           required
           rows={5}
           value={messageText}
-          onChange={(e) =>
-            setMessageText(e.target.value)
-          }
+          onChange={(e) => setMessageText(e.target.value)}
           className="w-full rounded-lg border border-stone-300 px-3 py-2"
         />
       </div>
 
       {message && (
-        <div className="rounded-lg bg-stone-100 p-3 text-sm">
-          {message}
-        </div>
+        <div className="rounded-lg bg-stone-100 p-3 text-sm">{message}</div>
       )}
 
       <button
