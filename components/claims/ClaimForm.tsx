@@ -26,13 +26,18 @@ export default function ClaimForm({
 
     setMessage("");
 
-    if (!itemId.trim()) {
+    const cleanItemId = itemId.trim();
+    const cleanReason = reason.trim();
+
+    if (!cleanItemId) {
       setMessage("Item ID is required.");
       return;
     }
 
-    if (!reason.trim()) {
-      setMessage("Please explain why the item belongs to you.");
+    if (!cleanReason) {
+      setMessage(
+        "Please explain why the item belongs to you."
+      );
       return;
     }
 
@@ -47,14 +52,42 @@ export default function ClaimForm({
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        setMessage("You must login before submitting a claim.");
+        setMessage(
+          "You must login before submitting a claim."
+        );
         return;
       }
 
-      // Evidence is optional
+      // Verify that the target is currently a published FOUND item.
+      const { data: targetItem, error: itemError } =
+        await supabase
+          .from("items")
+          .select("id, report_type, status")
+          .eq("id", cleanItemId)
+          .eq("report_type", "FOUND")
+          .eq("status", "PUBLISHED")
+          .maybeSingle();
+
+      if (itemError) {
+        setMessage(
+          `Unable to verify item: ${itemError.message}`
+        );
+        return;
+      }
+
+      if (!targetItem) {
+        setMessage(
+          "This item is not available for claiming."
+        );
+        return;
+      }
+
       if (evidence) {
         const extension =
-          evidence.name.split(".").pop()?.toLowerCase();
+          evidence.name
+            .split(".")
+            .pop()
+            ?.toLowerCase();
 
         const allowedExtensions = [
           "jpg",
@@ -74,7 +107,9 @@ export default function ClaimForm({
         }
 
         if (evidence.size > 5 * 1024 * 1024) {
-          setMessage("Evidence must not exceed 5 MB.");
+          setMessage(
+            "Evidence must not exceed 5 MB."
+          );
           return;
         }
 
@@ -97,15 +132,16 @@ export default function ClaimForm({
         }
       }
 
-      const { error: insertError } = await supabase
-        .from("claims")
-        .insert({
-          item_id: itemId.trim(),
-          claimant_id: user.id,
-          claim_reason: reason.trim(),
-          evidence: evidencePath,
-          status: "PENDING_REVIEW",
-        });
+      const { error: insertError } =
+        await supabase
+          .from("claims")
+          .insert({
+            item_id: cleanItemId,
+            claimant_id: user.id,
+            claim_reason: cleanReason,
+            evidence: evidencePath,
+            status: "PENDING_REVIEW",
+          });
 
       if (insertError) {
         if (evidencePath) {
@@ -135,7 +171,15 @@ export default function ClaimForm({
         "Claim submitted successfully and is waiting for Staff review."
       );
     } catch {
-      setMessage("Something went wrong. Please try again.");
+      if (evidencePath) {
+        await supabase.storage
+          .from("claim-evidence")
+          .remove([evidencePath]);
+      }
+
+      setMessage(
+        "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -161,7 +205,8 @@ export default function ClaimForm({
         />
 
         <p className="mt-1 text-xs text-stone-500">
-          This will normally be selected from the item search page.
+          This will normally be selected from the item
+          search or matching page.
         </p>
       </div>
 

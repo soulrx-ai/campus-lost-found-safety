@@ -28,7 +28,6 @@ type Props = {
 
 export default function StaffClaimCard({
   claim,
-  staffId,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -41,7 +40,8 @@ export default function StaffClaimCard({
     useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] =
+    useState("");
 
   async function reviewClaim(
     newStatus: "APPROVED" | "REJECTED"
@@ -49,24 +49,30 @@ export default function StaffClaimCard({
     setLoading(true);
     setErrorMessage("");
 
-    const { error } = await supabase
-      .from("claims")
-      .update({
-        status: newStatus,
-        reviewed_by: staffId,
-        reviewed_at: new Date().toISOString(),
-        staff_note: staffNote.trim() || null,
-      })
-      .eq("id", claim.id)
-      .eq("status", "PENDING_REVIEW");
+    try {
+      const { error } = await supabase.rpc(
+        "review_claim",
+        {
+          p_claim_id: claim.id,
+          p_new_status: newStatus,
+          p_staff_note:
+            staffNote.trim() || null,
+        }
+      );
 
-    if (error) {
-      setErrorMessage(error.message);
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      router.refresh();
+    } catch {
+      setErrorMessage(
+        "Unable to review claim. Please try again."
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-    router.refresh();
   }
 
   async function completeHandover() {
@@ -77,66 +83,110 @@ export default function StaffClaimCard({
       return;
     }
 
+    const extension =
+      handoverPhoto.name
+        .split(".")
+        .pop()
+        ?.toLowerCase();
+
+    const allowedExtensions = [
+      "jpg",
+      "jpeg",
+      "png",
+      "webp",
+    ];
+
+    if (
+      !extension ||
+      !allowedExtensions.includes(extension)
+    ) {
+      setErrorMessage(
+        "Handover photo must be JPG, PNG, or WEBP."
+      );
+      return;
+    }
+
+    if (handoverPhoto.size > 5 * 1024 * 1024) {
+      setErrorMessage(
+        "Handover photo must not exceed 5 MB."
+      );
+      return;
+    }
+
     setLoading(true);
     setErrorMessage("");
 
-    const extension =
-      handoverPhoto.name.split(".").pop()?.toLowerCase() || "jpg";
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    const filePath =
-      `${staffId}/${claim.id}/${crypto.randomUUID()}.${extension}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("handover")
-      .upload(filePath, handoverPhoto, {
-        upsert: false,
-      });
-
-    if (uploadError) {
-      setErrorMessage(uploadError.message);
-      setLoading(false);
-      return;
-    }
-
-    const handoverTime = new Date().toISOString();
-
-    const { error: claimError } = await supabase
-      .from("claims")
-      .update({
-        status: "COMPLETED",
-        handover_photo_url: filePath,
-        handover_at: handoverTime,
-        handover_confirmed_by: staffId,
-      })
-      .eq("id", claim.id)
-      .eq("status", "APPROVED");
-
-    if (claimError) {
-      await supabase.storage
-        .from("handover")
-        .remove([filePath]);
-
-      setErrorMessage(claimError.message);
-      setLoading(false);
-      return;
-    }
-
-    const { error: itemError } = await supabase
-      .from("items")
-      .update({
-        status: "RETURNED",
-      })
-      .eq("id", claim.item_id);
-
-    if (itemError) {
+    if (userError || !user) {
       setErrorMessage(
-        `Claim was completed, but the item status could not be updated: ${itemError.message}`
+        "Staff authentication could not be verified."
       );
       setLoading(false);
       return;
     }
 
-    router.refresh();
+    const filePath =
+      `${user.id}/${claim.id}/${crypto.randomUUID()}.${extension}`;
+
+    let uploaded = false;
+
+    try {
+      const { error: uploadError } =
+        await supabase.storage
+          .from("handover")
+          .upload(filePath, handoverPhoto, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+      if (uploadError) {
+        setErrorMessage(uploadError.message);
+        return;
+      }
+
+      uploaded = true;
+
+      const { error: handoverError } =
+        await supabase.rpc(
+          "complete_claim_handover",
+          {
+            p_claim_id: claim.id,
+            p_handover_photo_url: filePath,
+          }
+        );
+
+      if (handoverError) {
+        await supabase.storage
+          .from("handover")
+          .remove([filePath]);
+
+        uploaded = false;
+
+        setErrorMessage(
+          handoverError.message
+        );
+        return;
+      }
+
+      setHandoverPhoto(null);
+      router.refresh();
+    } catch {
+      if (uploaded) {
+        await supabase.storage
+          .from("handover")
+          .remove([filePath]);
+      }
+
+      setErrorMessage(
+        "Unable to complete handover. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -153,7 +203,9 @@ export default function StaffClaimCard({
 
           <p className="mt-1 text-sm text-stone-500">
             Submitted{" "}
-            {new Date(claim.created_at).toLocaleString()}
+            {new Date(
+              claim.created_at
+            ).toLocaleString()}
           </p>
         </div>
 
@@ -167,6 +219,7 @@ export default function StaffClaimCard({
           <p className="font-medium text-stone-700">
             Item ID
           </p>
+
           <p className="break-all text-stone-600">
             {claim.item_id}
           </p>
@@ -176,6 +229,7 @@ export default function StaffClaimCard({
           <p className="font-medium text-stone-700">
             Claimant ID
           </p>
+
           <p className="break-all text-stone-600">
             {claim.claimant_id}
           </p>
@@ -185,6 +239,7 @@ export default function StaffClaimCard({
           <p className="font-medium text-stone-700">
             Claim Reason
           </p>
+
           <p className="mt-1 whitespace-pre-wrap text-stone-600">
             {claim.claim_reason}
           </p>
@@ -227,16 +282,22 @@ export default function StaffClaimCard({
             <button
               type="button"
               disabled={loading}
-              onClick={() => reviewClaim("APPROVED")}
+              onClick={() =>
+                reviewClaim("APPROVED")
+              }
               className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
             >
-              {loading ? "Processing..." : "Approve"}
+              {loading
+                ? "Processing..."
+                : "Approve"}
             </button>
 
             <button
               type="button"
               disabled={loading}
-              onClick={() => reviewClaim("REJECTED")}
+              onClick={() =>
+                reviewClaim("REJECTED")
+              }
               className="rounded-xl border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
             >
               Reject
@@ -252,13 +313,14 @@ export default function StaffClaimCard({
           </h3>
 
           <p className="mt-1 text-sm text-stone-600">
-            Upload a handover photo when the item is returned to
-            the claimant.
+            Upload a handover photo when the item is
+            returned to the claimant.
           </p>
 
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
+            disabled={loading}
             onChange={(event) =>
               setHandoverPhoto(
                 event.target.files?.[0] ?? null
@@ -288,7 +350,8 @@ export default function StaffClaimCard({
 
       {claim.status === "COMPLETED" && (
         <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
-          Handover completed. The item has been returned.
+          Handover completed. The item has been
+          returned.
         </div>
       )}
 
@@ -299,4 +362,4 @@ export default function StaffClaimCard({
       )}
     </article>
   );
-}
+} 
