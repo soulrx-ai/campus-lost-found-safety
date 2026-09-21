@@ -13,6 +13,7 @@ export default async function MatchingPage() {
         )
         .eq("reporter_id", profile.id)
         .eq("report_type", "LOST")
+        .eq("status", "PUBLISHED")
         .order("created_at", { ascending: false });
 
     return (

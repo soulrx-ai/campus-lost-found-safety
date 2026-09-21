@@ -25,6 +25,7 @@ export default async function MatchDetailPage({
         .eq("id", id)
         .eq("reporter_id", profile.id)
         .eq("report_type", "LOST")
+        .eq("status", "PUBLISHED")
         .single();
 
     if (!lostItem) {
