@@ -9,7 +9,7 @@ export default async function StaffItemsPage() {
     const { data: items, error } = await supabase
         .from("items")
         .select(
-            "id, reporter_id, report_type, name, category, brand, color, description, location, date_time, status"
+            "id, reporter_id, report_type, name, category, brand, color, description, location, date_time, image_url, status"
         )
         .eq("status", "PENDING_REVIEW")
         .order("created_at", { ascending: true });
