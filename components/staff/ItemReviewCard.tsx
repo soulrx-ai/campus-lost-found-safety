@@ -4,6 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+function formatDateTime(value: string) {
+    return new Intl.DateTimeFormat("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Asia/Bangkok",
+    }).format(new Date(value));
+}
+
 type ReviewItem = {
     id: string;
     report_type: string;
@@ -39,23 +47,39 @@ export default function ItemReviewCard({
         setLoading(true);
         setErrorMessage("");
 
-        const { error } = await supabase
-            .from("items")
-            .update({
-                status: newStatus,
-                reviewed_by: staffId,
-                reviewed_at: new Date().toISOString(),
-            })
-            .eq("id", item.id)
-            .eq("status", "PENDING_REVIEW");
+        try {
+            const { data, error } = await supabase
+                .from("items")
+                .update({
+                    status: newStatus,
+                    reviewed_by: staffId,
+                    reviewed_at: new Date().toISOString(),
+                })
+                .eq("id", item.id)
+                .eq("status", "PENDING_REVIEW")
+                .select("id")
+                .maybeSingle();
 
-        if (error) {
-            setErrorMessage(error.message);
+            if (error) {
+                setErrorMessage(error.message);
+                return;
+            }
+
+            if (!data) {
+                setErrorMessage(
+                    "This report has already been reviewed. Refresh the page and try again."
+                );
+                return;
+            }
+
+            router.refresh();
+        } catch {
+            setErrorMessage(
+                "Unable to review this report. Please try again."
+            );
+        } finally {
             setLoading(false);
-            return;
         }
-
-        router.refresh();
     }
 
     return (
@@ -115,7 +139,7 @@ export default function ItemReviewCard({
                         Lost / Found Date
                     </p>
                     <p className="text-stone-600">
-                        {new Date(item.date_time).toLocaleString()}
+                        {formatDateTime(item.date_time)}
                     </p>
                 </div>
 
