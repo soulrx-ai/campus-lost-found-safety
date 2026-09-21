@@ -4,6 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Bangkok",
+  }).format(new Date(value));
+}
+
 type SafetyIncident = {
   id: string;
   reporter_id: string;
@@ -31,11 +39,12 @@ export default function SafetyReviewCard({
   const [errorMessage, setErrorMessage] = useState("");
 
   async function reviewIncident(
-    newStatus: "PUBLISHED" | "REJECTED"
-  ) {
-    setLoading(true);
-    setErrorMessage("");
+  newStatus: "PUBLISHED" | "REJECTED"
+) {
+  setLoading(true);
+  setErrorMessage("");
 
+  try {
     const { error } = await supabase
       .from("security_incidents")
       .update({
@@ -48,12 +57,18 @@ export default function SafetyReviewCard({
 
     if (error) {
       setErrorMessage(error.message);
-      setLoading(false);
       return;
     }
 
     router.refresh();
+  } catch {
+    setErrorMessage(
+      "Unable to review incident. Please try again."
+    );
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <article className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
@@ -69,7 +84,7 @@ export default function SafetyReviewCard({
 
           <p className="mt-1 text-sm text-stone-500">
             Submitted{" "}
-            {new Date(incident.created_at).toLocaleString()}
+            {formatDateTime(incident.created_at)}
           </p>
         </div>
 
@@ -93,7 +108,7 @@ export default function SafetyReviewCard({
             Incident Time
           </p>
           <p className="text-sm text-stone-600">
-            {new Date(incident.incident_time).toLocaleString()}
+            {formatDateTime(incident.incident_time)}
           </p>
         </div>
       </div>

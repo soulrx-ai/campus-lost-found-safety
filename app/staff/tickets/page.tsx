@@ -1,9 +1,8 @@
 import TicketManagementCard from "@/components/staff/TicketManagementCard";
 import { requireStaff } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
-import { ComponentProps } from "react"; // <-- 1. เพิ่มบรรทัดนี้
+import { ComponentProps } from "react";
 
-// 2. ลบ type ยาวๆ ทิ้ง แล้วใช้คำสั่งนี้เพื่อดึง Type มาจากการ์ดโดยตรง (รับรองตรงเป๊ะ 100%)
 type Ticket = ComponentProps<typeof TicketManagementCard>["ticket"];
 
 export default async function StaffTicketsPage() {
@@ -12,7 +11,6 @@ export default async function StaffTicketsPage() {
 
   const { data, error } = await supabase
     .from("service_tickets")
-    // (แถม) ผมแนะนำให้เพิ่ม updated_at เข้าไปใน select ด้วย เผื่อในการ์ดมีการแสดงเวลาอัปเดตครับ
     .select(
       "id, requester_id, claim_id, ticket_type, subject, description, status, assigned_to, created_at, updated_at"
     )
@@ -60,7 +58,7 @@ export default async function StaffTicketsPage() {
             {tickets.map((ticket) => (
               <TicketManagementCard
                 key={ticket.id}
-                ticket={ticket} // <-- เส้นแดงน่าจะหายไปทันทีครับ
+                ticket={ticket} 
                 staffId={staff.id}
               />
             ))}
