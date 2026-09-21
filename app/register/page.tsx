@@ -15,14 +15,22 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     setErrorMessage("");
-    setSuccessMessage("");
+
+    const cleanFullName = fullName.trim();
+    const cleanEmail = email.trim();
+
+    if (!cleanFullName) {
+      setErrorMessage("Full name is required.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
@@ -30,38 +38,47 @@ export default function RegisterPage() {
     }
 
     if (password.length < 6) {
-      setErrorMessage("Password must contain at least 6 characters.");
+      setErrorMessage(
+        "Password must contain at least 6 characters."
+      );
       return;
     }
 
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName.trim(),
-        },
-      },
-    });
+    try {
+      const { data, error } =
+        await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: {
+            data: {
+              full_name: cleanFullName,
+            },
+          },
+        });
 
-    if (error) {
-      setErrorMessage(error.message);
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      if (!data.user) {
+        setErrorMessage(
+          "Unable to create account."
+        );
+        return;
+      }
+
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setErrorMessage(
+        "Something went wrong. Please try again."
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (!data.user) {
-      setErrorMessage("Unable to create account.");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(false);
-
-router.push("/login");
-router.refresh();
   }
 
   return (
@@ -87,11 +104,6 @@ router.refresh();
           </div>
         )}
 
-        {successMessage && (
-          <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-700">
-            {successMessage}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
