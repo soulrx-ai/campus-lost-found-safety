@@ -4,6 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Bangkok",
+  }).format(new Date(value));
+}
+
 type ClaimStatus =
   | "PENDING_REVIEW"
   | "APPROVED"
@@ -39,10 +47,45 @@ export default function StaffClaimCard({
   const [handoverPhoto, setHandoverPhoto] =
     useState<File | null>(null);
 
+  const [evidenceUrl, setEvidenceUrl] =
+  useState<string | null>(null);
+
+  const [evidenceLoading, setEvidenceLoading] =
+  useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] =
     useState("");
+  
+  async function viewEvidence() {
+  if (!claim.evidence) {
+    return;
+  }
 
+  setEvidenceLoading(true);
+  setErrorMessage("");
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("claim-evidence")
+      .createSignedUrl(claim.evidence, 60 * 5);
+
+    if (error || !data?.signedUrl) {
+      setErrorMessage(
+        error?.message ?? "Unable to load claim evidence."
+      );
+      return;
+    }
+
+    setEvidenceUrl(data.signedUrl);
+  } catch {
+    setErrorMessage(
+      "Unable to load claim evidence. Please try again."
+    );
+  } finally {
+    setEvidenceLoading(false);
+  }
+}
+  
   async function reviewClaim(
     newStatus: "APPROVED" | "REJECTED"
   ) {
@@ -203,9 +246,7 @@ export default function StaffClaimCard({
 
           <p className="mt-1 text-sm text-stone-500">
             Submitted{" "}
-            {new Date(
-              claim.created_at
-            ).toLocaleString()}
+            {formatDateTime(claim.created_at)}
           </p>
         </div>
 
@@ -246,16 +287,33 @@ export default function StaffClaimCard({
         </div>
 
         <div>
-          <p className="font-medium text-stone-700">
-            Evidence
-          </p>
+  <p className="font-medium text-stone-700">
+    Evidence
+  </p>
 
-          <p className="text-stone-600">
-            {claim.evidence
-              ? "Evidence submitted"
-              : "No evidence submitted"}
-          </p>
-        </div>
+  {!claim.evidence ? (
+    <p className="text-stone-600">
+      No evidence submitted
+    </p>
+  ) : !evidenceUrl ? (
+    <button
+      type="button"
+      disabled={evidenceLoading}
+      onClick={viewEvidence}
+      className="mt-2 rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+    >
+      {evidenceLoading
+        ? "Loading..."
+        : "View Evidence"}
+    </button>
+  ) : (
+    <img
+      src={evidenceUrl}
+      alt="Claim ownership evidence"
+      className="mt-2 max-h-96 rounded-xl border border-stone-200 object-contain"
+    />
+  )}
+</div>
       </div>
 
       {claim.status === "PENDING_REVIEW" && (
