@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -11,56 +11,94 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    const rememberedEmail = window.localStorage.getItem(
+      "campus-remembered-email"
+    );
+
+    if (rememberedEmail) {
+      const animationFrame = window.requestAnimationFrame(() => {
+        setEmail(rememberedEmail);
+        setRememberMe(true);
+      });
+
+      return () => window.cancelAnimationFrame(animationFrame);
+    }
+  }, []);
+
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     setLoading(true);
     setErrorMessage("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data, error } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
 
-    if (error || !data.user) {
-      setErrorMessage(error?.message ?? "Unable to sign in.");
-      setLoading(false);
-      return;
-    }
+      if (error || !data.user) {
+        setErrorMessage(
+          error?.message ?? "Unable to sign in."
+        );
+        return;
+      }
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role, status")
-      .eq("id", data.user.id)
-      .single();
+      const {
+        data: profile,
+        error: profileError,
+      } = await supabase
+        .from("profiles")
+        .select("role, status")
+        .eq("id", data.user.id)
+        .single();
 
-    if (profileError || !profile) {
+      if (profileError || !profile) {
+        await supabase.auth.signOut();
+
+        setErrorMessage(
+          "Your account profile could not be loaded. Please contact an administrator."
+        );
+        return;
+      }
+
+      if (profile.status !== "ACTIVE") {
+        await supabase.auth.signOut();
+
+        setErrorMessage(
+          "Your account is inactive. Please contact an administrator."
+        );
+        return;
+      }
+
+      if (rememberMe) {
+        window.localStorage.setItem(
+          "campus-remembered-email",
+          email.trim().toLowerCase()
+        );
+      } else {
+        window.localStorage.removeItem("campus-remembered-email");
+      }
+
+      router.replace("/");
+      router.refresh();
+    } catch {
       await supabase.auth.signOut();
 
       setErrorMessage(
-        "Your account profile could not be loaded. Please contact an administrator."
+        "Something went wrong. Please try again."
       );
-
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (profile.status !== "ACTIVE") {
-      await supabase.auth.signOut();
-
-      setErrorMessage(
-        "Your account is inactive. Please contact an administrator."
-      );
-
-      setLoading(false);
-      return;
-    }
-
-    router.push("/");
-    router.refresh();
   }
 
   return (
@@ -125,6 +163,33 @@ export default function LoginPage() {
               className="w-full rounded-xl border border-stone-300 px-3 py-2 outline-none transition focus:border-stone-500"
               placeholder="Enter your password"
             />
+
+            <div className="mt-2 text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-gray-600 underline underline-offset-4 hover:text-gray-900"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              id="rememberMe"
+              name="rememberMe"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(event) => setRememberMe(event.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+
+            <label
+              htmlFor="rememberMe"
+              className="text-sm text-gray-700"
+            >
+              Remember me
+            </label>
           </div>
 
           <button
