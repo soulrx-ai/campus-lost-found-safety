@@ -4,6 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Bangkok",
+  }).format(new Date(value));
+}
+
 type TicketStatus =
   | "OPEN"
   | "IN_PROGRESS"
@@ -39,28 +47,60 @@ export default function TicketManagementCard({
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  async function updateTicket(
-    newStatus: TicketStatus
-  ) {
-    setLoading(true);
-    setErrorMessage("");
+async function updateTicket(
+  newStatus: TicketStatus
+) {
+  setLoading(true);
+  setErrorMessage("");
 
-    const { error } = await supabase
+  try {
+    const expectedStatus =
+      newStatus === "IN_PROGRESS"
+        ? "OPEN"
+        : "IN_PROGRESS";
+
+    const updateData =
+      newStatus === "RESOLVED"
+        ? {
+            status: newStatus,
+            assigned_to: staffId,
+            resolved_at: new Date().toISOString(),
+          }
+        : {
+            status: newStatus,
+            assigned_to: staffId,
+            resolved_at: null,
+          };
+
+    const { data, error } = await supabase
       .from("service_tickets")
-      .update({
-        status: newStatus,
-        assigned_to: staffId,
-      })
-      .eq("id", ticket.id);
+      .update(updateData)
+      .eq("id", ticket.id)
+      .eq("status", expectedStatus)
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       setErrorMessage(error.message);
-      setLoading(false);
+      return;
+    }
+
+    if (!data) {
+      setErrorMessage(
+        "This ticket has already been updated. Refresh the page and try again."
+      );
       return;
     }
 
     router.refresh();
+  } catch {
+    setErrorMessage(
+      "Unable to update ticket. Please try again."
+    );
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
@@ -76,7 +116,7 @@ export default function TicketManagementCard({
 
           <p className="mt-1 text-sm text-stone-500">
             Created{" "}
-            {new Date(ticket.created_at).toLocaleString()}
+            {formatDateTime(ticket.created_at)}
           </p>
         </div>
 
