@@ -1,11 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
   const supabase = createClient();
   const searchParams = useSearchParams();
 
@@ -128,5 +128,19 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center">
+          <p className="text-sm text-gray-600">Loading...</p>
+        </main>
+      }
+    >
+      <ForgotPasswordContent />
+    </Suspense>
   );
 }
