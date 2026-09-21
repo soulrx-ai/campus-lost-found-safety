@@ -9,8 +9,8 @@ export default async function StaffSafetyPage() {
   const { data: incidents, error } = await supabase
     .from("security_incidents")
     .select(
-      "id, reporter_id, title, description, location, incident_time, status, created_at"
-    )
+  "id, reporter_id, title, description, location, incident_time, image_url, status, created_at"
+  )
     .eq("status", "PENDING_REVIEW")
     .order("created_at", { ascending: true });
 

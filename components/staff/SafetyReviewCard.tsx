@@ -21,6 +21,7 @@ type SafetyIncident = {
   incident_time: string;
   status: string;
   created_at: string;
+  image_url: string;
 };
 
 type Props = {
@@ -37,15 +38,17 @@ export default function SafetyReviewCard({
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(false);
 
-  async function reviewIncident(
+async function reviewIncident(
   newStatus: "PUBLISHED" | "REJECTED"
 ) {
   setLoading(true);
   setErrorMessage("");
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("security_incidents")
       .update({
         status: newStatus,
@@ -53,10 +56,19 @@ export default function SafetyReviewCard({
         reviewed_at: new Date().toISOString(),
       })
       .eq("id", incident.id)
-      .eq("status", "PENDING_REVIEW");
+      .eq("status", "PENDING_REVIEW")
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       setErrorMessage(error.message);
+      return;
+    }
+
+    if (!data) {
+      setErrorMessage(
+        "This incident has already been reviewed. Refresh the page and try again."
+      );
       return;
     }
 
@@ -67,6 +79,32 @@ export default function SafetyReviewCard({
     );
   } finally {
     setLoading(false);
+  }
+}
+
+async function viewIncidentImage() {
+  setImageLoading(true);
+  setErrorMessage("");
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("safety-incidents")
+      .createSignedUrl(incident.image_url, 60 * 5);
+
+    if (error || !data?.signedUrl) {
+      setErrorMessage(
+        error?.message ?? "Unable to load incident image."
+      );
+      return;
+    }
+
+    setImageUrl(data.signedUrl);
+  } catch {
+    setErrorMessage(
+      "Unable to load incident image. Please try again."
+    );
+  } finally {
+    setImageLoading(false);
   }
 }
 
@@ -122,6 +160,29 @@ export default function SafetyReviewCard({
           {incident.description}
         </p>
       </div>
+
+      <div className="mt-4">
+  <p className="text-sm font-medium text-stone-700">
+    Incident Image
+  </p>
+
+  {!imageUrl ? (
+    <button
+      type="button"
+      disabled={imageLoading}
+      onClick={viewIncidentImage}
+      className="mt-2 rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+    >
+      {imageLoading ? "Loading..." : "View Incident Image"}
+    </button>
+  ) : (
+    <img
+      src={imageUrl}
+      alt="Safety incident evidence"
+      className="mt-2 max-h-96 rounded-xl border border-stone-200 object-contain"
+    />
+  )}
+</div>
 
       {errorMessage && (
         <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
