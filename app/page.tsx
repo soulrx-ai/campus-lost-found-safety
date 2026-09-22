@@ -411,6 +411,18 @@ export default async function Home() {
               />
             </section>
           )}
+
+          {profile.role === "ADMIN" && (
+            <section className="mt-8">
+              <MenuCard
+                href="/admin"
+                label="ADMIN"
+                title="Admin Dashboard"
+                description="Manage users, notifications and system activity."
+              />
+            </section>
+          )}
+
           <footer className="mt-12 border-t border-[var(--border)] py-7">
             <div className="flex flex-col gap-4 text-sm sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -451,17 +463,6 @@ export default async function Home() {
               Walailak University
             </p>
           </footer>
-
-          {profile.role === "ADMIN" && (
-            <section className="mt-8">
-              <MenuCard
-                href="/admin"
-                label="ADMIN"
-                title="Admin Dashboard"
-                description="Manage users, notifications and system activity."
-              />
-            </section>
-          )}
         </div>
       </div>
     </main>
