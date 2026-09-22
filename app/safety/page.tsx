@@ -18,7 +18,6 @@ type Incident = {
 const initialFilters: SafetyFilterValues = {
   location: "",
   date: "",
-  status: "",
 };
 
 function formatDateTime(value: string) {
@@ -48,7 +47,7 @@ export default function SafetyPage() {
       .select(
         "id, title, description, location, incident_time, status"
       )
-      .in("status", ["PUBLISHED", "CLOSED"])
+      .eq("status", "PUBLISHED")
       .order("incident_time", { ascending: false });
 
     if (filters.location.trim()) {
@@ -56,10 +55,6 @@ export default function SafetyPage() {
         "location",
         `%${filters.location.trim()}%`
       );
-    }
-
-    if (filters.status) {
-      query = query.eq("status", filters.status);
     }
 
     if (filters.date) {
@@ -109,7 +104,7 @@ export default function SafetyPage() {
 
             <p className="page-description">
               View published campus safety reports and filter incidents by
-              location, date, or current status.
+              location or date.
             </p>
           </header>
 

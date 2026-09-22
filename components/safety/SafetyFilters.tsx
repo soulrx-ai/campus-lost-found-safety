@@ -1,7 +1,6 @@
 export type SafetyFilterValues = {
   location: string;
   date: string;
-  status: string;
 };
 
 type Props = {
@@ -42,7 +41,7 @@ export default function SafetyFilters({
       </div>
 
       <div className="p-5 sm:p-6">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label
               htmlFor="safety-location"
@@ -80,28 +79,6 @@ export default function SafetyFilters({
               }
               className="ui-input"
             />
-          </div>
-
-          <div>
-            <label
-              htmlFor="safety-status"
-              className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
-            >
-              Status
-            </label>
-
-            <select
-              id="safety-status"
-              value={filters.status}
-              onChange={(event) =>
-                update("status", event.target.value)
-              }
-              className="ui-input"
-            >
-              <option value="">Published &amp; closed</option>
-              <option value="PUBLISHED">Published</option>
-              <option value="CLOSED">Closed</option>
-            </select>
           </div>
         </div>
 
