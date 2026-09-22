@@ -1,18 +1,30 @@
+import Link from "next/link";
 import MyTickets from "@/components/tickets/MyTickets";
 
 export default function TicketsPage() {
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
-      <div className="mx-auto max-w-4xl">
-        <h1 className="text-3xl font-bold text-stone-900">
-          My Service Tickets
-        </h1>
+    <main className="page-shell">
+      <div className="app-container">
+        <div className="mx-auto max-w-4xl">
+          <header className="mb-7">
+    
+            <h1 className="page-title">My Service Tickets</h1>
 
-        <p className="mt-2 text-stone-600">
-          Track issues you have reported to Staff.
-        </p>
+            <div className="flex items-center justify-between gap-4">
+              <p className="page-description">
+                Track service requests you have submitted to Staff and follow
+                their current progress.
+              </p>
 
-        <div className="mt-6">
+              <Link
+                href="/tickets/new"
+                className="shrink-0 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-hover)]"
+              >
+                + Create Ticket
+              </Link>
+            </div>
+          </header>
+
           <MyTickets />
         </div>
       </div>
