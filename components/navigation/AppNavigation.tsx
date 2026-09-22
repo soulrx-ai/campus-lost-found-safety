@@ -13,93 +13,57 @@ export default function AppNavigation({
   role,
 }: Props) {
   return (
-    <header className="border-b border-stone-200 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
+    <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-white/95 backdrop-blur">
+      <div className="app-container">
+        <div className="flex min-h-16 items-center justify-between gap-4 py-3">
+          <div className="min-w-0">
             <Link
               href="/"
-              className="text-lg font-bold text-stone-900"
+              className="block truncate text-lg font-bold tracking-tight text-[var(--foreground)] transition hover:opacity-75"
             >
-              Campus Lost & Found
+              Campus Lost &amp; Found
             </Link>
 
-            <p className="text-xs text-stone-500">
+            <p className="mt-0.5 truncate text-xs text-[var(--foreground-muted)]">
               {fullName} · {role}
             </p>
           </div>
 
-          <LogoutButton />
+          <div className="shrink-0">
+            <LogoutButton />
+          </div>
         </div>
 
-        <nav className="mt-4 flex flex-wrap gap-2">
+        <nav
+          aria-label="Main navigation"
+          className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+        >
           <NavLink href="/">Home</NavLink>
-
-          <NavLink href="/search">
-            Search
-          </NavLink>
-
-          <NavLink href="/matching">
-            Find Matches
-          </NavLink>
-
-          <NavLink href="/lost/report">
-            Report Lost
-          </NavLink>
-
-          <NavLink href="/found/report">
-            Report Found
-          </NavLink>
-
-          <NavLink href="/claims">
-            My Claims
-          </NavLink>
-
-          <NavLink href="/safety">
-            Safety
-          </NavLink>
-
-          <NavLink href="/tickets">
-            Tickets
-          </NavLink>
+          <NavLink href="/search">Search</NavLink>
+          <NavLink href="/matching">Find Matches</NavLink>
+          <NavLink href="/lost/report">Report Lost</NavLink>
+          <NavLink href="/found/report">Report Found</NavLink>
+          <NavLink href="/claims">My Claims</NavLink>
+          <NavLink href="/safety">Safety</NavLink>
+          <NavLink href="/tickets">Tickets</NavLink>
 
           {role === "STAFF" && (
             <>
-              <NavLink href="/staff/items">
-                Review Items
-              </NavLink>
-
-              <NavLink href="/staff/claims">
-                Review Claims
-              </NavLink>
-
-              <NavLink href="/staff/safety">
-                Review Safety
-              </NavLink>
-
-              <NavLink href="/staff/tickets">
-                Manage Tickets
-              </NavLink>
+              <NavLink href="/staff/items">Review Items</NavLink>
+              <NavLink href="/staff/claims">Review Claims</NavLink>
+              <NavLink href="/staff/safety">Review Safety</NavLink>
+              <NavLink href="/staff/tickets">Manage Tickets</NavLink>
             </>
           )}
 
           {role === "ADMIN" && (
             <>
-              <NavLink href="/admin">
-                Admin
-              </NavLink>
-
-              <NavLink href="/admin/users">
-                Users
-              </NavLink>
-
+              <NavLink href="/admin">Admin</NavLink>
+              <NavLink href="/admin/users">Users</NavLink>
               <NavLink href="/admin/notifications">
                 Notifications
               </NavLink>
-
-              <NavLink href="/admin/logs">
-                Activity Logs
-              </NavLink>
+              <NavLink href="/admin/logs">Activity Logs</NavLink>
             </>
           )}
         </nav>
@@ -118,7 +82,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100 hover:text-stone-900"
+      className="shrink-0 whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm font-medium text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:bg-[var(--primary-soft)] hover:text-[var(--foreground)]"
     >
       {children}
     </Link>
