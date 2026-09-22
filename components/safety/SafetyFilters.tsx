@@ -30,56 +30,101 @@ export default function SafetyFilters({
   }
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm">
-      <div className="grid gap-4 md:grid-cols-3">
-        <input
-          type="text"
-          value={filters.location}
-          onChange={(e) =>
-            update("location", e.target.value)
-          }
-          placeholder="Location"
-          className="rounded-lg border border-stone-300 px-3 py-2"
-        />
+    <section className="ui-card overflow-hidden">
+      <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
+        <h2 className="font-semibold text-[var(--foreground)]">
+          Filter incidents
+        </h2>
 
-        <input
-          type="date"
-          value={filters.date}
-          onChange={(e) => update("date", e.target.value)}
-          className="rounded-lg border border-stone-300 px-3 py-2"
-        />
-
-        <select
-          value={filters.status}
-          onChange={(e) =>
-            update("status", e.target.value)
-          }
-          className="rounded-lg border border-stone-300 px-3 py-2"
-        >
-          <option value="">Published incidents</option>
-          <option value="PUBLISHED">Published</option>
-          <option value="CLOSED">Closed</option>
-        </select>
+        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+          Narrow the published safety reports shown below.
+        </p>
       </div>
 
-      <div className="mt-4 flex gap-3">
-        <button
-          type="button"
-          onClick={onSearch}
-          disabled={loading}
-          className="rounded-lg bg-red-700 px-5 py-2 text-white disabled:opacity-50"
-        >
-          {loading ? "Searching..." : "Search"}
-        </button>
+      <div className="p-5 sm:p-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div>
+            <label
+              htmlFor="safety-location"
+              className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+            >
+              Location
+            </label>
 
-        <button
-          type="button"
-          onClick={onClear}
-          className="rounded-lg border border-stone-300 px-5 py-2"
-        >
-          Clear
-        </button>
+            <input
+              id="safety-location"
+              type="text"
+              value={filters.location}
+              onChange={(event) =>
+                update("location", event.target.value)
+              }
+              placeholder="e.g. Thaiburi Building"
+              className="ui-input"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="safety-date"
+              className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+            >
+              Date
+            </label>
+
+            <input
+              id="safety-date"
+              type="date"
+              value={filters.date}
+              onChange={(event) =>
+                update("date", event.target.value)
+              }
+              className="ui-input"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="safety-status"
+              className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+            >
+              Status
+            </label>
+
+            <select
+              id="safety-status"
+              value={filters.status}
+              onChange={(event) =>
+                update("status", event.target.value)
+              }
+              className="ui-input"
+            >
+              <option value="">Published &amp; closed</option>
+              <option value="PUBLISHED">Published</option>
+              <option value="CLOSED">Closed</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={loading}
+            className="ui-button-secondary w-full sm:w-auto"
+          >
+            Clear filters
+          </button>
+
+          <button
+            type="button"
+            onClick={onSearch}
+            disabled={loading}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger)] px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          >
+            {loading ? "Searching..." : "Search incidents"}
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

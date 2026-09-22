@@ -37,6 +37,17 @@ type Props = {
   staffId: string;
 };
 
+function statusClass(status: TicketStatus) {
+  switch (status) {
+    case "OPEN":
+      return "bg-[var(--warning-soft)] text-[var(--warning)]";
+    case "IN_PROGRESS":
+      return "bg-[var(--info-soft)] text-[var(--info)]";
+    case "RESOLVED":
+      return "bg-[var(--success-soft)] text-[var(--success)]";
+  }
+}
+
 export default function TicketManagementCard({
   ticket,
   staffId,
@@ -47,149 +58,171 @@ export default function TicketManagementCard({
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-async function updateTicket(
-  newStatus: TicketStatus
-) {
-  setLoading(true);
-  setErrorMessage("");
+  async function updateTicket(
+    newStatus: TicketStatus
+  ) {
+    setLoading(true);
+    setErrorMessage("");
 
-  try {
-    const expectedStatus =
-      newStatus === "IN_PROGRESS"
-        ? "OPEN"
-        : "IN_PROGRESS";
+    try {
+      const expectedStatus =
+        newStatus === "IN_PROGRESS"
+          ? "OPEN"
+          : "IN_PROGRESS";
 
-    const updateData =
-      newStatus === "RESOLVED"
-        ? {
-            status: newStatus,
-            assigned_to: staffId,
-            resolved_at: new Date().toISOString(),
-          }
-        : {
-            status: newStatus,
-            assigned_to: staffId,
-            resolved_at: null,
-          };
+      const updateData =
+        newStatus === "RESOLVED"
+          ? {
+              status: newStatus,
+              assigned_to: staffId,
+              resolved_at: new Date().toISOString(),
+            }
+          : {
+              status: newStatus,
+              assigned_to: staffId,
+              resolved_at: null,
+            };
 
-    const { data, error } = await supabase
-      .from("service_tickets")
-      .update(updateData)
-      .eq("id", ticket.id)
-      .eq("status", expectedStatus)
-      .select("id")
-      .maybeSingle();
+      const { data, error } = await supabase
+        .from("service_tickets")
+        .update(updateData)
+        .eq("id", ticket.id)
+        .eq("status", expectedStatus)
+        .select("id")
+        .maybeSingle();
 
-    if (error) {
-      setErrorMessage(error.message);
-      return;
-    }
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
 
-    if (!data) {
+      if (!data) {
+        setErrorMessage(
+          "This ticket has already been updated. Refresh the page and try again."
+        );
+        return;
+      }
+
+      router.refresh();
+    } catch {
       setErrorMessage(
-        "This ticket has already been updated. Refresh the page and try again."
+        "Unable to update ticket. Please try again."
       );
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    router.refresh();
-  } catch {
-    setErrorMessage(
-      "Unable to update ticket. Please try again."
-    );
-  } finally {
-    setLoading(false);
   }
-}
 
   return (
-    <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-stone-500">
+    <article className="ui-card overflow-hidden">
+      <div className="flex flex-col gap-4 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
+        <div className="min-w-0">
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
             {ticket.ticket_type.replaceAll("_", " ")}
           </p>
 
-          <h2 className="mt-1 text-lg font-semibold text-stone-900">
+          <h2 className="mt-1 break-words text-lg font-semibold text-[var(--foreground)]">
             {ticket.subject}
           </h2>
 
-          <p className="mt-1 text-sm text-stone-500">
-            Created{" "}
-            {formatDateTime(ticket.created_at)}
+          <p className="mt-1 text-xs text-[var(--foreground-muted)]">
+            Created {formatDateTime(ticket.created_at)}
           </p>
         </div>
 
-        <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700">
+        <span
+          className={`inline-flex w-fit shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusClass(
+            ticket.status
+          )}`}
+        >
           {ticket.status.replaceAll("_", " ")}
         </span>
       </div>
 
-      <div className="mt-4">
-        <p className="text-sm font-medium text-stone-700">
-          Description
-        </p>
-
-        <p className="mt-1 whitespace-pre-wrap text-sm text-stone-600">
-          {ticket.description}
-        </p>
-      </div>
-
-      <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+      <div className="space-y-5 p-5 sm:p-6">
         <div>
-          <p className="font-medium text-stone-700">
-            Requester ID
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+            Description
           </p>
-          <p className="break-all text-stone-600">
-            {ticket.requester_id}
+
+          <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
+            {ticket.description}
           </p>
         </div>
 
-        <div>
-          <p className="font-medium text-stone-700">
-            Related Claim
-          </p>
-          <p className="break-all text-stone-600">
-            {ticket.claim_id || "None"}
-          </p>
-        </div>
-      </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <InfoField
+            label="Requester ID"
+            value={ticket.requester_id}
+          />
 
-      {errorMessage && (
-        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {errorMessage}
+          <InfoField
+            label="Related claim"
+            value={ticket.claim_id || "None"}
+          />
         </div>
-      )}
 
-      <div className="mt-6 flex flex-wrap gap-3">
-        {ticket.status === "OPEN" && (
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => updateTicket("IN_PROGRESS")}
-            className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
+        {errorMessage && (
+          <div
+            role="alert"
+            className="rounded-xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger)]"
           >
-            {loading ? "Processing..." : "Start Processing"}
-          </button>
+            {errorMessage}
+          </div>
         )}
 
-        {ticket.status === "IN_PROGRESS" && (
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => updateTicket("RESOLVED")}
-            className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700 disabled:opacity-50"
-          >
-            {loading ? "Processing..." : "Resolve Ticket"}
-          </button>
-        )}
+        <div className="border-t border-[var(--border)] pt-5">
+          {ticket.status === "OPEN" && (
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => updateTicket("IN_PROGRESS")}
+              className="ui-button-primary w-full sm:w-auto"
+            >
+              {loading ? "Processing..." : "Start processing"}
+            </button>
+          )}
 
-        {ticket.status === "RESOLVED" && (
-          <p className="rounded-xl bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
-            Ticket resolved
-          </p>
-        )}
+          {ticket.status === "IN_PROGRESS" && (
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => updateTicket("RESOLVED")}
+              className="ui-button-primary w-full sm:w-auto"
+            >
+              {loading ? "Processing..." : "Resolve ticket"}
+            </button>
+          )}
+
+          {ticket.status === "RESOLVED" && (
+            <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4">
+              <p className="text-sm font-semibold text-[var(--success)]">
+                Ticket resolved
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </article>
+  );
+}
+
+function InfoField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+        {label}
+      </p>
+
+      <p className="mt-1 break-all text-sm text-[var(--foreground)]">
+        {value}
+      </p>
+    </div>
   );
 }
