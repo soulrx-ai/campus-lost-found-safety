@@ -2,17 +2,20 @@ import MyClaims from "@/components/claims/MyClaims";
 
 export default function ClaimsPage() {
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
-      <div className="mx-auto max-w-4xl">
-        <h1 className="text-3xl font-bold text-stone-900">
-          My Claims
-        </h1>
+    <main className="page-shell">
+      <div className="app-container">
+        <div className="mx-auto max-w-4xl">
+          <header className="mb-7">
+            <p className="page-eyebrow">Lost &amp; Found</p>
 
-        <p className="mt-2 text-stone-600">
-          Track the status of your submitted claims.
-        </p>
+            <h1 className="page-title">My Claims</h1>
 
-        <div className="mt-6">
+            <p className="page-description">
+              Track your ownership claims, Staff review decisions, and
+              completed item handovers.
+            </p>
+          </header>
+
           <MyClaims />
         </div>
       </div>
