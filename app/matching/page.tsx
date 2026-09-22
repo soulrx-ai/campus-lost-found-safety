@@ -17,73 +17,127 @@ export default async function MatchingPage() {
         .order("created_at", { ascending: false });
 
     return (
-        <main className="min-h-screen bg-stone-50 px-4 py-10">
-            <div className="mx-auto max-w-4xl">
-                <div className="mb-8">
-                    <p className="text-sm font-medium text-stone-500">
-                        Lost & Found
-                    </p>
-
-                    <h1 className="mt-1 text-3xl font-bold text-stone-900">
-                        Find Potential Matches
-                    </h1>
-
-                    <p className="mt-2 text-stone-600">
-                        Select one of your lost item reports to compare it with
-                        published found items.
-                    </p>
-                </div>
-
-                {!lostItems || lostItems.length === 0 ? (
-                    <div className="rounded-2xl border border-stone-200 bg-white p-6">
-                        <p className="text-stone-600">
-                            You do not have any lost item reports yet.
+        <main className="page-shell">
+            <div className="app-container">
+                <div className="mx-auto max-w-5xl">
+                    <header className="mb-7">
+                        <p className="page-eyebrow">
+                            Lost & Found
                         </p>
 
-                        <Link
-                            href="/lost/report"
-                            className="mt-4 inline-block rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white"
-                        >
-                            Report Lost Item
-                        </Link>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        {lostItems.map((item) => (
-                            <div
-                                key={item.id}
-                                className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm"
-                            >
-                                <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div>
-                                        <h2 className="font-semibold text-stone-900">
-                                            {item.name}
-                                        </h2>
+                        <h1 className="page-title">
+                            Find Potential Matches
+                        </h1>
 
-                                        <div className="mt-2 space-y-1 text-sm text-stone-600">
-                                            <p>Category: {item.category}</p>
+                        <p className="page-description">
+                            Select one of your published lost reports.
+                            The system will compare it with published
+                            found items.
+                        </p>
+                    </header>
 
-                                            {item.brand && <p>Brand: {item.brand}</p>}
+                    {!lostItems || lostItems.length === 0 ? (
+                        <div className="ui-card p-6 sm:p-8">
+                            <div className="max-w-lg">
+                                <span className="inline-flex rounded-full bg-[var(--warning-soft)] px-3 py-1 text-xs font-semibold text-[var(--warning)]">
+                                    NO LOST REPORTS
+                                </span>
 
-                                            {item.color && <p>Color: {item.color}</p>}
+                                <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
+                                    No published lost reports available
+                                </h2>
 
-                                            <p>Location: {item.location}</p>
+                                <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
+                                    Submit a lost item report first. Once Staff
+                                    approves it, you can use it to find potential
+                                    matches.
+                                </p>
 
-                                            <p>Status: {item.status}</p>
-                                        </div>
-                                    </div>
-
-                                    <Link
-                                        href={`/matching/${item.id}`}
-                                        className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700"
-                                    >
-                                        Find Matches
-                                    </Link>
-                                </div>
+                                <Link
+                                    href="/lost/report"
+                                    className="ui-button-primary mt-5"
+                                >
+                                    Report Lost Item
+                                </Link>
                             </div>
-                        ))}
-                    </div>
-                )}
+                        </div>
+                    ) : (
+                        <>
+                            <div className="mb-4 flex items-center justify-between">
+                                <p className="text-sm text-[var(--foreground-muted)]">
+                                    Your published lost reports
+                                </p>
+
+                                <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-medium text-[var(--primary)]">
+                                    {lostItems.length} item
+                                    {lostItems.length === 1 ? "" : "s"}
+                                </span>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                {lostItems.map((item) => (
+                                    <article
+                                        key={item.id}
+                                        className="ui-card flex h-full flex-col p-5"
+                                    >
+                                        <div>
+                                            <span className="inline-flex rounded-full bg-[var(--warning-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--warning)]">
+                                                LOST
+                                            </span>
+
+                                            <h2 className="mt-3 text-lg font-semibold text-[var(--foreground)]">
+                                                {item.name}
+                                            </h2>
+
+                                            <dl className="mt-4 space-y-2 text-sm text-[var(--foreground-muted)]">
+                                                <p>
+                                                    <span className="font-medium text-[var(--foreground)]">
+                                                        Category:
+                                                    </span>{" "}
+                                                    {item.category}
+                                                </p>
+
+                                                {item.brand && (
+                                                    <p>
+                                                        <span className="font-medium text-[var(--foreground)]">
+                                                            Brand:
+                                                        </span>{" "}
+                                                        {item.brand}
+                                                    </p>
+                                                )}
+
+                                                {item.color && (
+                                                    <p>
+                                                        <span className="font-medium text-[var(--foreground)]">
+                                                            Color:
+                                                        </span>{" "}
+                                                        {item.color}
+                                                    </p>
+                                                )}
+
+                                                <p>
+                                                    <span className="font-medium text-[var(--foreground)]">
+                                                        Location:
+                                                    </span>{" "}
+                                                    {item.location}
+                                                </p>
+                                            </dl>
+                                        </div>
+
+                                        <div className="mt-auto pt-5">
+                                            <Link
+                                                href={`/matching/${item.id}`}
+                                                className="ui-button-primary w-full"
+                                            >
+                                                Find Matches
+                                            </Link>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
         </main>
     );
