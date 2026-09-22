@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 type UserProfile = {
   id: string;
   full_name: string;
+  email: string | null;
   phone: string | null;
   role: string;
   status: string;
@@ -25,34 +26,48 @@ export default function UserTable() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [updatingUserId, setUpdatingUserId] =
-    useState<string | null>(null);
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const [deleteUser, setDeleteUser] = useState<UserProfile | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteConfirmed, setDeleteConfirmed] = useState(false);
 
   const fetchUsers = useCallback(async () => {
-    return await supabase
-      .from("profiles")
-      .select(
-        "id, full_name, phone, role, status, created_at"
-      )
-      .order("created_at", { ascending: false });
+    const response = await fetch("/api/admin/user", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error ?? "Unable to load users.");
+    }
+
+    return result.users as UserProfile[];
   }, []);
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadInitialUsers() {
-      const { data, error } = await fetchUsers();
+      try {
+        const data = await fetchUsers();
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (error) {
-        setMessage(error.message);
+        setUsers(data);
+      } catch (error) {
+        if (cancelled) return;
+
+        setMessage(
+          error instanceof Error ? error.message : "Unable to load users.",
+        );
         setUsers([]);
-      } else {
-        setUsers((data ?? []) as UserProfile[]);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-
-      setLoading(false);
     }
 
     void loadInitialUsers();
@@ -63,21 +78,18 @@ export default function UserTable() {
   }, [fetchUsers]);
 
   async function loadUsers() {
-    const { data, error } = await fetchUsers();
-
-    if (error) {
-      setMessage(error.message);
+    try {
+      const data = await fetchUsers();
+      setUsers(data);
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Unable to load users.",
+      );
       setUsers([]);
-      return;
     }
-
-    setUsers((data ?? []) as UserProfile[]);
   }
 
-  async function updateRole(
-    userId: string,
-    role: string
-  ) {
+  async function updateRole(userId: string, role: string) {
     setMessage("");
     setUpdatingUserId(userId);
 
@@ -95,27 +107,20 @@ export default function UserTable() {
       }
 
       if (!data) {
-        setMessage(
-          "User was not found or could not be updated."
-        );
+        setMessage("User was not found or could not be updated.");
         return;
       }
 
       setMessage("User role updated successfully.");
       await loadUsers();
     } catch {
-      setMessage(
-        "Unable to update user role. Please try again."
-      );
+      setMessage("Unable to update user role. Please try again.");
     } finally {
       setUpdatingUserId(null);
     }
   }
 
-  async function updateStatus(
-    userId: string,
-    status: string
-  ) {
+  async function updateStatus(userId: string, status: string) {
     setMessage("");
     setUpdatingUserId(userId);
 
@@ -133,21 +138,58 @@ export default function UserTable() {
       }
 
       if (!data) {
-        setMessage(
-          "User was not found or could not be updated."
-        );
+        setMessage("User was not found or could not be updated.");
         return;
       }
 
       setMessage("User status updated successfully.");
       await loadUsers();
     } catch {
-      setMessage(
-        "Unable to update user status. Please try again."
-      );
+      setMessage("Unable to update user status. Please try again.");
     } finally {
       setUpdatingUserId(null);
     }
+  }
+
+  async function confirmDeleteUser() {
+    if (!deleteUser) return;
+
+    setDeleting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`/api/admin/user/${deleteUser.id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error ?? "Unable to delete user.");
+      }
+
+      setDeleteUser(null);
+      setDeleteConfirmed(false);
+      setMessage("User account deleted successfully.");
+
+      await loadUsers();
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Unable to delete user.",
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  function openDeleteModal(user: UserProfile) {
+    setDeleteUser(user);
+    setDeleteConfirmed(false);
+  }
+
+  function closeDeleteModal() {
+    setDeleteUser(null);
+    setDeleteConfirmed(false);
   }
 
   if (loading) {
@@ -195,9 +237,9 @@ export default function UserTable() {
             <thead className="border-b border-[var(--border)] bg-[var(--surface-soft)]">
               <tr className="text-xs uppercase tracking-wide text-[var(--foreground-muted)]">
                 <th className="px-4 py-3 font-medium">Name</th>
+                <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Phone</th>
                 <th className="px-4 py-3 font-medium">Role</th>
-                <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Created</th>
               </tr>
             </thead>
@@ -212,11 +254,9 @@ export default function UserTable() {
                     <p className="font-medium text-[var(--foreground)]">
                       {user.full_name}
                     </p>
-
-                    <p className="mt-1 max-w-48 truncate text-xs text-[var(--foreground-muted)]">
-                      {user.id}
-                    </p>
                   </td>
+
+                  <td className="px-4 py-4">{user.email || "-"}</td>
 
                   <td className="px-4 py-4 text-[var(--foreground-muted)]">
                     {user.phone ?? "-"}
@@ -228,10 +268,7 @@ export default function UserTable() {
                       value={user.role}
                       disabled={updatingUserId === user.id}
                       onChange={(event) =>
-                        updateRole(
-                          user.id,
-                          event.target.value
-                        )
+                        updateRole(user.id, event.target.value)
                       }
                       className="ui-input min-h-9 min-w-28 py-1.5 text-sm disabled:opacity-50"
                     >
@@ -241,28 +278,52 @@ export default function UserTable() {
                     </select>
                   </td>
 
-                  <td className="px-4 py-4">
-                    <select
-                      aria-label={`Status for ${user.full_name}`}
-                      value={user.status}
-                      disabled={updatingUserId === user.id}
-                      onChange={(event) =>
-                        updateStatus(
-                          user.id,
-                          event.target.value
-                        )
-                      }
-                      className="ui-input min-h-9 min-w-32 py-1.5 text-sm disabled:opacity-50"
-                    >
-                      <option value="ACTIVE">ACTIVE</option>
-                      <option value="INACTIVE">
-                        INACTIVE
-                      </option>
-                    </select>
-                  </td>
-
                   <td className="whitespace-nowrap px-4 py-4 text-[var(--foreground-muted)]">
-                    {formatDate(user.created_at)}
+                    <div className="flex w-full items-center justify-between gap-5">
+                      <span className="min-w-[110px]">
+                        {formatDate(user.created_at)}
+                      </span>
+
+                      <div className="flex items-center gap-4">
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={user.status === "ACTIVE"}
+                          aria-label={`Set ${user.full_name} ${
+                            user.status === "ACTIVE" ? "inactive" : "active"
+                          }`}
+                          disabled={updatingUserId === user.id}
+                          onClick={() =>
+                            updateStatus(
+                              user.id,
+                              user.status === "ACTIVE" ? "INACTIVE" : "ACTIVE",
+                            )
+                          }
+                          className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                            user.status === "ACTIVE"
+                              ? "bg-green-600"
+                              : "bg-gray-400"
+                          }`}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-5 w-5 translate-y-0.5 rounded-full bg-white shadow transition-transform ${
+                              user.status === "ACTIVE"
+                                ? "translate-x-5"
+                                : "translate-x-0.5"
+                            }`}
+                          />
+                        </button>
+
+                        <button
+                          type="button"
+                          aria-label={`Delete ${user.full_name}`}
+                          onClick={() => openDeleteModal(user)}
+                          className="rounded-md p-1.5 text-[var(--foreground-muted)] transition hover:bg-red-50 hover:text-red-600"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -281,6 +342,66 @@ export default function UserTable() {
           </table>
         </div>
       </div>
+
+      {deleteUser && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-user-title"
+        >
+          <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 shadow-xl">
+            <h2
+              id="delete-user-title"
+              className="text-lg font-semibold text-[var(--foreground)]"
+            >
+              Delete account?
+            </h2>
+
+            <p className="mt-2 text-sm text-[var(--foreground-muted)]">
+              Are you sure you want to delete this account?
+            </p>
+
+            <p className="mt-3 text-sm font-medium text-[var(--foreground)]">
+              {deleteUser.full_name}
+            </p>
+
+            <div className="mt-6 flex items-center justify-between gap-4">
+              <label className="flex cursor-pointer items-start gap-2 text-sm text-[var(--foreground-muted)]">
+                <input
+                  type="checkbox"
+                  checked={deleteConfirmed}
+                  onChange={(event) => setDeleteConfirmed(event.target.checked)}
+                  disabled={deleting}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                />
+
+                <span>I understand that this action cannot be undone.</span>
+              </label>
+
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  onClick={closeDeleteModal}
+                  disabled={deleting}
+                  className="ui-button-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  disabled={!deleteConfirmed || deleting}
+                  onClick={confirmDeleteUser}
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                >
+                  {deleting ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
