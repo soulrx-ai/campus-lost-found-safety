@@ -2,17 +2,20 @@ import ActivityLogTable from "@/components/admin/ActivityLogTable";
 
 export default function AdminLogsPage() {
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
-      <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold">
-          Activity Logs
-        </h1>
+    <main className="page-shell">
+      <div className="app-container">
+        <div className="mx-auto max-w-6xl">
+          <header className="mb-7">
+            <p className="page-eyebrow">Administration</p>
 
-        <p className="mt-2 text-stone-600">
-          Review recorded system activity.
-        </p>
+            <h1 className="page-title">Activity Logs</h1>
 
-        <div className="mt-6">
+            <p className="page-description">
+              Review recent system activity recorded for administrative
+              auditing.
+            </p>
+          </header>
+
           <ActivityLogTable />
         </div>
       </div>

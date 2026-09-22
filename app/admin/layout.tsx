@@ -10,8 +10,8 @@ export default async function AdminLayout({
 
   return (
     <>
-      <div className="bg-stone-50 px-4 pt-6">
-        <div className="mx-auto max-w-6xl">
+      <div className="border-b border-[var(--border)] bg-[var(--background)]">
+        <div className="app-container pt-6">
           <AdminNavigation />
         </div>
       </div>

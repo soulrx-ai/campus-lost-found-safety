@@ -84,77 +84,126 @@ export default function AdminDashboard() {
   }, [supabase]);
 
   if (loading) {
-    return <p>Loading dashboard...</p>;
+    return (
+      <div className="ui-card p-6">
+        <div className="flex items-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-[var(--primary)]" />
+
+          <p className="text-sm text-[var(--foreground-muted)]">
+            Loading dashboard...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const cards = [
     { label: "Users", value: counts.users },
     { label: "Items", value: counts.items },
     { label: "Claims", value: counts.claims },
-    { label: "Safety Incidents", value: counts.incidents },
-    { label: "Service Tickets", value: counts.tickets },
+    {
+      label: "Safety Incidents",
+      value: counts.incidents,
+    },
+    {
+      label: "Service Tickets",
+      value: counts.tickets,
+    },
+  ];
+
+  const tools = [
+    {
+      href: "/admin/users",
+      title: "User Management",
+      description: "Manage user roles and account status.",
+    },
+    {
+      href: "/admin/notifications",
+      title: "Notifications",
+      description: "Send system notifications to users.",
+    },
+    {
+      href: "/admin/logs",
+      title: "Activity Logs",
+      description: "Review important recorded system activity.",
+    },
   ];
 
   return (
     <div>
       {message && (
-        <div className="mb-5 rounded-lg bg-white p-4 text-sm">
+        <div
+          role="alert"
+          className="mb-5 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-4 text-sm text-[var(--danger)]"
+        >
           {message}
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-2xl bg-white p-5 shadow-sm"
-          >
-            <p className="text-sm text-stone-500">
-              {card.label}
-            </p>
-
-            <p className="mt-2 text-3xl font-bold">
-              {card.value}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
-        <Link
-          href="/admin/users"
-          className="rounded-2xl bg-white p-6 shadow-sm hover:bg-stone-100"
-        >
-          <h2 className="font-semibold">User Management</h2>
-          <p className="mt-2 text-sm text-stone-600">
-            Manage user roles and account status.
-          </p>
-        </Link>
-
-        <Link
-          href="/admin/notifications"
-          className="rounded-2xl bg-white p-6 shadow-sm hover:bg-stone-100"
-        >
-          <h2 className="font-semibold">
-            Notifications
+      <section>
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+            System overview
           </h2>
-          <p className="mt-2 text-sm text-stone-600">
-            Send system notifications to users.
-          </p>
-        </Link>
 
-        <Link
-          href="/admin/logs"
-          className="rounded-2xl bg-white p-6 shadow-sm hover:bg-stone-100"
-        >
-          <h2 className="font-semibold">
-            Activity Logs
-          </h2>
-          <p className="mt-2 text-sm text-stone-600">
-            Review important system activity.
+          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+            Current record counts available to the Admin role.
           </p>
-        </Link>
-      </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {cards.map((card) => (
+            <div key={card.label} className="ui-card p-5">
+              <p className="text-sm font-medium text-[var(--foreground-muted)]">
+                {card.label}
+              </p>
+
+              <p className="mt-3 text-3xl font-bold tracking-tight text-[var(--foreground)]">
+                {card.value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-8">
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+            Administration tools
+          </h2>
+
+          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+            Manage system-level configuration and records.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {tools.map((tool) => (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className="ui-card group p-5 transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)] sm:p-6"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <h3 className="font-semibold text-[var(--foreground)]">
+                  {tool.title}
+                </h3>
+
+                <span
+                  aria-hidden="true"
+                  className="text-lg text-[var(--foreground-muted)] transition group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </div>
+
+              <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
+                {tool.description}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

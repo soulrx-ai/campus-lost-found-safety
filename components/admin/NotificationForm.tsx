@@ -14,7 +14,9 @@ export default function NotificationForm() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
     setMessage("");
@@ -25,12 +27,21 @@ export default function NotificationForm() {
       const cleanedTitle = title.trim();
       const cleanedMessage = messageText.trim();
 
-      if (!cleanedUserId || !cleanedTitle || !cleanedMessage) {
-        setMessage("Please fill in all required fields.");
+      if (
+        !cleanedUserId ||
+        !cleanedTitle ||
+        !cleanedMessage
+      ) {
+        setMessage(
+          "Please fill in all required fields."
+        );
         return;
       }
 
-      const { data: recipient, error: recipientError } = await supabase
+      const {
+        data: recipient,
+        error: recipientError,
+      } = await supabase
         .from("profiles")
         .select("id")
         .eq("id", cleanedUserId)
@@ -42,17 +53,21 @@ export default function NotificationForm() {
       }
 
       if (!recipient) {
-        setMessage("The selected user does not exist.");
+        setMessage(
+          "The selected user does not exist."
+        );
         return;
       }
 
-      const { error } = await supabase.from("notifications").insert({
-        user_id: cleanedUserId,
-        title: cleanedTitle,
-        message: cleanedMessage,
-        type,
-        is_read: false,
-      });
+      const { error } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: cleanedUserId,
+          title: cleanedTitle,
+          message: cleanedMessage,
+          type,
+          is_read: false,
+        });
 
       if (error) {
         setMessage(error.message);
@@ -64,7 +79,9 @@ export default function NotificationForm() {
       setMessageText("");
       setType("SYSTEM");
 
-      setMessage("Notification sent successfully.");
+      setMessage(
+        "Notification sent successfully."
+      );
     } catch {
       setMessage("Something went wrong.");
     } finally {
@@ -75,75 +92,134 @@ export default function NotificationForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-5 rounded-2xl bg-white p-6 shadow-sm"
+      className="ui-card overflow-hidden"
     >
-      <div>
-        <label className="mb-1 block text-sm font-medium">User ID *</label>
+      <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
+        <h2 className="font-semibold text-[var(--foreground)]">
+          Notification details
+        </h2>
 
-        <input
-          required
-          type="text"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          placeholder="User UUID"
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
-        />
+        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+          Fields marked with * are required.
+        </p>
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">
-          Notification Type *
-        </label>
+      <div className="space-y-5 p-5 sm:p-6">
+        <div>
+          <label
+            htmlFor="notification-user"
+            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+          >
+            User ID *
+          </label>
 
-        <select
-          required
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
-        >
-          <option value="SYSTEM">SYSTEM</option>
-          <option value="ITEM">ITEM</option>
-          <option value="CLAIM">CLAIM</option>
-          <option value="SAFETY">SAFETY</option>
-          <option value="SERVICE_TICKET">SERVICE_TICKET</option>
-        </select>
+          <input
+            id="notification-user"
+            required
+            type="text"
+            value={userId}
+            onChange={(event) =>
+              setUserId(event.target.value)
+            }
+            placeholder="User UUID"
+            className="ui-input"
+          />
+
+          <p className="mt-1.5 text-xs text-[var(--foreground-muted)]">
+            Enter the UUID of an existing registered user.
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="notification-type"
+            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+          >
+            Notification type *
+          </label>
+
+          <select
+            id="notification-type"
+            required
+            value={type}
+            onChange={(event) =>
+              setType(event.target.value)
+            }
+            className="ui-input"
+          >
+            <option value="SYSTEM">SYSTEM</option>
+            <option value="ITEM">ITEM</option>
+            <option value="CLAIM">CLAIM</option>
+            <option value="SAFETY">SAFETY</option>
+            <option value="SERVICE_TICKET">
+              SERVICE TICKET
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor="notification-title"
+            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+          >
+            Title *
+          </label>
+
+          <input
+            id="notification-title"
+            required
+            type="text"
+            value={title}
+            onChange={(event) =>
+              setTitle(event.target.value)
+            }
+            placeholder="Notification title"
+            className="ui-input"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="notification-message"
+            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+          >
+            Message *
+          </label>
+
+          <textarea
+            id="notification-message"
+            required
+            rows={5}
+            value={messageText}
+            onChange={(event) =>
+              setMessageText(event.target.value)
+            }
+            placeholder="Write the notification message"
+            className="ui-input min-h-32 resize-y"
+          />
+        </div>
+
+        {message && (
+          <div
+            role="status"
+            className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm text-[var(--foreground)]"
+          >
+            {message}
+          </div>
+        )}
+
+        <div className="border-t border-[var(--border)] pt-5">
+          <button
+            type="submit"
+            disabled={loading}
+            className="ui-button-primary w-full"
+          >
+            {loading
+              ? "Sending..."
+              : "Send notification"}
+          </button>
+        </div>
       </div>
-
-      <div>
-        <label className="mb-1 block text-sm font-medium">Title *</label>
-
-        <input
-          required
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
-        />
-      </div>
-
-      <div>
-        <label className="mb-1 block text-sm font-medium">Message *</label>
-
-        <textarea
-          required
-          rows={5}
-          value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
-        />
-      </div>
-
-      {message && (
-        <div className="rounded-lg bg-stone-100 p-3 text-sm">{message}</div>
-      )}
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-lg bg-stone-800 px-4 py-3 text-white disabled:opacity-50"
-      >
-        {loading ? "Sending..." : "Send Notification"}
-      </button>
     </form>
   );
 }
