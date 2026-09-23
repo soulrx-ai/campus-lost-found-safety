@@ -30,6 +30,8 @@ export default function UserTable() {
   const [deleteUser, setDeleteUser] = useState<UserProfile | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [deleteWarning, setDeleteWarning] = useState("");
 
   const fetchUsers = useCallback(async () => {
     const response = await fetch("/api/admin/user", {
@@ -156,6 +158,7 @@ export default function UserTable() {
 
     setDeleting(true);
     setMessage("");
+    setDeleteWarning("");
 
     try {
       const response = await fetch(`/api/admin/user/${deleteUser.id}`, {
@@ -165,14 +168,18 @@ export default function UserTable() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error ?? "Unable to delete user.");
+        setDeleteUser(null);
+        setDeleteConfirmed(false);
+        setDeleteWarning(result.error ?? "Unable to delete this user account.");
+        return;
       }
 
       setDeleteUser(null);
       setDeleteConfirmed(false);
-      setMessage("User account deleted successfully.");
+      setMessage("");
 
       await loadUsers();
+      setDeleteSuccess(true);
     } catch (error) {
       setMessage(
         error instanceof Error ? error.message : "Unable to delete user.",
@@ -399,6 +406,66 @@ export default function UserTable() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {deleteSuccess && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-success-title"
+        >
+          <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 text-center shadow-xl">
+            <h2
+              id="delete-success-title"
+              className="text-lg font-semibold text-[var(--foreground)]"
+            >
+              Account deleted successfully
+            </h2>
+
+            <p className="mt-2 text-sm text-[var(--foreground-muted)]">
+              The user account has been deleted successfully.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setDeleteSuccess(false)}
+              className="ui-button-primary mt-6"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {deleteWarning && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-warning-title"
+        >
+          <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 text-center shadow-xl">
+            <h2
+              id="delete-warning-title"
+              className="text-lg font-semibold text-[var(--foreground)]"
+            >
+              Cannot delete this account
+            </h2>
+
+            <p className="mt-2 text-sm text-[var(--foreground-muted)]">
+              {deleteWarning}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setDeleteWarning("")}
+              className="ui-button-primary mt-6"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
