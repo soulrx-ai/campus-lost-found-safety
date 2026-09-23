@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import SafetyFilters, {
   SafetyFilterValues,
@@ -36,9 +36,9 @@ export default function SafetyPage() {
 
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  async function searchIncidents() {
+  async function searchIncidents(activeFilters: SafetyFilterValues = filters) {
     setLoading(true);
     setMessage("");
 
@@ -50,16 +50,16 @@ export default function SafetyPage() {
       .eq("status", "PUBLISHED")
       .order("incident_time", { ascending: false });
 
-    if (filters.location.trim()) {
+    if (activeFilters.location.trim()) {
       query = query.ilike(
         "location",
-        `%${filters.location.trim()}%`
+        `%${activeFilters.location.trim()}%`
       );
     }
 
-    if (filters.date) {
-      const start = new Date(`${filters.date}T00:00:00`);
-      const end = new Date(`${filters.date}T23:59:59.999`);
+    if (activeFilters.date) {
+      const start = new Date(`${activeFilters.date}T00:00:00`);
+      const end = new Date(`${activeFilters.date}T23:59:59.999`);
 
       query = query
         .gte("incident_time", start.toISOString())
@@ -85,10 +85,14 @@ export default function SafetyPage() {
     }
   }
 
+  useEffect(() => {
+    searchIncidents(initialFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function clearFilters() {
     setFilters(initialFilters);
-    setIncidents([]);
-    setMessage("");
+    searchIncidents(initialFilters);
   }
 
   return (
@@ -116,7 +120,18 @@ export default function SafetyPage() {
             loading={loading}
           />
 
-          {message && (
+          {loading && incidents.length === 0 && (
+            <div className="ui-card mt-6 p-6">
+              <div className="flex items-center gap-3">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-[var(--danger)]" />
+                <p className="text-sm text-[var(--foreground-muted)]">
+                  Loading safety incidents...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {message && !loading && (
             <div className="ui-card mt-5 p-4 text-sm text-[var(--foreground)]">
               {message}
             </div>

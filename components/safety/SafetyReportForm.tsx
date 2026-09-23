@@ -129,7 +129,7 @@ export default function SafetyReportForm() {
     >
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Title *
+          Incident Title <span className="text-red-500">*</span>
         </label>
 
         <input
@@ -144,7 +144,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Description *
+          Description <span className="text-red-500">*</span>
         </label>
 
         <textarea
@@ -159,7 +159,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Location *
+          Location <span className="text-red-500">*</span>
         </label>
 
         <input
@@ -174,7 +174,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Date / Time *
+          Incident Date / Time <span className="text-red-500">*</span>
         </label>
 
         <input
@@ -188,7 +188,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Image *
+          Incident Image <span className="text-red-500">*</span>
         </label>
 
         <input
