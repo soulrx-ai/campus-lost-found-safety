@@ -121,159 +121,186 @@ export default function ItemReviewCard({
         }
     }
 
-    return (
-        <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${item.report_type === "LOST"
-                                ? "bg-amber-100 text-amber-800"
-                                : "bg-emerald-100 text-emerald-800"
-                            }`}
-                    >
-                        {item.report_type}
-                    </span>
+    const isLost = item.report_type === "LOST";
 
-                    <h2 className="mt-3 text-xl font-semibold text-stone-900">
+    return (
+        <article className="ui-card overflow-hidden">
+            <div className="flex flex-col gap-4 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
+                <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span
+                            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${isLost
+                                    ? "bg-[var(--warning-soft)] text-[var(--warning)]"
+                                    : "bg-[var(--success-soft)] text-[var(--success)]"
+                                }`}
+                        >
+                            {item.report_type}
+                        </span>
+
+                        <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+                            {item.status}
+                        </span>
+                    </div>
+
+                    <h2 className="mt-3 break-words text-xl font-semibold text-[var(--foreground)]">
                         {item.name}
                     </h2>
 
-                    <p className="mt-1 text-sm text-stone-500">
-                        Pending staff review
+                    <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+                        Waiting for Staff review
                     </p>
                 </div>
 
-                <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">
-                    {item.status}
-                </span>
-            </div>
-
-            <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-                <div>
-                    <p className="font-medium text-stone-700">
-                        Category
-                    </p>
-                    <p className="text-stone-600">
-                        {item.category}
-                    </p>
-                </div>
-
-                <div>
-                    <p className="font-medium text-stone-700">
-                        Brand
-                    </p>
-                    <p className="text-stone-600">
-                        {item.brand || "Not specified"}
-                    </p>
-                </div>
-
-                <div>
-                    <p className="font-medium text-stone-700">
-                        Color
-                    </p>
-                    <p className="text-stone-600">
-                        {item.color || "Not specified"}
-                    </p>
-                </div>
-
-                <div>
-                    <p className="font-medium text-stone-700">
-                        Location
-                    </p>
-                    <p className="text-stone-600">
-                        {item.location}
-                    </p>
-                </div>
-
-                <div>
-                    <p className="font-medium text-stone-700">
-                        Lost / Found Date
-                    </p>
-
-                    <p className="text-stone-600">
-                        {formatDateTime(item.date_time)}
-                    </p>
-                </div>
-
-                <div>
-                    <p className="font-medium text-stone-700">
-                        Reporter ID
-                    </p>
-
-                    <p className="break-all text-stone-600">
-                        {item.reporter_id}
-                    </p>
+                <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-xs text-[var(--foreground-muted)]">
+                    {formatDateTime(item.date_time)}
                 </div>
             </div>
 
-            {item.description && (
-                <div className="mt-4">
-                    <p className="text-sm font-medium text-stone-700">
-                        Description
-                    </p>
+            <div className="p-5 sm:p-6">
+                <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <InfoField
+                        label="Category"
+                        value={item.category}
+                    />
 
-                    <p className="mt-1 whitespace-pre-wrap text-sm text-stone-600">
-                        {item.description}
-                    </p>
+                    <InfoField
+                        label="Brand"
+                        value={item.brand || "Not specified"}
+                    />
+
+                    <InfoField
+                        label="Color"
+                        value={item.color || "Not specified"}
+                    />
+
+                    <InfoField
+                        label="Location"
+                        value={item.location}
+                    />
+
+                    <InfoField
+                        label="Lost / Found Date"
+                        value={formatDateTime(item.date_time)}
+                    />
+
+                    <InfoField
+                        label="Reporter ID"
+                        value={item.reporter_id}
+                        breakAll
+                    />
                 </div>
-            )}
 
-            <div className="mt-5">
-                <p className="text-sm font-medium text-stone-700">
-                    Report Image
-                </p>
+                {item.description && (
+                    <div className="mt-6 rounded-xl bg-[var(--surface-soft)] p-4">
+                        <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                            Description
+                        </p>
 
-                {!imageUrl ? (
+                        <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
+                            {item.description}
+                        </p>
+                    </div>
+                )}
+
+                <div className="mt-6 border-t border-[var(--border)] pt-6">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                                Private report image
+                            </h3>
+
+                            <p className="mt-1 text-xs text-[var(--foreground-muted)]">
+                                Only authorized Staff can load this image for review.
+                            </p>
+                        </div>
+
+                        {!imageUrl && (
+                            <button
+                                type="button"
+                                disabled={imageLoading}
+                                onClick={viewItemImage}
+                                className="ui-button-secondary mt-3 w-full sm:mt-0 sm:w-auto"
+                            >
+                                {imageLoading
+                                    ? "Loading..."
+                                    : "View report image"}
+                            </button>
+                        )}
+                    </div>
+
+                    {imageUrl && (
+                        <div className="mt-4 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-2">
+                            {/* Private signed URL returned by Supabase Storage. */}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={imageUrl}
+                                alt={`${item.report_type.toLowerCase()} item`}
+                                className="mx-auto max-h-[28rem] w-full rounded-lg object-contain"
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {errorMessage && (
+                    <div
+                        role="alert"
+                        className="mt-5 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-3 text-sm leading-6 text-[var(--danger)]"
+                    >
+                        {errorMessage}
+                    </div>
+                )}
+
+                <div className="mt-6 flex flex-col gap-3 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center sm:justify-end">
                     <button
                         type="button"
-                        disabled={imageLoading}
-                        onClick={viewItemImage}
-                        className="mt-2 rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={loading}
+                        onClick={() =>
+                            reviewItem("REJECTED")
+                        }
+                        className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-white px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                        {imageLoading
-                            ? "Loading..."
-                            : "View Report Image"}
+                        Reject
                     </button>
-                ) : (
-                    <img
-                        src={imageUrl}
-                        alt={`${item.report_type.toLowerCase()} item`}
-                        className="mt-3 max-h-96 rounded-xl border border-stone-200 object-contain"
-                    />
-                )}
-            </div>
 
-            {errorMessage && (
-                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                    {errorMessage}
+                    <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() =>
+                            reviewItem("PUBLISHED")
+                        }
+                        className="ui-button-primary w-full sm:w-auto"
+                    >
+                        {loading
+                            ? "Processing..."
+                            : "Publish report"}
+                    </button>
                 </div>
-            )}
-
-            <div className="mt-6 flex flex-wrap gap-3">
-                <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() =>
-                        reviewItem("PUBLISHED")
-                    }
-                    className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    {loading
-                        ? "Processing..."
-                        : "Publish"}
-                </button>
-
-                <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() =>
-                        reviewItem("REJECTED")
-                    }
-                    className="rounded-xl border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    Reject
-                </button>
             </div>
         </article>
+    );
+}
+
+function InfoField({
+    label,
+    value,
+    breakAll = false,
+}: {
+    label: string;
+    value: string;
+    breakAll?: boolean;
+}) {
+    return (
+        <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                {label}
+            </p>
+
+            <p
+                className={`mt-1 text-sm leading-6 text-[var(--foreground)] ${breakAll ? "break-all" : "break-words"
+                    }`}
+            >
+                {value}
+            </p>
+        </div>
     );
 }

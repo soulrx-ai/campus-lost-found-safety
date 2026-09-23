@@ -31,7 +31,6 @@ export default function LostReportForm() {
         setLoading(true);
 
         try {
-            // 1. Get the currently logged-in user
             const {
                 data: { user },
                 error: userError,
@@ -42,7 +41,6 @@ export default function LostReportForm() {
                 return;
             }
 
-            // 2. Create a unique image path
             const fileExtension = image.name.split(".").pop()?.toLowerCase();
 
             if (!fileExtension) {
@@ -65,7 +63,6 @@ export default function LostReportForm() {
             const filePath =
                 `${user.id}/lost/${crypto.randomUUID()}.${fileExtension}`;
 
-            // 3. Upload image to private Storage bucket
             const { error: uploadError } = await supabase.storage
                 .from("lost-found")
                 .upload(filePath, image, {
@@ -78,7 +75,6 @@ export default function LostReportForm() {
                 return;
             }
 
-            // 4. Insert the lost item report
             const { error: insertError } = await supabase
                 .from("items")
                 .insert({
@@ -91,22 +87,17 @@ export default function LostReportForm() {
                     description: description.trim() || null,
                     date_time: new Date(dateTime).toISOString(),
                     location: location.trim(),
-
-                    // Private Storage object path, not a public URL
                     image_url: filePath,
-
                     status: "PENDING_REVIEW",
                 });
 
             if (insertError) {
-                // Remove uploaded file if DB insert fails
                 await supabase.storage.from("lost-found").remove([filePath]);
 
                 setMessage(`Unable to submit report: ${insertError.message}`);
                 return;
             }
 
-            // 5. Reset form
             setName("");
             setCategory("");
             setBrand("");
@@ -137,150 +128,210 @@ export default function LostReportForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-5 rounded-2xl bg-white p-6 shadow-sm"
+            className="ui-card overflow-hidden"
         >
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Item Name *
-                </label>
+            <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-7">
+                <h2 className="font-semibold text-[var(--foreground)]">
+                    Item information
+                </h2>
 
-                <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="e.g. Black Wallet"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Category *
-                </label>
-
-                <select
-                    required
-                    value={category}
-                    onChange={(event) => setCategory(event.target.value)}
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                >
-                    <option value="">Select category</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Wallet">Wallet</option>
-                    <option value="Bag">Bag</option>
-                    <option value="Document">Document</option>
-                    <option value="Clothing">Clothing</option>
-                    <option value="Accessory">Accessory</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Brand
-                </label>
-
-                <input
-                    type="text"
-                    value={brand}
-                    onChange={(event) => setBrand(event.target.value)}
-                    placeholder="e.g. Apple, Nike, Samsung"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Color
-                </label>
-
-                <input
-                    type="text"
-                    value={color}
-                    onChange={(event) => setColor(event.target.value)}
-                    placeholder="e.g. Black"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Description
-                </label>
-
-                <textarea
-                    rows={4}
-                    value={description}
-                    onChange={(event) => setDescription(event.target.value)}
-                    placeholder="Describe the lost item"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Date / Time Lost *
-                </label>
-
-                <input
-                    type="datetime-local"
-                    required
-                    value={dateTime}
-                    onChange={(event) => setDateTime(event.target.value)}
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Location *
-                </label>
-
-                <input
-                    type="text"
-                    required
-                    value={location}
-                    onChange={(event) => setLocation(event.target.value)}
-                    placeholder="e.g. Thaiburi Building"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Item Image *
-                </label>
-
-                <input
-                    id="lost-image"
-                    type="file"
-                    required
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={(event) =>
-                        setImage(event.target.files?.[0] ?? null)
-                    }
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-
-                <p className="mt-1 text-xs text-stone-500">
-                    JPG, PNG or WEBP. Maximum 5 MB.
+                <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+                    Fields marked with * are required.
                 </p>
             </div>
 
-            {message && (
-                <div className="rounded-lg bg-stone-100 p-3 text-sm text-stone-700">
-                    {message}
-                </div>
-            )}
+            <div className="space-y-6 p-5 sm:p-7">
+                <div className="grid gap-5 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                        <label
+                            htmlFor="lost-name"
+                            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                        >
+                            Item name *
+                        </label>
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-lg bg-stone-800 px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {loading ? "Submitting..." : "Submit Lost Report"}
-            </button>
+                        <input
+                            id="lost-name"
+                            type="text"
+                            required
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            placeholder="e.g. Black Wallet"
+                            className="ui-input"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="lost-category"
+                            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                        >
+                            Category *
+                        </label>
+
+                        <select
+                            id="lost-category"
+                            required
+                            value={category}
+                            onChange={(event) => setCategory(event.target.value)}
+                            className="ui-input"
+                        >
+                            <option value="">Select category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Wallet">Wallet</option>
+                            <option value="Bag">Bag</option>
+                            <option value="Document">Document</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Accessory">Accessory</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="lost-brand"
+                            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                        >
+                            Brand
+                        </label>
+
+                        <input
+                            id="lost-brand"
+                            type="text"
+                            value={brand}
+                            onChange={(event) => setBrand(event.target.value)}
+                            placeholder="e.g. Apple, Nike"
+                            className="ui-input"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="lost-color"
+                            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                        >
+                            Color
+                        </label>
+
+                        <input
+                            id="lost-color"
+                            type="text"
+                            value={color}
+                            onChange={(event) => setColor(event.target.value)}
+                            placeholder="e.g. Black"
+                            className="ui-input"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="lost-date-time"
+                            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                        >
+                            Date / time lost *
+                        </label>
+
+                        <input
+                            id="lost-date-time"
+                            type="datetime-local"
+                            required
+                            value={dateTime}
+                            onChange={(event) => setDateTime(event.target.value)}
+                            className="ui-input"
+                        />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label
+                            htmlFor="lost-location"
+                            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                        >
+                            Location *
+                        </label>
+
+                        <input
+                            id="lost-location"
+                            type="text"
+                            required
+                            value={location}
+                            onChange={(event) => setLocation(event.target.value)}
+                            placeholder="e.g. Thaiburi Building"
+                            className="ui-input"
+                        />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label
+                            htmlFor="lost-description"
+                            className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                        >
+                            Description
+                        </label>
+
+                        <textarea
+                            id="lost-description"
+                            rows={4}
+                            value={description}
+                            onChange={(event) =>
+                                setDescription(event.target.value)
+                            }
+                            placeholder="Add useful details about the item"
+                            className="ui-input min-h-28 resize-y"
+                        />
+                    </div>
+                </div>
+
+                <div className="border-t border-[var(--border)] pt-6">
+                    <label
+                        htmlFor="lost-image"
+                        className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
+                    >
+                        Item image *
+                    </label>
+
+                    <div className="rounded-xl border border-dashed border-[var(--border-strong)] bg-[var(--surface-soft)] p-4">
+                        <input
+                            id="lost-image"
+                            type="file"
+                            required
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={(event) =>
+                                setImage(event.target.files?.[0] ?? null)
+                            }
+                            className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-white"
+                        />
+
+                        <p className="mt-3 text-xs leading-5 text-[var(--foreground-muted)]">
+                            JPG, PNG or WEBP. Maximum file size 5 MB. The image is kept
+                            private and is available to authorized Staff during review.
+                        </p>
+                    </div>
+                </div>
+
+                {message && (
+                    <div
+                        role="status"
+                        className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm leading-6 text-[var(--foreground)]"
+                    >
+                        {message}
+                    </div>
+                )}
+
+                <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs leading-5 text-[var(--foreground-muted)] sm:max-w-sm">
+                        Your report will remain pending until it has been reviewed by
+                        Staff.
+                    </p>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="ui-button-primary w-full sm:w-auto"
+                    >
+                        {loading ? "Submitting..." : "Submit lost report"}
+                    </button>
+                </div>
+            </div>
         </form>
     );
 }

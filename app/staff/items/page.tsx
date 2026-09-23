@@ -15,58 +15,80 @@ export default async function StaffItemsPage() {
         .order("created_at", { ascending: true });
 
     return (
-        <main className="min-h-screen bg-stone-50 px-4 py-10">
-            <div className="mx-auto max-w-5xl">
-                <div className="mb-8">
-                    <p className="text-sm font-medium text-stone-500">
-                        Staff Operations
-                    </p>
+        <main className="page-shell">
+            <div className="app-container">
+                <div className="mx-auto max-w-5xl">
+                    <header className="mb-7">
+                        <p className="page-eyebrow">Staff Operations</p>
 
-                    <h1 className="mt-1 text-3xl font-bold text-stone-900">
-                        Lost & Found Review
-                    </h1>
+                        <h1 className="page-title">
+                            Lost &amp; Found Review
+                        </h1>
 
-                    <p className="mt-2 text-stone-600">
-                        Review pending lost and found reports before they are
-                        published.
-                    </p>
-                </div>
-
-                {error ? (
-                    <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
-                        Unable to load pending reports: {error.message}
-                    </div>
-                ) : !items || items.length === 0 ? (
-                    <div className="rounded-2xl border border-stone-200 bg-white p-6">
-                        <h2 className="font-semibold text-stone-900">
-                            No pending reports
-                        </h2>
-
-                        <p className="mt-2 text-sm text-stone-600">
-                            There are currently no lost or found reports waiting for
-                            review.
+                        <p className="page-description">
+                            Review pending lost and found reports before they become
+                            visible in the published item workflow.
                         </p>
-                    </div>
-                ) : (
-                    <>
-                        <div className="mb-4 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-600">
-                            Pending reports:{" "}
-                            <span className="font-semibold text-stone-900">
-                                {items.length}
-                            </span>
-                        </div>
+                    </header>
 
-                        <div className="space-y-4">
-                            {items.map((item) => (
-                                <ItemReviewCard
-                                    key={item.id}
-                                    item={item}
-                                    staffId={staff.id}
-                                />
-                            ))}
+                    {error ? (
+                        <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-5 text-sm text-[var(--danger)]">
+                            <p className="font-semibold">
+                                Unable to load pending reports
+                            </p>
+
+                            <p className="mt-1">{error.message}</p>
                         </div>
-                    </>
-                )}
+                    ) : !items || items.length === 0 ? (
+                        <div className="ui-card p-6 sm:p-8">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--success-soft)] text-lg font-semibold text-[var(--success)]">
+                                ✓
+                            </div>
+
+                            <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
+                                No pending reports
+                            </h2>
+
+                            <p className="mt-2 max-w-lg text-sm leading-6 text-[var(--foreground-muted)]">
+                                There are currently no lost or found reports waiting for
+                                Staff review.
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="ui-card mb-5 flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p className="font-medium text-[var(--foreground)]">
+                                        Review queue
+                                    </p>
+
+                                    <p className="mt-0.5 text-sm text-[var(--foreground-muted)]">
+                                        Oldest reports are shown first.
+                                    </p>
+                                </div>
+
+                                <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[var(--warning-soft)] px-3 py-1.5 text-sm font-medium text-[var(--warning)]">
+                                    <span
+                                        aria-hidden="true"
+                                        className="h-2 w-2 rounded-full bg-[var(--warning)]"
+                                    />
+
+                                    {items.length} pending
+                                </div>
+                            </div>
+
+                            <div className="space-y-5">
+                                {items.map((item) => (
+                                    <ItemReviewCard
+                                        key={item.id}
+                                        item={item}
+                                        staffId={staff.id}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
         </main>
     );
