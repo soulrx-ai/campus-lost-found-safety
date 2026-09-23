@@ -4,16 +4,20 @@ export default function AdminPage() {
   return (
     <main className="page-shell">
       <div className="app-container">
-        <div className="mx-auto max-w-6xl">
-          <header className="mb-7">
+        <div className="mx-auto max-w-6xl space-y-8">
+          <header>
             <p className="page-eyebrow">Administration</p>
 
-            <h1 className="page-title">Admin Dashboard</h1>
+            <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h1 className="page-title">Admin Dashboard</h1>
 
-            <p className="page-description">
-              Monitor system-level information and access administrative
-              tools for users, notifications, and activity logs.
-            </p>
+                <p className="page-description">
+                  Overview of users, lost and found records, safety incidents,
+                  and service tickets across the campus system.
+                </p>
+              </div>
+            </div>
           </header>
 
           <AdminDashboard />

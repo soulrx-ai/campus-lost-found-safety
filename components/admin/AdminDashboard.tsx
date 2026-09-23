@@ -35,17 +35,11 @@ export default function AdminDashboard() {
         incidentsResult,
         ticketsResult,
       ] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("*", { count: "exact", head: true }),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
 
-        supabase
-          .from("items")
-          .select("*", { count: "exact", head: true }),
+        supabase.from("items").select("*", { count: "exact", head: true }),
 
-        supabase
-          .from("claims")
-          .select("*", { count: "exact", head: true }),
+        supabase.from("claims").select("*", { count: "exact", head: true }),
 
         supabase
           .from("security_incidents")
@@ -141,39 +135,65 @@ export default function AdminDashboard() {
       )}
 
       <section>
-        <div className="mb-3">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            System overview
-          </h2>
+        <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-[var(--foreground)]">
+              System overview
+            </h2>
 
-          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-            Current record counts available to the Admin role.
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+              Current record counts available to the Admin role.
+            </p>
+          </div>
+
+          <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
+            Live records
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {cards.map((card) => (
-            <div key={card.label} className="ui-card p-5">
-              <p className="text-sm font-medium text-[var(--foreground-muted)]">
-                {card.label}
-              </p>
+            <div
+              key={card.label}
+              className="ui-card group relative overflow-hidden p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-md"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-[var(--foreground-muted)]">
+                    {card.label}
+                  </p>
 
-              <p className="mt-3 text-3xl font-bold tracking-tight text-[var(--foreground)]">
-                {card.value}
-              </p>
+                  <p className="mt-3 text-3xl font-bold tracking-tight text-[var(--foreground)]">
+                    {card.value}
+                  </p>
+                </div>
+
+                <div
+                  aria-hidden="true"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--primary-soft)] text-sm font-bold text-[var(--primary)]"
+                >
+                  {card.label.charAt(0)}
+                </div>
+              </div>
+
+              <div className="mt-5 h-1 w-10 rounded-full bg-[var(--primary)] opacity-70 transition-all duration-200 group-hover:w-16" />
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mt-8">
-        <div className="mb-3">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+      <section className="mt-10">
+        <div className="mb-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--foreground-muted)]">
+            Quick access
+          </p>
+
+          <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)]">
             Administration tools
           </h2>
 
           <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-            Manage system-level configuration and records.
+            Manage system-level records and administrative workflows.
           </p>
         </div>
 
@@ -182,7 +202,7 @@ export default function AdminDashboard() {
             <Link
               key={tool.href}
               href={tool.href}
-              className="ui-card group p-5 transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)] sm:p-6"
+              className="ui-card group block p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)] hover:shadow-md sm:p-6"
             >
               <div className="flex items-center justify-between gap-4">
                 <h3 className="font-semibold text-[var(--foreground)]">
@@ -191,13 +211,13 @@ export default function AdminDashboard() {
 
                 <span
                   aria-hidden="true"
-                  className="text-lg text-[var(--foreground-muted)] transition group-hover:translate-x-1"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] text-sm text-[var(--foreground-muted)] transition duration-200 group-hover:translate-x-1 group-hover:border-[var(--border-strong)] group-hover:text-[var(--foreground)]"
                 >
-                  →
+                  &gt;
                 </span>
               </div>
 
-              <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
+              <p className="mt-3 text-sm leading-6 text-[var(--foreground-muted)]">
                 {tool.description}
               </p>
             </Link>
