@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Thai } from "next/font/google";
+import AppShell from "@/components/navigation/AppShell";
 import "./globals.css";
+
 
 const notoSansThai = Noto_Sans_Thai({
   variable: "--font-noto-sans-thai",
@@ -25,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${notoSansThai.variable} antialiased`}>
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

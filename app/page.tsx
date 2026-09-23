@@ -178,14 +178,14 @@ export default async function Home() {
           </section>
 
           {/* Safety + Quick Actions */}
-          <section className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,0.85fr)]">
+          <section className="grid items-start gap-5 lg:items-stretch lg:grid-cols-[minmax(0,1.65fr)_minmax(0,0.85fr)]">
             <div className="relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--danger)]/20 bg-[var(--danger-soft)]">
               <div
                 aria-hidden="true"
                 className="absolute -right-16 -top-16 h-52 w-52 rounded-full border-[28px] border-white/30"
               />
 
-              <div className="relative flex min-w-0 flex-col p-5 sm:p-6">
+              <div className="relative flex min-w-0 flex-col p-5 sm:p-6 lg:h-full">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <SafetyIcon />
@@ -210,7 +210,7 @@ export default async function Home() {
                 <div className="my-5 border-t border-[var(--danger)]/15" />
 
                 {latestIncident ? (
-                  <div className="flex min-w-0 flex-col">
+                  <div className="flex min-w-0 flex-col lg:flex-1">
                     <h2 className="max-w-2xl [overflow-wrap:anywhere] text-xl font-bold text-[var(--foreground)] sm:text-2xl">
                       {latestIncident.title}
                     </h2>
@@ -235,7 +235,7 @@ export default async function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-5">
+                    <div className="mt-5 lg:mt-auto lg:pt-5">
                       <Link
                         href="/safety"
                         className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
@@ -248,7 +248,7 @@ export default async function Home() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex min-w-0 flex-col gap-5">
+                  <div className="flex min-w-0 flex-col gap-5 lg:flex-1">
                     <div>
                       <h2 className="text-xl font-bold text-[var(--foreground)]">
                         No active safety incidents
@@ -262,7 +262,7 @@ export default async function Home() {
 
                     <Link
                       href="/safety"
-                      className="ui-button-secondary w-fit"
+                      className="ui-button-secondary w-fit lg:mt-auto"
                     >
                       View Safety
                     </Link>
