@@ -113,10 +113,10 @@ export default function LoginPage() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#187f7a]">
-                  Campus Care
+                  Lost &amp; Found
                 </p>
                 <p className="text-sm font-semibold text-[#263a36]">
-                  Lost &amp; Found Safety
+                  Safety System
                 </p>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function LoginPage() {
             </form>
 
             <p className="mt-7 text-center text-sm text-[#68756f]">
-              New to Campus Care?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/register" className="font-semibold text-[#187f7a] hover:underline">
                 Create an account
               </Link>
