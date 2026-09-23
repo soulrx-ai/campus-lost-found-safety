@@ -2206,6 +2206,42 @@ export const translations = {
     en: "Deactivate {name}",
     th: "ปิดใช้งานบัญชี {name}",
   },
+  "View Details": {
+    en: "View Details",
+    th: "ดูรายละเอียด",
+  },
+  "Incident Details": {
+    en: "Incident Details",
+    th: "รายละเอียดเหตุการณ์",
+  },
+  "Attached Incident Image": {
+    en: "Attached Incident Image",
+    th: "รูปภาพเหตุการณ์",
+  },
+  "Incident Description": {
+    en: "Incident Description",
+    th: "รายละเอียดเหตุการณ์",
+  },
+  "Reported on": {
+    en: "Reported on",
+    th: "วันที่ส่งรายงาน",
+  },
+  "Open Full Size": {
+    en: "Open Full Size",
+    th: "เปิดดูภาพขนาดเต็ม",
+  },
+  "Close": {
+    en: "Close",
+    th: "ปิด",
+  },
+  "Loading image...": {
+    en: "Loading image...",
+    th: "กำลังโหลดรูปภาพ...",
+  },
+  "No image attached.": {
+    en: "No image attached.",
+    th: "ไม่มีรูปภาพแนบ",
+  },
 } as const satisfies Record<string, Record<Language, string>>;
 
 export type TranslationKey = keyof typeof translations;
