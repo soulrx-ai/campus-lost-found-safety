@@ -298,7 +298,7 @@ export default function LostReportForm() {
                             onChange={(event) =>
                                 setImage(event.target.files?.[0] ?? null)
                             }
-                            className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-white"
+                            className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[var(--primary-contrast)]"
                         />
 
                         <p className="mt-3 text-xs leading-5 text-[var(--foreground-muted)]">

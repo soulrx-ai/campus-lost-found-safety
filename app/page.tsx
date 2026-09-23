@@ -201,7 +201,7 @@ export default async function Home() {
                   </div>
 
                   {latestIncident && (
-                    <span className="inline-flex shrink-0 rounded-full border border-[var(--danger)]/20 bg-white/70 px-3 py-1 text-[11px] font-semibold text-[var(--danger)]">
+                    <span className="inline-flex shrink-0 rounded-full border border-[var(--danger)]/20 bg-[var(--surface)]/70 px-3 py-1 text-[11px] font-semibold text-[var(--danger)]">
                       PUBLISHED
                     </span>
                   )}
@@ -220,12 +220,12 @@ export default async function Home() {
                     </p>
 
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-white/80 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-[var(--foreground-muted)]">
+                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-[var(--surface)]/80 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-[var(--foreground-muted)]">
                         <LocationIcon />
                         <span>{latestIncident.location}</span>
                       </div>
 
-                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-white/80 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-[var(--foreground-muted)]">
+                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-[var(--surface)]/80 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-[var(--foreground-muted)]">
                         <ClockIcon />
                         <span>
                           {new Date(
@@ -238,7 +238,7 @@ export default async function Home() {
                     <div className="mt-5 lg:mt-auto lg:pt-5">
                       <Link
                         href="/safety"
-                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger-solid)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
                       >
                         View safety details
                         <span className="ml-2" aria-hidden="true">
@@ -359,7 +359,7 @@ export default async function Home() {
           <section className="mt-6">
             <Link
               href="/safety/report"
-              className="group relative flex overflow-hidden rounded-[var(--radius-xl)] border border-[var(--danger)]/20 bg-[var(--danger)] p-5 text-white shadow-[0_12px_32px_rgba(165,67,61,0.14)] transition hover:-translate-y-0.5 sm:p-6"
+              className="group relative flex overflow-hidden rounded-[var(--radius-xl)] border border-[var(--danger)]/20 bg-[var(--danger-solid)] p-5 text-white shadow-[0_12px_32px_rgba(165,67,61,0.14)] transition hover:-translate-y-0.5 sm:p-6"
             >
               <div
                 aria-hidden="true"
@@ -388,7 +388,7 @@ export default async function Home() {
                   </div>
                 </div>
 
-                <span className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--danger)]">
+                <span className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--surface)] px-5 py-2.5 text-sm font-semibold text-[var(--danger)]">
                   Report Incident →
                 </span>
               </div>
@@ -590,7 +590,7 @@ function QuickAction({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-soft)] p-3 transition hover:border-[var(--border-strong)] hover:bg-white"
+      className="group flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-soft)] p-3 transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
     >
       <span
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${toneClasses}`}
@@ -674,7 +674,7 @@ function MenuCard({
           <MenuIcon name={icon} />
         </span>
 
-        <span className="rounded-full bg-white/70 px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] text-[var(--foreground-muted)]">
+        <span className="rounded-full bg-[var(--surface)]/70 px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] text-[var(--foreground-muted)]">
           {label}
         </span>
       </div>
@@ -943,7 +943,7 @@ function ActivityIcon() {
 
 function SafetyIcon() {
   return (
-    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--danger)] text-white shadow-sm">
+    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--danger-solid)] text-white shadow-sm">
       <SafetyOutlineIcon />
     </span>
   );

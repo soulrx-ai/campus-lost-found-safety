@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
   --background: #faf9f6;
   --surface: #ffffff;
   --surface-soft: #f5f3ee;
@@ -27,10 +30,55 @@
   --info: #526b75;
   --info-soft: #eaf1f3;
 
+  --selection: #ded9cd;
+  --placeholder: #9b978f;
+  --focus-ring: rgba(81, 77, 63, 0.22);
+  --input-focus-ring: rgba(81, 77, 63, 0.1);
+  --primary-contrast: #ffffff;
+  --danger-solid: var(--danger);
+
   --radius-sm: 0.625rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.125rem;
   --radius-xl: 1.5rem;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --background: #181815;
+  --surface: #22221e;
+  --surface-soft: #2b2a25;
+
+  --foreground: #f2f0e9;
+  --foreground-muted: #aaa69c;
+
+  --border: #38372f;
+  --border-strong: #4a483e;
+
+  --primary: #d2cbb8;
+  --primary-hover: #e3dcc8;
+  --primary-soft: #302f29;
+
+  --success: #8fc4a2;
+  --success-soft: #203128;
+
+  --warning: #d7ad6d;
+  --warning-soft: #392e1f;
+
+  --danger: #e18a84;
+  --danger-soft: #3b2422;
+
+  --info: #91b4c1;
+  --info-soft: #223137;
+
+  --selection: var(--border-strong);
+  --placeholder: var(--foreground-muted);
+  --focus-ring: rgba(210, 203, 184, 0.65);
+  --input-focus-ring: rgba(210, 203, 184, 0.35);
+  --primary-contrast: var(--background);
+  /* Keep white notification-count text readable on a solid brick badge. */
+  --danger-solid: #a5433d;
 }
 
 @theme inline {
@@ -101,12 +149,12 @@ a {
 }
 
 ::selection {
-  background: #ded9cd;
-  color: #292722;
+  background: var(--selection);
+  color: var(--foreground);
 }
 
 :focus-visible {
-  outline: 3px solid rgba(81, 77, 63, 0.22);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -174,12 +222,12 @@ a {
 }
 
 .ui-input::placeholder {
-  color: #9b978f;
+  color: var(--placeholder);
 }
 
 .ui-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(81, 77, 63, 0.1);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
   outline: none;
 }
 
@@ -193,7 +241,7 @@ a {
   border-radius: var(--radius-md);
   background: var(--primary);
   padding: 0.625rem 1rem;
-  color: #ffffff;
+  color: var(--primary-contrast);
   font-size: 0.875rem;
   font-weight: 500;
   transition:

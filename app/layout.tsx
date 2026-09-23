@@ -26,6 +26,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `(function () {
+              var theme = "light";
+              try {
+                if (localStorage.getItem("theme") === "dark") theme = "dark";
+              } catch {}
+              document.documentElement.classList.toggle("dark", theme === "dark");
+            })();`,
+          }}
+        />
+      </head>
       <body className={`${notoSansThai.variable} antialiased`}>
         <AppShell>{children}</AppShell>
       </body>

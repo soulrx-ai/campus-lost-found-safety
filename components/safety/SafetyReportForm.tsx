@@ -125,11 +125,11 @@ export default function SafetyReportForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-5 rounded-2xl bg-white p-6 shadow-sm"
+      className="space-y-5 rounded-2xl bg-[var(--surface)] text-[var(--foreground)] p-6 shadow-sm"
     >
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Title <span className="text-red-500">*</span>
+          Incident Title <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -138,13 +138,13 @@ export default function SafetyReportForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g. Broken stair handrail"
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)]"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Description <span className="text-red-500">*</span>
+          Description <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <textarea
@@ -153,13 +153,13 @@ export default function SafetyReportForm() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Describe what happened or the safety issue."
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)]"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Location <span className="text-red-500">*</span>
+          Location <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -168,13 +168,13 @@ export default function SafetyReportForm() {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="e.g. Thaiburi Building"
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)]"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Date / Time <span className="text-red-500">*</span>
+          Incident Date / Time <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -182,13 +182,13 @@ export default function SafetyReportForm() {
           type="datetime-local"
           value={incidentTime}
           onChange={(e) => setIncidentTime(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)]"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Image <span className="text-red-500">*</span>
+          Incident Image <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -199,16 +199,16 @@ export default function SafetyReportForm() {
           onChange={(e) =>
             setImage(e.target.files?.[0] ?? null)
           }
-          className="w-full rounded-lg border border-stone-300 px-3 py-2"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)] dark:file:bg-[var(--surface-soft)] dark:file:text-[var(--foreground)]"
         />
 
-        <p className="mt-1 text-xs text-stone-500">
+        <p className="mt-1 text-xs text-stone-500 dark:text-[var(--foreground-muted)]">
           At least one image is required. Maximum 5 MB.
         </p>
       </div>
 
       {message && (
-        <div className="rounded-lg bg-stone-100 p-3 text-sm">
+        <div className="rounded-lg bg-stone-100 dark:bg-[var(--surface-soft)] p-3 text-sm">
           {message}
         </div>
       )}

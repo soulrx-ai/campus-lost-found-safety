@@ -209,7 +209,7 @@ export default function MyTickets() {
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all sm:h-9 sm:w-9 ${
                           isCompleted
-                            ? "bg-[var(--success)] text-white shadow-sm"
+                            ? "bg-[var(--success)] text-[var(--primary-contrast)] shadow-sm"
                             : isCurrent
                             ? "border-2 border-[var(--primary)] bg-[var(--surface)] text-[var(--primary)] ring-4 ring-[var(--primary-soft)]"
                             : "border border-[var(--border-strong)] bg-[var(--surface)] text-[var(--foreground-muted)]"

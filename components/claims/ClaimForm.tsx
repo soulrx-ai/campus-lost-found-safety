@@ -271,7 +271,7 @@ export default function ClaimForm({
               onChange={(event) =>
                 setEvidence(event.target.files?.[0] ?? null)
               }
-              className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-white"
+              className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[var(--primary-contrast)]"
             />
 
             <p className="mt-3 text-xs text-[var(--foreground-muted)]">

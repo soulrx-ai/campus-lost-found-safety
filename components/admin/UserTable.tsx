@@ -400,7 +400,7 @@ export default function UserTable() {
                   type="button"
                   disabled={!deleteConfirmed || deleting}
                   onClick={confirmDeleteUser}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-[var(--border-strong)] dark:disabled:text-[var(--foreground-muted)]"
                 >
                   {deleting ? "Deleting..." : "Delete"}
                 </button>

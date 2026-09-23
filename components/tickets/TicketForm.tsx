@@ -95,18 +95,18 @@ if (cleanClaimId) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-5 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm"
+      className="space-y-5 rounded-2xl border border-stone-200 dark:border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm"
     >
       <div>
-        <label className="mb-1 block text-sm font-medium text-stone-800">
-          Ticket Type <span className="text-red-500">*</span>
+        <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
+          Ticket Type <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
         <select
           required
           value={ticketType}
           // 3. ยืนยันกับ TypeScript ว่า e.target.value คือ ValidTicketType แน่นอน
           onChange={(e) => setTicketType(e.target.value as ValidTicketType)}
-          className="w-full rounded-lg border border-stone-400 bg-white px-3 py-2 text-stone-900 focus:border-stone-700 focus:outline-none focus:ring-1 focus:ring-stone-700"
+          className="w-full rounded-lg border border-stone-400 dark:border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-stone-900 dark:text-[var(--foreground)] focus:border-stone-700 dark:focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-stone-700 dark:focus:ring-[var(--primary)]"
         >
           <option value="NOT_RECEIVED">Item Not Received</option>
           <option value="SYSTEM_PROBLEM">System Problem</option>
@@ -115,7 +115,7 @@ if (cleanClaimId) {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-stone-800">
+        <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
           Related Claim ID
         </label>
         <input
@@ -123,41 +123,41 @@ if (cleanClaimId) {
           value={claimId}
           onChange={(e) => setClaimId(e.target.value)}
           placeholder="Optional"
-          className="w-full rounded-lg border border-stone-400 bg-white px-3 py-2 text-stone-900 placeholder:text-stone-500 focus:border-stone-700 focus:outline-none focus:ring-1 focus:ring-stone-700"
+          className="w-full rounded-lg border border-stone-400 dark:border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-stone-900 dark:text-[var(--foreground)] placeholder:text-stone-500 dark:placeholder:text-[var(--foreground-muted)] focus:border-stone-700 dark:focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-stone-700 dark:focus:ring-[var(--primary)]"
         />
-        <p className="mt-1 text-xs text-stone-600">
+        <p className="mt-1 text-xs text-stone-600 dark:text-[var(--foreground-muted)]">
           Optional. Use this when the issue is related to a claim.
         </p>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-stone-800">
-          Subject <span className="text-red-500">*</span>
+        <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
+          Subject <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
         <input
           required
           type="text"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          className="w-full rounded-lg border border-stone-400 bg-white px-3 py-2 text-stone-900 placeholder:text-stone-500 focus:border-stone-700 focus:outline-none focus:ring-1 focus:ring-stone-700"
+          className="w-full rounded-lg border border-stone-400 dark:border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-stone-900 dark:text-[var(--foreground)] placeholder:text-stone-500 dark:placeholder:text-[var(--foreground-muted)] focus:border-stone-700 dark:focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-stone-700 dark:focus:ring-[var(--primary)]"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-stone-800">
-          Description <span className="text-red-500">*</span>
+        <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
+          Description <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
         <textarea
           required
           rows={5}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-lg border border-stone-400 bg-white px-3 py-2 text-stone-900 placeholder:text-stone-500 focus:border-stone-700 focus:outline-none focus:ring-1 focus:ring-stone-700"
+          className="w-full rounded-lg border border-stone-400 dark:border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-stone-900 dark:text-[var(--foreground)] placeholder:text-stone-500 dark:placeholder:text-[var(--foreground-muted)] focus:border-stone-700 dark:focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-stone-700 dark:focus:ring-[var(--primary)]"
         />
       </div>
 
       {message && (
-        <div className="rounded-lg border border-stone-300 bg-stone-100 p-3 text-sm font-medium text-stone-800">
+        <div className="rounded-lg border border-stone-300 dark:border-[var(--border-strong)] bg-stone-100 dark:bg-[var(--surface-soft)] p-3 text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
           {message}
         </div>
       )}

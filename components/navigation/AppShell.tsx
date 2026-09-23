@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+type Theme = "light" | "dark";
+
 type AppRole = "USER" | "STAFF" | "ADMIN";
 
 type Profile = {
@@ -52,6 +54,7 @@ function AuthenticatedShell({ children, pathname }: {
     const router = useRouter();
     const supabase = useMemo(() => createClient(), []);
 
+    const [theme, setTheme] = useState<Theme>("light");
     const [profile, setProfile] = useState<Profile | null>(null);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(true);
@@ -66,6 +69,39 @@ function AuthenticatedShell({ children, pathname }: {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+
+    useEffect(() => {
+        function syncTheme() {
+            // Preserve an in-memory choice on route changes if storage is blocked.
+            let nextTheme: Theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
+            try {
+                nextTheme = localStorage.getItem("theme") === "dark" ? "dark" : "light";
+            } catch {}
+            document.documentElement.classList.toggle("dark", nextTheme === "dark");
+            setTheme(nextTheme);
+        }
+
+        const frame = requestAnimationFrame(syncTheme);
+        function handleStorage(event: StorageEvent) {
+            if (event.key === "theme" || event.key === null) syncTheme();
+        }
+        window.addEventListener("storage", handleStorage);
+        return () => {
+            cancelAnimationFrame(frame);
+            window.removeEventListener("storage", handleStorage);
+        };
+    }, []);
+
+    function toggleTheme() {
+        const nextTheme: Theme = theme === "light" ? "dark" : "light";
+        document.documentElement.classList.toggle("dark", nextTheme === "dark");
+        setTheme(nextTheme);
+        try {
+            localStorage.setItem("theme", nextTheme);
+        } catch {
+            // Theme switching still works for this page without persistent storage.
+        }
+    }
 
     useEffect(() => {
         let active = true;
@@ -231,7 +267,7 @@ function AuthenticatedShell({ children, pathname }: {
 
     return (
         <div className="flex min-h-screen flex-col bg-[var(--background)]">
-            <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-white/95 backdrop-blur">
+            <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur">
                 <div className="app-container">
                     <div className="flex min-h-16 items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-3">
@@ -271,19 +307,19 @@ function AuthenticatedShell({ children, pathname }: {
                                         setNotificationsOpen((open) => !open);
                                         setProfileOpen(false);
                                     }}
-                                    className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-white text-[var(--foreground)] transition hover:bg-[var(--surface-soft)]"
+                                    className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition hover:bg-[var(--surface-soft)]"
                                 >
                                     <BellIcon />
 
                                     {unreadCount > 0 && (
-                                        <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[var(--danger)] px-1 text-[10px] font-bold text-white">
+                                        <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[var(--danger-solid)] px-1 text-[10px] font-bold text-white">
                                             {unreadCount > 9 ? "9+" : unreadCount}
                                         </span>
                                     )}
                                 </button>
 
                                 {notificationsOpen && (
-                                    <div id="notification-panel" className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-white shadow-xl">
+                                    <div id="notification-panel" className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] shadow-xl">
                                         <div className="border-b border-[var(--border)] px-4 py-3">
                                             <p className="font-semibold text-[var(--foreground)]">
                                                 Notifications
@@ -310,7 +346,7 @@ function AuthenticatedShell({ children, pathname }: {
                                                             )
                                                         }
                                                         className={`block w-full border-b border-[var(--border)] px-4 py-3 text-left transition last:border-b-0 hover:bg-[var(--surface-soft)] ${notification.is_read
-                                                                ? "bg-white"
+                                                                ? "bg-[var(--surface)]"
                                                                 : "bg-[var(--primary-soft)]"
                                                             }`}
                                                     >
@@ -356,7 +392,7 @@ function AuthenticatedShell({ children, pathname }: {
                                         setProfileOpen((open) => !open);
                                         setNotificationsOpen(false);
                                     }}
-                                    className="flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] bg-white px-2.5 text-[var(--foreground)] transition hover:bg-[var(--surface-soft)] sm:px-3"
+                                    className="flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2.5 text-[var(--foreground)] transition hover:bg-[var(--surface-soft)] sm:px-3"
                                 >
                                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--success-soft)] text-xs font-bold text-[var(--success)]">
                                         {profile.full_name.charAt(0).toUpperCase()}
@@ -370,7 +406,7 @@ function AuthenticatedShell({ children, pathname }: {
                                 </button>
 
                                 {profileOpen && (
-                                    <div id="account-panel" className="absolute right-0 top-12 z-50 w-64 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-white shadow-xl">
+                                    <div id="account-panel" className="absolute right-0 top-12 z-50 w-64 max-w-[calc(100vw-2rem)] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] shadow-xl">
                                         <div className="border-b border-[var(--border)] px-4 py-4">
                                             <p className="truncate font-semibold text-[var(--foreground)]">
                                                 {profile.full_name}
@@ -379,6 +415,17 @@ function AuthenticatedShell({ children, pathname }: {
                                                 {profile.role}
                                             </p>
                                         </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={toggleTheme}
+                                            aria-label={`Appearance: ${theme === "dark" ? "Dark" : "Light"}. Switch to ${theme === "dark" ? "Light" : "Dark"} mode`}
+                                            aria-pressed={theme === "dark"}
+                                            className="flex min-h-11 w-full items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3 text-left text-sm text-[var(--foreground)] transition hover:bg-[var(--surface-soft)]"
+                                        >
+                                            <span>Appearance</span>
+                                            <span className="text-[var(--foreground-muted)]">{theme === "dark" ? "Dark" : "Light"}</span>
+                                        </button>
 
                                         <button
                                             type="button"
@@ -409,7 +456,7 @@ function AuthenticatedShell({ children, pathname }: {
                 {children}
             </div>
 
-            <footer className="border-t border-[var(--border)] bg-white">
+            <footer className="border-t border-[var(--border)] bg-[var(--surface)]">
                 <div className="app-container py-6">
                     <div className="flex flex-col gap-2 text-sm text-[var(--foreground-muted)] sm:flex-row sm:items-center sm:justify-between">
                         <p>
@@ -429,7 +476,7 @@ function AuthenticatedShell({ children, pathname }: {
                     onClick={(event) => {
                         if (event.target === event.currentTarget) setSidebarOpen(false);
                     }}
-                    className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-[min(21rem,88vw)] max-w-none border-0 bg-white p-0 text-[var(--foreground)] shadow-2xl backdrop:bg-black/30 backdrop:backdrop-blur-[1px] motion-safe:transition-transform motion-safe:duration-200 motion-safe:starting:-translate-x-full"
+                    className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-[min(21rem,88vw)] max-w-none border-0 bg-[var(--surface)] p-0 text-[var(--foreground)] shadow-2xl backdrop:bg-black/30 backdrop:backdrop-blur-[1px] motion-safe:transition-transform motion-safe:duration-200 motion-safe:starting:-translate-x-full"
                 >
                     <aside className="flex h-full flex-col border-r border-[var(--border)]">
                         <div className="flex min-h-16 shrink-0 items-center justify-between border-b border-[var(--border)] px-5">
