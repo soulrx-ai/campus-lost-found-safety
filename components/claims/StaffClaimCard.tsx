@@ -357,7 +357,7 @@ export default function StaffClaimCard({
                 onClick={() =>
                   reviewClaim("REJECTED")
                 }
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-white px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 Reject
               </button>
@@ -387,7 +387,7 @@ export default function StaffClaimCard({
               to the claimant.
             </p>
 
-            <div className="mt-4 rounded-xl border border-dashed border-[var(--border-strong)] bg-white/70 p-4">
+            <div className="mt-4 rounded-xl border border-dashed border-[var(--border-strong)] bg-[var(--surface)]/70 p-4">
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -397,7 +397,7 @@ export default function StaffClaimCard({
                     event.target.files?.[0] ?? null
                   )
                 }
-                className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-white"
+                className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[var(--primary-contrast)]"
               />
 
               <p className="mt-2 text-xs text-[var(--foreground-muted)]">

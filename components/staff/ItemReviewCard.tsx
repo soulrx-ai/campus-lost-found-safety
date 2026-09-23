@@ -257,7 +257,7 @@ export default function ItemReviewCard({
                         onClick={() =>
                             reviewItem("REJECTED")
                         }
-                        className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-white px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                        className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                         Reject
                     </button>

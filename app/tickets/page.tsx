@@ -17,7 +17,7 @@ export default function TicketsPage() {
 
               <Link
                 href="/tickets/new"
-                className="shrink-0 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--primary-hover)]"
+                className="shrink-0 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm transition hover:bg-[var(--primary-hover)]"
               >
                 + Create Ticket
               </Link>

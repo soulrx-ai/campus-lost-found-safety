@@ -96,7 +96,7 @@ export default function SafetyFilters({
             type="button"
             onClick={onSearch}
             disabled={loading}
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger)] px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger-solid)] px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {loading ? "Searching..." : "Search incidents"}
           </button>
