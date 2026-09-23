@@ -55,7 +55,7 @@ function AuthenticatedShell({ children, pathname }: {
     children: React.ReactNode;
     pathname: string;
 }) {
-  const { t } = useLanguage();
+    const { t } = useLanguage();
     const router = useRouter();
     const supabase = useMemo(() => createClient(), []);
 
@@ -81,7 +81,7 @@ function AuthenticatedShell({ children, pathname }: {
             let nextTheme: Theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
             try {
                 nextTheme = localStorage.getItem("theme") === "dark" ? "dark" : "light";
-            } catch {}
+            } catch { }
             document.documentElement.classList.toggle("dark", nextTheme === "dark");
             setTheme(nextTheme);
         }
@@ -351,15 +351,15 @@ function AuthenticatedShell({ children, pathname }: {
                                                             )
                                                         }
                                                         className={`block w-full border-b border-[var(--border)] px-4 py-3 text-left transition last:border-b-0 hover:bg-[var(--surface-soft)] ${notification.is_read
-                                                                ? "bg-[var(--surface)]"
-                                                                : "bg-[var(--primary-soft)]"
+                                                            ? "bg-[var(--surface)]"
+                                                            : "bg-[var(--primary-soft)]"
                                                             }`}
                                                     >
                                                         <div className="flex items-start gap-3">
                                                             <span
                                                                 className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${notification.is_read
-                                                                        ? "bg-[var(--border-strong)]"
-                                                                        : "bg-[var(--danger)]"
+                                                                    ? "bg-[var(--border-strong)]"
+                                                                    : "bg-[var(--danger)]"
                                                                     }`}
                                                             />
 
@@ -420,7 +420,13 @@ function AuthenticatedShell({ children, pathname }: {
                                                 <DisplayValue value={profile.role} />
                                             </p>
                                         </div>
-
+                                        <Link
+                                            href="/profile"
+                                            onClick={() => setProfileOpen(false)}
+                                            className="block min-h-11 w-full border-b border-[var(--border)] px-4 py-3 text-left text-sm font-medium text-[var(--foreground)] transition hover:bg-[var(--surface-soft)]"
+                                        >
+                                            <Text id="My Profile" />
+                                        </Link>
                                         <button
                                             type="button"
                                             onClick={toggleTheme}
@@ -666,12 +672,12 @@ function SideLink({
             href={href}
             aria-current={active ? "page" : undefined}
             className={`block rounded-xl px-3 py-2.5 text-sm font-medium transition ${active
-                    ? danger
-                        ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                        : "bg-[var(--primary-soft)] text-[var(--foreground)]"
-                    : danger
-                        ? "text-[var(--danger)] hover:bg-[var(--danger-soft)]"
-                        : "text-[var(--foreground-muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)]"
+                ? danger
+                    ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                    : "bg-[var(--primary-soft)] text-[var(--foreground)]"
+                : danger
+                    ? "text-[var(--danger)] hover:bg-[var(--danger-soft)]"
+                    : "text-[var(--foreground-muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)]"
                 }`}
         >
             <UiText text={label} />

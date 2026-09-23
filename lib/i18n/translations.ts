@@ -2258,6 +2258,78 @@ export const translations = {
     en: "Unable to find the selected user.",
     th: "ไม่พบผู้ใช้ที่ระบุ",
   },
+  "Account": {
+    en: "Account",
+    th: "บัญชี",
+  },
+  "My Profile": {
+    en: "My Profile",
+    th: "โปรไฟล์ของฉัน",
+  },
+  "Manage your personal account information.": {
+    en: "Manage your personal account information.",
+    th: "จัดการข้อมูลส่วนตัวของบัญชีของคุณ",
+  },
+  "Unable to load your profile. Please try again later.": {
+    en: "Unable to load your profile. Please try again later.",
+    th: "ไม่สามารถโหลดโปรไฟล์ได้ กรุณาลองใหม่ภายหลัง",
+  },
+  "Personal Information": {
+    en: "Personal Information",
+    th: "ข้อมูลส่วนตัว",
+  },
+  "Update your personal details used by the system.": {
+    en: "Update your personal details used by the system.",
+    th: "แก้ไขข้อมูลส่วนตัวที่ใช้ในระบบ",
+  },
+  "Full Name": {
+    en: "Full Name",
+    th: "ชื่อ-นามสกุล",
+  },
+  "Email cannot be changed from this page.": {
+    en: "Email cannot be changed from this page.",
+    th: "ไม่สามารถเปลี่ยนอีเมลจากหน้านี้ได้",
+  },
+  "Phone number is optional. Use the format 0xx-xxx-xxxx.": {
+    en: "Phone number is optional. Use the format 0xx-xxx-xxxx.",
+    th: "เบอร์โทรศัพท์ไม่บังคับ โดยใช้รูปแบบ 0xx-xxx-xxxx",
+  },
+  "Account Information": {
+    en: "Account Information",
+    th: "ข้อมูลบัญชี",
+  },
+  "These account settings are managed by the system.": {
+    en: "These account settings are managed by the system.",
+    th: "ข้อมูลบัญชีเหล่านี้ถูกจัดการโดยระบบ",
+  },
+  "Status": {
+    en: "Status",
+    th: "สถานะ",
+  },
+  "Save Changes": {
+    en: "Save Changes",
+    th: "บันทึกการเปลี่ยนแปลง",
+  },
+  "Saving...": {
+    en: "Saving...",
+    th: "กำลังบันทึก...",
+  },
+  "Profile updated successfully.": {
+    en: "Profile updated successfully.",
+    th: "อัปเดตโปรไฟล์สำเร็จ",
+  },
+  "Unable to update your profile. Please try again.": {
+    en: "Unable to update your profile. Please try again.",
+    th: "ไม่สามารถอัปเดตโปรไฟล์ได้ กรุณาลองอีกครั้ง",
+  },
+  "Full name must be 100 characters or fewer.": {
+    en: "Full name must be 100 characters or fewer.",
+    th: "ชื่อ-นามสกุลต้องมีความยาวไม่เกิน 100 ตัวอักษร",
+  },
+  "Phone number must be in the format 0xx-xxx-xxxx (e.g. 081-234-5478).": {
+    en: "Phone number must be in the format 0xx-xxx-xxxx (e.g. 081-234-5478).",
+    th: "เบอร์โทรศัพท์ต้องอยู่ในรูปแบบ 0xx-xxx-xxxx เช่น 081-234-5478",
+  },
 } as const satisfies Record<string, Record<Language, string>>;
 
 export type TranslationKey = keyof typeof translations;
