@@ -99,7 +99,7 @@ if (cleanClaimId) {
     >
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800">
-          Ticket Type *
+          Ticket Type <span className="text-red-500">*</span>
         </label>
         <select
           required
@@ -132,7 +132,7 @@ if (cleanClaimId) {
 
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800">
-          Subject *
+          Subject <span className="text-red-500">*</span>
         </label>
         <input
           required
@@ -145,7 +145,7 @@ if (cleanClaimId) {
 
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800">
-          Description *
+          Description <span className="text-red-500">*</span>
         </label>
         <textarea
           required
