@@ -2,21 +2,20 @@ import AdminDashboard from "@/components/admin/AdminDashboard";
 
 export default function AdminPage() {
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
-      <div className="mx-auto max-w-6xl">
-        <p className="text-sm font-medium text-stone-500">
-          Administration
-        </p>
+    <main className="page-shell">
+      <div className="app-container">
+        <div className="mx-auto max-w-6xl">
+          <header className="mb-7">
+            <p className="page-eyebrow">Administration</p>
 
-        <h1 className="mt-1 text-3xl font-bold text-stone-900">
-          Admin Dashboard
-        </h1>
+            <h1 className="page-title">Admin Dashboard</h1>
 
-        <p className="mt-2 text-stone-600">
-          Manage users and monitor system activity.
-        </p>
+            <p className="page-description">
+              Monitor system-level information and access administrative
+              tools for users, notifications, and activity logs.
+            </p>
+          </header>
 
-        <div className="mt-8">
           <AdminDashboard />
         </div>
       </div>

@@ -12,6 +12,7 @@ type ActivityLog = {
   details: unknown;
   created_at: string;
 };
+
 type Profile = {
   id: string;
   full_name: string | null;
@@ -25,12 +26,13 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-  const supabase = createClient();
-export default function ActivityLogTable() {
-  
+const supabase = createClient();
 
+export default function ActivityLogTable() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
+  const [profiles, setProfiles] = useState<
+    Record<string, Profile>
+  >({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -39,9 +41,11 @@ export default function ActivityLogTable() {
       const { data, error } = await supabase
         .from("activity_logs")
         .select(
-          "id, actor_id, action, entity_type, entity_id, details, created_at",
+          "id, actor_id, action, entity_type, entity_id, details, created_at"
         )
-        .order("created_at", { ascending: false })
+        .order("created_at", {
+          ascending: false,
+        })
         .limit(100);
 
       if (error) {
@@ -50,7 +54,8 @@ export default function ActivityLogTable() {
         return;
       }
 
-      const activityLogs = (data ?? []) as ActivityLog[];
+      const activityLogs =
+        (data ?? []) as ActivityLog[];
 
       setLogs(activityLogs);
 
@@ -58,12 +63,18 @@ export default function ActivityLogTable() {
         ...new Set(
           activityLogs
             .map((log) => log.actor_id)
-            .filter((id): id is string => Boolean(id)),
+            .filter(
+              (id): id is string =>
+                Boolean(id)
+            )
         ),
       ];
 
       if (actorIds.length > 0) {
-        const { data: profileData, error: profileError } = await supabase
+        const {
+          data: profileData,
+          error: profileError,
+        } = await supabase
           .from("profiles")
           .select("id, full_name")
           .in("id", actorIds);
@@ -71,9 +82,13 @@ export default function ActivityLogTable() {
         if (profileError) {
           setMessage(profileError.message);
         } else {
-          const profileMap: Record<string, Profile> = {};
+          const profileMap: Record<
+            string,
+            Profile
+          > = {};
 
-          for (const profile of (profileData ?? []) as Profile[]) {
+          for (const profile of
+            (profileData ?? []) as Profile[]) {
             profileMap[profile.id] = profile;
           }
 
@@ -88,55 +103,100 @@ export default function ActivityLogTable() {
   }, []);
 
   if (loading) {
-    return <p>Loading activity logs...</p>;
+    return (
+      <div className="ui-card p-6">
+        <p className="text-sm text-[var(--foreground-muted)]">
+          Loading activity logs...
+        </p>
+      </div>
+    );
   }
 
   return (
     <div>
       {message && (
-        <div className="mb-4 rounded-lg bg-white p-4 text-sm">{message}</div>
+        <div
+          role="alert"
+          className="ui-card mb-4 p-4 text-sm text-[var(--foreground)]"
+        >
+          {message}
+        </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
-        <table className="min-w-full text-left text-sm">
-          <thead className="border-b bg-stone-100">
-            <tr>
-              <th className="p-4">Name</th>
-              <th className="p-4">Action</th>
-              <th className="p-4">Entity Type</th>
-              <th className="p-4">Entity ID</th>
-              <th className="p-4">Time</th>
-            </tr>
-          </thead>
+      <div className="ui-card overflow-hidden">
+        <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4">
+          <h2 className="font-semibold text-[var(--foreground)]">
+            Recent activity
+          </h2>
 
-          <tbody>
-            {logs.map((log) => (
-              <tr key={log.id} className="border-b last:border-b-0">
-                <td className="p-4">
-                  {log.actor_id? profiles[log.actor_id]?.full_name || "Unknown User" : "System"}
-                </td>
+          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+            Showing up to 100 most recent records.
+          </p>
+        </div>
 
-                <td className="p-4">{log.action}</td>
-
-                <td className="p-4">{log.entity_type}</td>
-
-                <td className="p-4">
-                  {log.entity_id ? log.entity_id.slice(0, 8) : "-"}
-                </td>
-
-                <td className="p-4">{formatDateTime(log.created_at)}</td>
+        <div className="overflow-x-auto">
+          <table className="min-w-[800px] w-full text-left text-sm">
+            <thead className="border-b border-[var(--border)] bg-[var(--surface-soft)]">
+              <tr className="text-xs uppercase tracking-wide text-[var(--foreground-muted)]">
+                <th className="px-4 py-3 font-medium">Name</th>
+                <th className="px-4 py-3 font-medium">Action</th>
+                <th className="px-4 py-3 font-medium">
+                  Entity Type
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  Entity ID
+                </th>
+                <th className="px-4 py-3 font-medium">Time</th>
               </tr>
-            ))}
+            </thead>
 
-            {logs.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-stone-500">
-                  No activity logs found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            <tbody className="divide-y divide-[var(--border)]">
+              {logs.map((log) => (
+                <tr
+                  key={log.id}
+                  className="transition hover:bg-[var(--surface-soft)]"
+                >
+                  <td className="px-4 py-4 font-medium text-[var(--foreground)]">
+                    {log.actor_id
+                      ? profiles[log.actor_id]
+                          ?.full_name ||
+                        "Unknown User"
+                      : "System"}
+                  </td>
+
+                  <td className="px-4 py-4 text-[var(--foreground)]">
+                    {log.action}
+                  </td>
+
+                  <td className="px-4 py-4 text-[var(--foreground-muted)]">
+                    {log.entity_type}
+                  </td>
+
+                  <td className="px-4 py-4 font-mono text-xs text-[var(--foreground-muted)]">
+                    {log.entity_id
+                      ? log.entity_id.slice(0, 8)
+                      : "-"}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-4 text-[var(--foreground-muted)]">
+                    {formatDateTime(log.created_at)}
+                  </td>
+                </tr>
+              ))}
+
+              {logs.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-4 py-10 text-center text-[var(--foreground-muted)]"
+                  >
+                    No activity logs found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

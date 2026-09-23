@@ -2,17 +2,19 @@ import NotificationForm from "@/components/admin/NotificationForm";
 
 export default function AdminNotificationsPage() {
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
-      <div className="mx-auto max-w-2xl">
-        <h1 className="text-3xl font-bold">
-          Send Notification
-        </h1>
+    <main className="page-shell">
+      <div className="app-container">
+        <div className="mx-auto max-w-2xl">
+          <header className="mb-7">
+            <p className="page-eyebrow">Administration</p>
 
-        <p className="mt-2 text-stone-600">
-          Send a system notification to a user.
-        </p>
+            <h1 className="page-title">Send Notification</h1>
 
-        <div className="mt-6">
+            <p className="page-description">
+              Send a system notification directly to a registered user.
+            </p>
+          </header>
+
           <NotificationForm />
         </div>
       </div>
