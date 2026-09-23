@@ -11,57 +11,82 @@ type ItemCardProps = {
     };
 };
 
-export default function ItemCard({ item }: ItemCardProps) {
+export default function ItemCard({
+    item,
+}: ItemCardProps) {
+    const isLost = item.report_type === "LOST";
+
     return (
-        <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-                <div>
-                    <span className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+        <article className="ui-card flex h-full flex-col p-5">
+            <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                    <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${isLost
+                                ? "bg-[var(--warning-soft)] text-[var(--warning)]"
+                                : "bg-[var(--success-soft)] text-[var(--success)]"
+                            }`}
+                    >
                         {item.report_type}
                     </span>
 
-                    <h2 className="mt-1 text-xl font-semibold text-stone-900">
+                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--foreground)]">
                         {item.name}
                     </h2>
                 </div>
 
-                <span className="rounded-full bg-stone-100 px-3 py-1 text-xs">
+                <span className="shrink-0 rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-medium text-[var(--primary)]">
                     {item.category}
                 </span>
             </div>
 
-            <dl className="mt-4 space-y-2 text-sm">
+            <dl className="mt-5 grid gap-3 text-sm">
                 {item.brand && (
-                    <div>
-                        <dt className="inline font-medium">Brand: </dt>
-                        <dd className="inline">{item.brand}</dd>
-                    </div>
+                    <Detail label="Brand" value={item.brand} />
                 )}
 
                 {item.color && (
-                    <div>
-                        <dt className="inline font-medium">Color: </dt>
-                        <dd className="inline">{item.color}</dd>
-                    </div>
+                    <Detail label="Color" value={item.color} />
                 )}
 
-                <div>
-                    <dt className="inline font-medium">Location: </dt>
-                    <dd className="inline">{item.location}</dd>
-                </div>
+                <Detail
+                    label="Location"
+                    value={item.location}
+                />
 
-                <div>
-                    <dt className="inline font-medium">Date: </dt>
-                    <dd className="inline">
-                        {new Date(item.date_time).toLocaleString()}
-                    </dd>
-                </div>
+                <Detail
+                    label="Date"
+                    value={new Date(
+                        item.date_time
+                    ).toLocaleString()}
+                />
             </dl>
 
-            <p className="mt-4 text-xs text-stone-500">
-                Item images and ownership verification details are hidden for
-                claim protection.
-            </p>
+            <div className="mt-5 border-t border-[var(--border)] pt-4">
+                <p className="text-xs leading-5 text-[var(--foreground-muted)]">
+                    Item images and ownership verification details are
+                    hidden to protect the claim process.
+                </p>
+            </div>
         </article>
+    );
+}
+
+function Detail({
+    label,
+    value,
+}: {
+    label: string;
+    value: string;
+}) {
+    return (
+        <div className="grid grid-cols-[5rem_1fr] gap-2">
+            <dt className="font-medium text-[var(--foreground)]">
+                {label}
+            </dt>
+
+            <dd className="break-words text-[var(--foreground-muted)]">
+                {value}
+            </dd>
+        </div>
     );
 }

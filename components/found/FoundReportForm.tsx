@@ -129,148 +129,168 @@ export default function FoundReportForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-5 rounded-2xl bg-white p-6 shadow-sm"
+            className="ui-card overflow-hidden"
         >
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Item Name *
-                </label>
+            <div className="border-b border-[var(--border)] bg-[var(--success-soft)] px-5 py-4 sm:px-6">
+                <p className="text-sm font-semibold text-[var(--success)]">
+                    Found Item Information
+                </p>
 
-                <input
-                    required
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. AirPods"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Category *
-                </label>
-
-                <select
-                    required
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                >
-                    <option value="">Select category</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Wallet">Wallet</option>
-                    <option value="Bag">Bag</option>
-                    <option value="Document">Document</option>
-                    <option value="Clothing">Clothing</option>
-                    <option value="Accessory">Accessory</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Brand
-                </label>
-
-                <input
-                    type="text"
-                    value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                    placeholder="e.g. Apple"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Color
-                </label>
-
-                <input
-                    type="text"
-                    value={color}
-                    onChange={(e) => setColor(e.target.value)}
-                    placeholder="e.g. White"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Description
-                </label>
-
-                <textarea
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe the found item"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Date / Time Found *
-                </label>
-
-                <input
-                    required
-                    type="datetime-local"
-                    value={dateTime}
-                    onChange={(e) => setDateTime(e.target.value)}
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Location *
-                </label>
-
-                <input
-                    required
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Thaiburi Building"
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-            </div>
-
-            <div>
-                <label className="mb-1 block text-sm font-medium">
-                    Item Image *
-                </label>
-
-                <input
-                    id="found-image"
-                    required
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-                    className="w-full rounded-lg border border-stone-300 px-3 py-2"
-                />
-
-                <p className="mt-1 text-xs text-stone-500">
-                    The image is kept private and is not displayed in public search.
+                <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+                    Fields marked with * are required.
                 </p>
             </div>
 
-            {message && (
-                <div className="rounded-lg bg-stone-100 p-3 text-sm">
-                    {message}
-                </div>
-            )}
+            <div className="space-y-6 p-5 sm:p-6">
+                <div className="grid gap-5 sm:grid-cols-2">
+                    <Field label="Item Name *">
+                        <input
+                            required
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="e.g. AirPods"
+                            className="ui-input"
+                        />
+                    </Field>
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-lg bg-stone-800 px-4 py-3 font-medium text-white disabled:opacity-50"
-            >
-                {loading ? "Submitting..." : "Submit Found Report"}
-            </button>
+                    <Field label="Category *">
+                        <select
+                            required
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="ui-input"
+                        >
+                            <option value="">Select category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Wallet">Wallet</option>
+                            <option value="Bag">Bag</option>
+                            <option value="Document">Document</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Accessory">Accessory</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </Field>
+
+                    <Field label="Brand">
+                        <input
+                            type="text"
+                            value={brand}
+                            onChange={(e) => setBrand(e.target.value)}
+                            placeholder="e.g. Apple"
+                            className="ui-input"
+                        />
+                    </Field>
+
+                    <Field label="Color">
+                        <input
+                            type="text"
+                            value={color}
+                            onChange={(e) => setColor(e.target.value)}
+                            placeholder="e.g. White"
+                            className="ui-input"
+                        />
+                    </Field>
+
+                    <Field label="Date / Time Found *">
+                        <input
+                            required
+                            type="datetime-local"
+                            value={dateTime}
+                            onChange={(e) => setDateTime(e.target.value)}
+                            className="ui-input"
+                        />
+                    </Field>
+
+                    <Field label="Location *">
+                        <input
+                            required
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="e.g. Thaiburi Building"
+                            className="ui-input"
+                        />
+                    </Field>
+                </div>
+
+                <Field label="Description">
+                    <textarea
+                        rows={4}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Describe the found item"
+                        className="ui-input resize-y"
+                    />
+                </Field>
+
+                <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-strong)] bg-[var(--surface-soft)] p-4">
+                    <label
+                        htmlFor="found-image"
+                        className="mb-2 block text-sm font-semibold text-[var(--foreground)]"
+                    >
+                        Item Image *
+                    </label>
+
+                    <input
+                        id="found-image"
+                        required
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={(e) =>
+                            setImage(e.target.files?.[0] ?? null)
+                        }
+                        className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-4 file:py-2 file:font-medium file:text-white"
+                    />
+
+                    <p className="mt-3 text-xs leading-5 text-[var(--foreground-muted)]">
+                        JPG, PNG or WEBP · Maximum 5 MB. The image is kept
+                        private and is not displayed in public search.
+                    </p>
+                </div>
+
+                {message && (
+                    <div
+                        role="status"
+                        className="rounded-[var(--radius-md)] bg-[var(--primary-soft)] p-4 text-sm text-[var(--foreground)]"
+                    >
+                        {message}
+                    </div>
+                )}
+
+                <div className="flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs leading-5 text-[var(--foreground-muted)]">
+                        Staff approval is required before this report is published.
+                    </p>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="ui-button-primary w-full sm:w-auto"
+                    >
+                        {loading
+                            ? "Submitting..."
+                            : "Submit Found Report"}
+                    </button>
+                </div>
+            </div>
         </form>
+    );
+}
+
+function Field({
+    label,
+    children,
+}: {
+    label: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <div>
+            <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
+                {label}
+            </label>
+            {children}
+        </div>
     );
 }
