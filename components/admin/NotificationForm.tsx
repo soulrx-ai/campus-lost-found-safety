@@ -10,7 +10,7 @@ export default function NotificationForm() {
   const { t } = useLanguage();
   const supabase = createClient();
 
-  const [userId, setUserId] = useState("");
+  const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
   const [messageText, setMessageText] = useState("");
   const [type, setType] = useState("SYSTEM");
@@ -27,12 +27,12 @@ export default function NotificationForm() {
     setLoading(true);
 
     try {
-      const cleanedUserId = userId.trim();
+      const cleanedEmail = email.trim().toLowerCase();
       const cleanedTitle = title.trim();
       const cleanedMessage = messageText.trim();
 
       if (
-        !cleanedUserId ||
+        !cleanedEmail ||
         !cleanedTitle ||
         !cleanedMessage
       ) {
@@ -42,31 +42,28 @@ export default function NotificationForm() {
         return;
       }
 
-      const {
-        data: recipient,
-        error: recipientError,
-      } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("id", cleanedUserId)
-        .maybeSingle();
+      const recipientResponse = await fetch(
+        `/api/admin/notification-recipient?email=${encodeURIComponent(
+          cleanedEmail
+        )}`
+      );
 
-      if (recipientError) {
-        setMessage(recipientError.message);
-        return;
-      }
+      const recipientData = await recipientResponse.json();
 
-      if (!recipient) {
+      if (!recipientResponse.ok) {
         setMessage(
-          "The selected user does not exist."
+          recipientData.error ??
+          "Unable to find the selected user."
         );
         return;
       }
 
+      const recipientId = recipientData.id;
+
       const { error } = await supabase
         .from("notifications")
         .insert({
-          user_id: cleanedUserId,
+          user_id: recipientId,
           title: cleanedTitle,
           message: cleanedMessage,
           type,
@@ -78,7 +75,7 @@ export default function NotificationForm() {
         return;
       }
 
-      setUserId("");
+      setEmail("");
       setTitle("");
       setMessageText("");
       setType("SYSTEM");
@@ -114,23 +111,23 @@ export default function NotificationForm() {
             htmlFor="notification-user"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            <Text id="User ID *" />
+            <Text id="User Email *" />
           </label>
 
           <input
             id="notification-user"
             required
-            type="text"
-            value={userId}
+            type="email"
+            value={email}
             onChange={(event) =>
-              setUserId(event.target.value)
+              setEmail(event.target.value)
             }
-            placeholder={t("User UUID")}
+            placeholder={t("user@example.com")}
             className="ui-input"
           />
 
           <p className="mt-1.5 text-xs text-[var(--foreground-muted)]">
-            <Text id="Enter the UUID of an existing registered user." />
+            <Text id="Enter the email address of an existing registered user." />
           </p>
         </div>
 
@@ -151,10 +148,18 @@ export default function NotificationForm() {
             }
             className="ui-input"
           >
-            <option value="SYSTEM"><DisplayValue value="SYSTEM" /></option>
-            <option value="ITEM"><DisplayValue value="ITEM" /></option>
-            <option value="CLAIM"><DisplayValue value="CLAIM" /></option>
-            <option value="SAFETY"><DisplayValue value="SAFETY" /></option>
+            <option value="SYSTEM">
+              <DisplayValue value="SYSTEM" />
+            </option>
+            <option value="ITEM">
+              <DisplayValue value="ITEM" />
+            </option>
+            <option value="CLAIM">
+              <DisplayValue value="CLAIM" />
+            </option>
+            <option value="SAFETY">
+              <DisplayValue value="SAFETY" />
+            </option>
             <option value="SERVICE_TICKET">
               <Text id="SERVICE TICKET" />
             </option>

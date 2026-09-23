@@ -2242,6 +2242,22 @@ export const translations = {
     en: "No image attached.",
     th: "ไม่มีรูปภาพแนบ",
   },
+  "User Email *": {
+    en: "User Email *",
+    th: "อีเมลผู้รับ *",
+  },
+  "Enter the email address of an existing registered user.": {
+    en: "Enter the email address of an existing registered user.",
+    th: "กรอกอีเมลของผู้ใช้ที่ลงทะเบียนอยู่ในระบบ",
+  },
+  "user@example.com": {
+    en: "user@example.com",
+    th: "user@example.com",
+  },
+  "Unable to find the selected user.": {
+    en: "Unable to find the selected user.",
+    th: "ไม่พบผู้ใช้ที่ระบุ",
+  },
 } as const satisfies Record<string, Record<Language, string>>;
 
 export type TranslationKey = keyof typeof translations;
