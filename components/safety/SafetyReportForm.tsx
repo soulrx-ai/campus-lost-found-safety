@@ -1,9 +1,13 @@
 "use client";
 
+import { AppMessage, Text } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SafetyReportForm() {
+  const { t } = useLanguage();
   const supabase = createClient();
 
   const [title, setTitle] = useState("");
@@ -129,7 +133,7 @@ export default function SafetyReportForm() {
     >
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Title <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Incident Title" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -137,14 +141,14 @@ export default function SafetyReportForm() {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g. Broken stair handrail"
+          placeholder={t("e.g. Broken stair handrail")}
           className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)]"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Description <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Description" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <textarea
@@ -152,14 +156,14 @@ export default function SafetyReportForm() {
           rows={5}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describe what happened or the safety issue."
+          placeholder={t("Describe what happened or the safety issue.")}
           className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)]"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Location <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Location" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -167,14 +171,14 @@ export default function SafetyReportForm() {
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          placeholder="e.g. Thaiburi Building"
+          placeholder={t("e.g. Thaiburi Building")}
           className="w-full rounded-lg border border-stone-300 px-3 py-2 dark:border-[var(--border-strong)] dark:bg-[var(--surface)] dark:text-[var(--foreground)] dark:placeholder:text-[var(--foreground-muted)]"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Date / Time <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Incident Date / Time" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -188,7 +192,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          Incident Image <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Incident Image" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
 
         <input
@@ -203,13 +207,13 @@ export default function SafetyReportForm() {
         />
 
         <p className="mt-1 text-xs text-stone-500 dark:text-[var(--foreground-muted)]">
-          At least one image is required. Maximum 5 MB.
+          <Text id="At least one image is required. Maximum 5 MB." />
         </p>
       </div>
 
       {message && (
         <div className="rounded-lg bg-stone-100 dark:bg-[var(--surface-soft)] p-3 text-sm">
-          {message}
+          <AppMessage text={message} />
         </div>
       )}
 
@@ -218,7 +222,7 @@ export default function SafetyReportForm() {
         disabled={loading}
         className="w-full rounded-lg bg-red-700 px-4 py-3 font-medium text-white disabled:opacity-50"
       >
-        {loading ? "Submitting..." : "Submit Safety Incident"}
+        {loading ? <Text id="Submitting..." /> : <Text id="Submit Safety Incident" />}
       </button>
     </form>
   );

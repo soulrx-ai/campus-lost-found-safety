@@ -1,9 +1,13 @@
 "use client";
 
+import { AppMessage, Text } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LostReportForm() {
+  const { t } = useLanguage();
     const supabase = createClient();
 
     const [name, setName] = useState("");
@@ -132,11 +136,11 @@ export default function LostReportForm() {
         >
             <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-7">
                 <h2 className="font-semibold text-[var(--foreground)]">
-                    Item information
+                    <Text id="Item information" />
                 </h2>
 
                 <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    Fields marked with * are required.
+                    <Text id="Fields marked with * are required." />
                 </p>
             </div>
 
@@ -147,7 +151,7 @@ export default function LostReportForm() {
                             htmlFor="lost-name"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            Item name *
+                            <Text id="Item name *" />
                         </label>
 
                         <input
@@ -156,7 +160,7 @@ export default function LostReportForm() {
                             required
                             value={name}
                             onChange={(event) => setName(event.target.value)}
-                            placeholder="e.g. Black Wallet"
+                            placeholder={t("e.g. Black Wallet")}
                             className="ui-input"
                         />
                     </div>
@@ -166,7 +170,7 @@ export default function LostReportForm() {
                             htmlFor="lost-category"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            Category *
+                            <Text id="Category *" />
                         </label>
 
                         <select
@@ -176,14 +180,14 @@ export default function LostReportForm() {
                             onChange={(event) => setCategory(event.target.value)}
                             className="ui-input"
                         >
-                            <option value="">Select category</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Wallet">Wallet</option>
-                            <option value="Bag">Bag</option>
-                            <option value="Document">Document</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Accessory">Accessory</option>
-                            <option value="Other">Other</option>
+                            <option value=""><Text id="Select category" /></option>
+                            <option value="Electronics"><Text id="Electronics" /></option>
+                            <option value="Wallet"><Text id="Wallet" /></option>
+                            <option value="Bag"><Text id="Bag" /></option>
+                            <option value="Document"><Text id="Document" /></option>
+                            <option value="Clothing"><Text id="Clothing" /></option>
+                            <option value="Accessory"><Text id="Accessory" /></option>
+                            <option value="Other"><Text id="Other" /></option>
                         </select>
                     </div>
 
@@ -192,7 +196,7 @@ export default function LostReportForm() {
                             htmlFor="lost-brand"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            Brand
+                            <Text id="Brand" />
                         </label>
 
                         <input
@@ -200,7 +204,7 @@ export default function LostReportForm() {
                             type="text"
                             value={brand}
                             onChange={(event) => setBrand(event.target.value)}
-                            placeholder="e.g. Apple, Nike"
+                            placeholder={t("e.g. Apple, Nike")}
                             className="ui-input"
                         />
                     </div>
@@ -210,7 +214,7 @@ export default function LostReportForm() {
                             htmlFor="lost-color"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            Color
+                            <Text id="Color" />
                         </label>
 
                         <input
@@ -218,7 +222,7 @@ export default function LostReportForm() {
                             type="text"
                             value={color}
                             onChange={(event) => setColor(event.target.value)}
-                            placeholder="e.g. Black"
+                            placeholder={t("e.g. Black")}
                             className="ui-input"
                         />
                     </div>
@@ -228,7 +232,7 @@ export default function LostReportForm() {
                             htmlFor="lost-date-time"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            Date / time lost *
+                            <Text id="Date / time lost *" />
                         </label>
 
                         <input
@@ -246,7 +250,7 @@ export default function LostReportForm() {
                             htmlFor="lost-location"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            Location *
+                            <Text id="Location *" />
                         </label>
 
                         <input
@@ -255,7 +259,7 @@ export default function LostReportForm() {
                             required
                             value={location}
                             onChange={(event) => setLocation(event.target.value)}
-                            placeholder="e.g. Thaiburi Building"
+                            placeholder={t("e.g. Thaiburi Building")}
                             className="ui-input"
                         />
                     </div>
@@ -265,7 +269,7 @@ export default function LostReportForm() {
                             htmlFor="lost-description"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            Description
+                            <Text id="Description" />
                         </label>
 
                         <textarea
@@ -275,7 +279,7 @@ export default function LostReportForm() {
                             onChange={(event) =>
                                 setDescription(event.target.value)
                             }
-                            placeholder="Add useful details about the item"
+                            placeholder={t("Add useful details about the item")}
                             className="ui-input min-h-28 resize-y"
                         />
                     </div>
@@ -286,7 +290,7 @@ export default function LostReportForm() {
                         htmlFor="lost-image"
                         className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                     >
-                        Item image *
+                        <Text id="Item image *" />
                     </label>
 
                     <div className="rounded-xl border border-dashed border-[var(--border-strong)] bg-[var(--surface-soft)] p-4">
@@ -302,8 +306,7 @@ export default function LostReportForm() {
                         />
 
                         <p className="mt-3 text-xs leading-5 text-[var(--foreground-muted)]">
-                            JPG, PNG or WEBP. Maximum file size 5 MB. The image is kept
-                            private and is available to authorized Staff during review.
+                            <Text id="JPG, PNG or WEBP. Maximum file size 5 MB. The image is kept private and is available to authorized Staff during review." />
                         </p>
                     </div>
                 </div>
@@ -313,14 +316,13 @@ export default function LostReportForm() {
                         role="status"
                         className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm leading-6 text-[var(--foreground)]"
                     >
-                        {message}
+                        <AppMessage text={message} />
                     </div>
                 )}
 
                 <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs leading-5 text-[var(--foreground-muted)] sm:max-w-sm">
-                        Your report will remain pending until it has been reviewed by
-                        Staff.
+                        <Text id="Your report will remain pending until it has been reviewed by Staff." />
                     </p>
 
                     <button
@@ -328,7 +330,7 @@ export default function LostReportForm() {
                         disabled={loading}
                         className="ui-button-primary w-full sm:w-auto"
                     >
-                        {loading ? "Submitting..." : "Submit lost report"}
+                        {loading ? <Text id="Submitting..." /> : <Text id="Submit lost report" />}
                     </button>
                 </div>
             </div>

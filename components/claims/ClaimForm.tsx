@@ -1,5 +1,8 @@
 "use client";
 
+import { AppMessage, Text } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -10,6 +13,7 @@ type Props = {
 export default function ClaimForm({
   initialItemId = "",
 }: Props) {
+  const { t } = useLanguage();
   const supabase = createClient();
 
   const [itemId, setItemId] = useState(initialItemId);
@@ -191,11 +195,11 @@ export default function ClaimForm({
     >
       <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-7">
         <h2 className="font-semibold text-[var(--foreground)]">
-          Ownership claim
+          <Text id="Ownership claim" />
         </h2>
 
         <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-          Provide enough information for Staff to review your claim.
+          <Text id="Provide enough information for Staff to review your claim." />
         </p>
       </div>
 
@@ -205,7 +209,7 @@ export default function ClaimForm({
             htmlFor="claim-item-id"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            Item ID *
+            <Text id="Item ID *" />
           </label>
 
           <input
@@ -217,12 +221,11 @@ export default function ClaimForm({
               setItemId(event.target.value)
             }
             className="ui-input"
-            placeholder="Item UUID"
+            placeholder={t("Item UUID")}
           />
 
           <p className="mt-1.5 text-xs leading-5 text-[var(--foreground-muted)]">
-            This is normally filled automatically when you claim an item
-            from Search or Find Matches.
+            <Text id="This is normally filled automatically when you claim an item from Search or Find Matches." />
           </p>
         </div>
 
@@ -231,7 +234,7 @@ export default function ClaimForm({
             htmlFor="claim-reason"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            Claim reason *
+            <Text id="Claim reason *" />
           </label>
 
           <textarea
@@ -243,23 +246,22 @@ export default function ClaimForm({
               setReason(event.target.value)
             }
             className="ui-input min-h-32 resize-y"
-            placeholder="Describe details that can help Staff verify ownership."
+            placeholder={t("Describe details that can help Staff verify ownership.")}
           />
 
           <p className="mt-1.5 text-xs leading-5 text-[var(--foreground-muted)]">
-            Avoid including unnecessary sensitive information.
+            <Text id="Avoid including unnecessary sensitive information." />
           </p>
         </div>
 
         <div className="border-t border-[var(--border)] pt-6">
           <div className="mb-3">
             <p className="text-sm font-medium text-[var(--foreground)]">
-              Supporting evidence
+              <Text id="Supporting evidence" />
             </p>
 
             <p className="mt-1 text-xs leading-5 text-[var(--foreground-muted)]">
-              Optional. You can submit an image that helps Staff verify your
-              ownership.
+              <Text id="Optional. You can submit an image that helps Staff verify your ownership." />
             </p>
           </div>
 
@@ -275,7 +277,7 @@ export default function ClaimForm({
             />
 
             <p className="mt-3 text-xs text-[var(--foreground-muted)]">
-              JPG, PNG or WEBP. Maximum 5 MB.
+              <Text id="JPG, PNG or WEBP. Maximum 5 MB." />
             </p>
           </div>
         </div>
@@ -285,14 +287,13 @@ export default function ClaimForm({
             role="status"
             className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm leading-6 text-[var(--foreground)]"
           >
-            {message}
+            <AppMessage text={message} />
           </div>
         )}
 
         <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs leading-5 text-[var(--foreground-muted)] sm:max-w-sm">
-            Submitting a claim does not confirm ownership. Staff must review
-            it before the handover process can begin.
+            <Text id="Submitting a claim does not confirm ownership. Staff must review it before the handover process can begin." />
           </p>
 
           <button
@@ -300,7 +301,7 @@ export default function ClaimForm({
             disabled={loading}
             className="ui-button-primary w-full sm:w-auto"
           >
-            {loading ? "Submitting..." : "Submit claim"}
+            {loading ? <Text id="Submitting..." /> : <Text id="Submit claim" />}
           </button>
         </div>
       </div>

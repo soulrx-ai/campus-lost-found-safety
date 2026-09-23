@@ -1,5 +1,8 @@
 "use client";
 
+import { AppMessage, Text } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -11,6 +14,7 @@ type Props = {
 type ValidTicketType = "NOT_RECEIVED" | "SYSTEM_PROBLEM" | "GENERAL";
 
 export default function TicketForm({ initialClaimId = "" }: Props) {
+  const { t } = useLanguage();
   const supabase = createClient();
 
   // 2. เรียกใช้ Type ที่สร้างไว้
@@ -99,7 +103,7 @@ if (cleanClaimId) {
     >
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          Ticket Type <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Ticket Type" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
         <select
           required
@@ -108,31 +112,31 @@ if (cleanClaimId) {
           onChange={(e) => setTicketType(e.target.value as ValidTicketType)}
           className="w-full rounded-lg border border-stone-400 dark:border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-stone-900 dark:text-[var(--foreground)] focus:border-stone-700 dark:focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-stone-700 dark:focus:ring-[var(--primary)]"
         >
-          <option value="NOT_RECEIVED">Item Not Received</option>
-          <option value="SYSTEM_PROBLEM">System Problem</option>
-          <option value="GENERAL">General</option>
+          <option value="NOT_RECEIVED"><Text id="Item Not Received" /></option>
+          <option value="SYSTEM_PROBLEM"><Text id="System Problem" /></option>
+          <option value="GENERAL"><Text id="General" /></option>
         </select>
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          Related Claim ID
+          <Text id="Related Claim ID" />
         </label>
         <input
           type="text"
           value={claimId}
           onChange={(e) => setClaimId(e.target.value)}
-          placeholder="Optional"
+          placeholder={t("Optional")}
           className="w-full rounded-lg border border-stone-400 dark:border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-stone-900 dark:text-[var(--foreground)] placeholder:text-stone-500 dark:placeholder:text-[var(--foreground-muted)] focus:border-stone-700 dark:focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-stone-700 dark:focus:ring-[var(--primary)]"
         />
         <p className="mt-1 text-xs text-stone-600 dark:text-[var(--foreground-muted)]">
-          Optional. Use this when the issue is related to a claim.
+          <Text id="Optional. Use this when the issue is related to a claim." />
         </p>
       </div>
 
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          Subject <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Subject" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
         <input
           required
@@ -145,7 +149,7 @@ if (cleanClaimId) {
 
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          Description <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Description" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
         </label>
         <textarea
           required
@@ -158,7 +162,7 @@ if (cleanClaimId) {
 
       {message && (
         <div className="rounded-lg border border-stone-300 dark:border-[var(--border-strong)] bg-stone-100 dark:bg-[var(--surface-soft)] p-3 text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          {message}
+          <AppMessage text={message} />
         </div>
       )}
 
@@ -167,7 +171,7 @@ if (cleanClaimId) {
         disabled={loading}
         className="w-full rounded-lg bg-stone-800 px-4 py-3 font-medium text-white disabled:opacity-50 hover:bg-stone-900"
       >
-        {loading ? "Creating..." : "Create Ticket"}
+        {loading ? <Text id="Creating..." /> : <Text id="Create Ticket" />}
       </button>
     </form>
   );

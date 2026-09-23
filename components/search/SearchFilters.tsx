@@ -1,3 +1,7 @@
+"use client";
+
+import { Text, UiText } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 export type SearchFilterValues = {
     name: string;
     category: string;
@@ -23,6 +27,7 @@ export default function SearchFilters({
     onClear,
     loading,
 }: Props) {
+  const { t } = useLanguage();
     function update(
         field: keyof SearchFilterValues,
         value: string
@@ -37,11 +42,11 @@ export default function SearchFilters({
         <section className="ui-card overflow-hidden">
             <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
                 <h2 className="font-semibold text-[var(--foreground)]">
-                    Search Filters
+                    <Text id="Search Filters" />
                 </h2>
 
                 <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    Use one or more fields to narrow the results.
+                    <Text id="Use one or more fields to narrow the results." />
                 </p>
             </div>
 
@@ -50,7 +55,7 @@ export default function SearchFilters({
                     <FilterField label="Item name">
                         <input
                             type="text"
-                            placeholder="e.g. AirPods"
+                            placeholder={t("e.g. AirPods")}
                             value={filters.name}
                             onChange={(e) =>
                                 update("name", e.target.value)
@@ -67,23 +72,23 @@ export default function SearchFilters({
                             }
                             className="ui-input"
                         >
-                            <option value="">All categories</option>
+                            <option value=""><Text id="All categories" /></option>
                             <option value="Electronics">
-                                Electronics
+                                <Text id="Electronics" />
                             </option>
-                            <option value="Wallet">Wallet</option>
-                            <option value="Bag">Bag</option>
-                            <option value="Document">Document</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Accessory">Accessory</option>
-                            <option value="Other">Other</option>
+                            <option value="Wallet"><Text id="Wallet" /></option>
+                            <option value="Bag"><Text id="Bag" /></option>
+                            <option value="Document"><Text id="Document" /></option>
+                            <option value="Clothing"><Text id="Clothing" /></option>
+                            <option value="Accessory"><Text id="Accessory" /></option>
+                            <option value="Other"><Text id="Other" /></option>
                         </select>
                     </FilterField>
 
                     <FilterField label="Brand">
                         <input
                             type="text"
-                            placeholder="e.g. Apple"
+                            placeholder={t("e.g. Apple")}
                             value={filters.brand}
                             onChange={(e) =>
                                 update("brand", e.target.value)
@@ -95,7 +100,7 @@ export default function SearchFilters({
                     <FilterField label="Color">
                         <input
                             type="text"
-                            placeholder="e.g. Black"
+                            placeholder={t("e.g. Black")}
                             value={filters.color}
                             onChange={(e) =>
                                 update("color", e.target.value)
@@ -107,7 +112,7 @@ export default function SearchFilters({
                     <FilterField label="Location">
                         <input
                             type="text"
-                            placeholder="e.g. Thaiburi Building"
+                            placeholder={t("e.g. Thaiburi Building")}
                             value={filters.location}
                             onChange={(e) =>
                                 update("location", e.target.value)
@@ -135,9 +140,9 @@ export default function SearchFilters({
                             }
                             className="ui-input"
                         >
-                            <option value="">Lost & Found</option>
-                            <option value="LOST">Lost</option>
-                            <option value="FOUND">Found</option>
+                            <option value=""><Text id="Lost & Found" /></option>
+                            <option value="LOST"><Text id="Lost" /></option>
+                            <option value="FOUND"><Text id="Found" /></option>
                         </select>
                     </FilterField>
                 </div>
@@ -149,7 +154,7 @@ export default function SearchFilters({
                         disabled={loading}
                         className="ui-button-primary sm:min-w-28"
                     >
-                        {loading ? "Searching..." : "Search"}
+                        {loading ? <Text id="Searching..." /> : <Text id="Search" />}
                     </button>
 
                     <button
@@ -158,7 +163,7 @@ export default function SearchFilters({
                         disabled={loading}
                         className="ui-button-secondary sm:min-w-24"
                     >
-                        Clear
+                        <Text id="Clear" />
                     </button>
                 </div>
             </div>
@@ -176,7 +181,7 @@ function FilterField({
     return (
         <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
-                {label}
+                <UiText text={label} />
             </span>
             {children}
         </label>

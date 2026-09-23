@@ -1,5 +1,7 @@
 "use client";
 
+import { AppMessage, DisplayValue, Text } from "@/components/i18n/Text";
+
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -84,7 +86,7 @@ export default function MyClaims() {
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-[var(--primary)]" />
 
           <p className="text-sm text-[var(--foreground-muted)]">
-            Loading claims...
+            <Text id="Loading claims..." />
           </p>
         </div>
       </div>
@@ -95,18 +97,18 @@ export default function MyClaims() {
     <div className="space-y-4">
       {message && (
         <div className="ui-card p-5 text-sm text-[var(--foreground)]">
-          {message}
+          <AppMessage text={message} />
         </div>
       )}
 
       {!message && claims.length === 0 && (
         <div className="ui-card p-6 sm:p-8">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            No claims yet
+            <Text id="No claims yet" />
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
-            You have not submitted any ownership claims.
+            <Text id="You have not submitted any ownership claims." />
           </p>
         </div>
       )}
@@ -119,7 +121,7 @@ export default function MyClaims() {
           <div className="flex flex-col gap-3 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
             <div className="min-w-0">
               <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                Claim
+                <Text id="Claim" />
               </p>
 
               <h2 className="mt-1 font-semibold text-[var(--foreground)]">
@@ -127,7 +129,7 @@ export default function MyClaims() {
               </h2>
 
               <p className="mt-1 text-xs text-[var(--foreground-muted)]">
-                Submitted {formatDateTime(claim.created_at)}
+                <Text id="Submitted" /> {formatDateTime(claim.created_at)}
               </p>
             </div>
 
@@ -136,14 +138,14 @@ export default function MyClaims() {
                 claim.status
               )}`}
             >
-              {claim.status.replaceAll("_", " ")}
+              <DisplayValue value={claim.status} />
             </span>
           </div>
 
           <div className="space-y-5 p-5 sm:p-6">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                Item ID
+                <Text id="Item ID" />
               </p>
 
               <p className="mt-1 break-all text-sm text-[var(--foreground)]">
@@ -153,7 +155,7 @@ export default function MyClaims() {
 
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                Your claim reason
+                <Text id="Your claim reason" />
               </p>
 
               <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
@@ -164,7 +166,7 @@ export default function MyClaims() {
             {claim.staff_note && (
               <div className="rounded-xl bg-[var(--surface-soft)] p-4">
                 <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                  Staff note
+                  <Text id="Staff note" />
                 </p>
 
                 <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
@@ -176,7 +178,7 @@ export default function MyClaims() {
             {claim.handover_at && (
               <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4">
                 <p className="text-sm font-semibold text-[var(--success)]">
-                  Handover completed
+                  <Text id="Handover completed" />
                 </p>
 
                 <p className="mt-1 text-sm text-[var(--success)]">

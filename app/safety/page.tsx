@@ -1,5 +1,7 @@
 "use client";
 
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
+
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import SafetyFilters, {
@@ -101,14 +103,13 @@ export default function SafetyPage() {
         <div className="mx-auto max-w-5xl">
           <header className="mb-7">
             <p className="text-sm font-semibold text-[var(--danger)]">
-              Campus Safety
+              <Text id="Campus Safety" />
             </p>
 
-            <h1 className="page-title">Safety Incidents</h1>
+            <h1 className="page-title"><Text id="Safety Incidents" /></h1>
 
             <p className="page-description">
-              View published campus safety reports and filter incidents by
-              location or date.
+              <Text id="View published campus safety reports and filter incidents by location or date." />
             </p>
           </header>
 
@@ -125,7 +126,7 @@ export default function SafetyPage() {
               <div className="flex items-center gap-3">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-[var(--danger)]" />
                 <p className="text-sm text-[var(--foreground-muted)]">
-                  Loading safety incidents...
+                  <Text id="Loading safety incidents..." />
                 </p>
               </div>
             </div>
@@ -133,7 +134,7 @@ export default function SafetyPage() {
 
           {message && !loading && (
             <div className="ui-card mt-5 p-4 text-sm text-[var(--foreground)]">
-              {message}
+              <AppMessage text={message} />
             </div>
           )}
 
@@ -146,7 +147,7 @@ export default function SafetyPage() {
                 <div className="flex flex-col gap-3 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wide text-[var(--danger)]">
-                      Safety Incident
+                      <Text id="Safety Incident" />
                     </p>
 
                     <h2 className="mt-1 break-words text-xl font-semibold text-[var(--foreground)]">
@@ -161,7 +162,7 @@ export default function SafetyPage() {
                         : "bg-[var(--danger-soft)] text-[var(--danger)]"
                     }`}
                   >
-                    {incident.status}
+                    <DisplayValue value={incident.status} />
                   </span>
                 </div>
 
@@ -201,7 +202,7 @@ function InfoField({
   return (
     <div>
       <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-        {label}
+        <UiText text={label} />
       </p>
 
       <p className="mt-1 break-words text-sm text-[var(--foreground)]">

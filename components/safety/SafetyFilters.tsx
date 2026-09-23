@@ -1,3 +1,7 @@
+"use client";
+
+import { Text } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 export type SafetyFilterValues = {
   location: string;
   date: string;
@@ -18,6 +22,7 @@ export default function SafetyFilters({
   onClear,
   loading,
 }: Props) {
+  const { t } = useLanguage();
   function update(
     field: keyof SafetyFilterValues,
     value: string
@@ -32,11 +37,11 @@ export default function SafetyFilters({
     <section className="ui-card overflow-hidden">
       <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
         <h2 className="font-semibold text-[var(--foreground)]">
-          Filter incidents
+          <Text id="Filter incidents" />
         </h2>
 
         <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-          Narrow the published safety reports shown below.
+          <Text id="Narrow the published safety reports shown below." />
         </p>
       </div>
 
@@ -47,7 +52,7 @@ export default function SafetyFilters({
               htmlFor="safety-location"
               className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
             >
-              Location
+              <Text id="Location" />
             </label>
 
             <input
@@ -57,7 +62,7 @@ export default function SafetyFilters({
               onChange={(event) =>
                 update("location", event.target.value)
               }
-              placeholder="e.g. Thaiburi Building"
+              placeholder={t("e.g. Thaiburi Building")}
               className="ui-input"
             />
           </div>
@@ -67,7 +72,7 @@ export default function SafetyFilters({
               htmlFor="safety-date"
               className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
             >
-              Date
+              <Text id="Date" />
             </label>
 
             <input
@@ -89,7 +94,7 @@ export default function SafetyFilters({
             disabled={loading}
             className="ui-button-secondary w-full sm:w-auto"
           >
-            Clear filters
+            <Text id="Clear filters" />
           </button>
 
           <button
@@ -98,7 +103,7 @@ export default function SafetyFilters({
             disabled={loading}
             className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger-solid)] px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
-            {loading ? "Searching..." : "Search incidents"}
+            {loading ? <Text id="Searching..." /> : <Text id="Search incidents" />}
           </button>
         </div>
       </div>

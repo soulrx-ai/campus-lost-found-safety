@@ -1,5 +1,7 @@
 "use client";
 
+import { AppMessage, Text } from "@/components/i18n/Text";
+
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import ItemCard from "@/components/search/ItemCard";
@@ -160,16 +162,15 @@ export default function SearchPage() {
                 <div className="mx-auto max-w-6xl">
                     <header className="mb-7">
                         <p className="page-eyebrow">
-                            Lost & Found
+                            <Text id="Lost & Found" />
                         </p>
 
                         <h1 className="page-title">
-                            Search Items
+                            <Text id="Search Items" />
                         </h1>
 
                         <p className="page-description">
-                            Search approved lost and found reports using
-                            item details, location, date or report type.
+                            <Text id="Search approved lost and found reports using item details, location, date or report type." />
                         </p>
                     </header>
 
@@ -186,7 +187,7 @@ export default function SearchPage() {
                             role="status"
                             className="ui-card mt-6 p-4 text-sm text-[var(--foreground-muted)]"
                         >
-                            {message}
+                            <AppMessage text={message} />
                         </div>
                     )}
 
@@ -195,17 +196,16 @@ export default function SearchPage() {
                             <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
                                 <div>
                                     <h2 className="text-lg font-semibold text-[var(--foreground)]">
-                                        Published Items
+                                        <Text id="Published Items" />
                                     </h2>
 
                                     <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                                        Latest published lost and found reports.
+                                        <Text id="Latest published lost and found reports." />
                                     </p>
                                 </div>
 
                                 <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-medium text-[var(--primary)]">
-                                    {items.length} result
-                                    {items.length === 1 ? "" : "s"}
+                                    <Text id={items.length === 1 ? "{count} result" : "{count} results"} params={{ count: items.length }} />
                                 </span>
                             </div>
 

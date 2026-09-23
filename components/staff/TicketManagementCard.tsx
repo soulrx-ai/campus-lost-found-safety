@@ -1,5 +1,7 @@
 "use client";
 
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -118,7 +120,7 @@ export default function TicketManagementCard({
       <div className="flex flex-col gap-4 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-            {ticket.ticket_type.replaceAll("_", " ")}
+            <DisplayValue value={ticket.ticket_type} />
           </p>
 
           <h2 className="mt-1 break-words text-lg font-semibold text-[var(--foreground)]">
@@ -126,7 +128,7 @@ export default function TicketManagementCard({
           </h2>
 
           <p className="mt-1 text-xs text-[var(--foreground-muted)]">
-            Created {formatDateTime(ticket.created_at)}
+            <Text id="Created" /> {formatDateTime(ticket.created_at)}
           </p>
         </div>
 
@@ -135,14 +137,14 @@ export default function TicketManagementCard({
             ticket.status
           )}`}
         >
-          {ticket.status.replaceAll("_", " ")}
+          <DisplayValue value={ticket.status} />
         </span>
       </div>
 
       <div className="space-y-5 p-5 sm:p-6">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-            Description
+            <Text id="Description" />
           </p>
 
           <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
@@ -167,7 +169,7 @@ export default function TicketManagementCard({
             role="alert"
             className="rounded-xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger)]"
           >
-            {errorMessage}
+            <AppMessage text={errorMessage} />
           </div>
         )}
 
@@ -179,7 +181,7 @@ export default function TicketManagementCard({
               onClick={() => updateTicket("IN_PROGRESS")}
               className="ui-button-primary w-full sm:w-auto"
             >
-              {loading ? "Processing..." : "Start processing"}
+              {loading ? <Text id="Processing..." /> : <Text id="Start processing" />}
             </button>
           )}
 
@@ -190,14 +192,14 @@ export default function TicketManagementCard({
               onClick={() => updateTicket("RESOLVED")}
               className="ui-button-primary w-full sm:w-auto"
             >
-              {loading ? "Processing..." : "Resolve ticket"}
+              {loading ? <Text id="Processing..." /> : <Text id="Resolve ticket" />}
             </button>
           )}
 
           {ticket.status === "RESOLVED" && (
             <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4">
               <p className="text-sm font-semibold text-[var(--success)]">
-                Ticket resolved
+                <Text id="Ticket resolved" />
               </p>
             </div>
           )}
@@ -217,7 +219,7 @@ function InfoField({
   return (
     <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-        {label}
+        <UiText text={label} />
       </p>
 
       <p className="mt-1 break-all text-sm text-[var(--foreground)]">

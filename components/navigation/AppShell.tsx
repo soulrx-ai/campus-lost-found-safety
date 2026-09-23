@@ -1,5 +1,9 @@
 "use client";
 
+import LanguageControl from "@/components/i18n/LanguageControl";
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -51,6 +55,7 @@ function AuthenticatedShell({ children, pathname }: {
     children: React.ReactNode;
     pathname: string;
 }) {
+  const { t } = useLanguage();
     const router = useRouter();
     const supabase = useMemo(() => createClient(), []);
 
@@ -273,7 +278,7 @@ function AuthenticatedShell({ children, pathname }: {
                         <div className="flex min-w-0 items-center gap-3">
                             <button
                                 type="button"
-                                aria-label="Open navigation menu"
+                                aria-label={t("Open navigation menu")}
                                 aria-expanded={sidebarOpen}
                                 aria-controls="app-sidebar"
                                 onClick={() => {
@@ -288,10 +293,10 @@ function AuthenticatedShell({ children, pathname }: {
 
                             <Link href="/" className="min-w-0">
                                 <span className="block truncate text-base font-bold text-[var(--foreground)] sm:text-lg">
-                                    Campus Lost &amp; Safety
+                                    Campus Lost & Safety
                                 </span>
                                 <span className="hidden text-xs text-[var(--foreground-muted)] sm:block">
-                                    Lost &amp; Found · Safety Services
+                                    <Text id="Lost & Found · Safety Services" />
                                 </span>
                             </Link>
                         </div>
@@ -300,7 +305,7 @@ function AuthenticatedShell({ children, pathname }: {
                             <div>
                                 <button
                                     type="button"
-                                    aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+                                    aria-label={unreadCount > 0 ? t("Notifications, {count} unread", { count: unreadCount }) : t("Notifications")}
                                     aria-controls="notification-panel"
                                     aria-expanded={notificationsOpen}
                                     onClick={() => {
@@ -322,18 +327,18 @@ function AuthenticatedShell({ children, pathname }: {
                                     <div id="notification-panel" className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] shadow-xl">
                                         <div className="border-b border-[var(--border)] px-4 py-3">
                                             <p className="font-semibold text-[var(--foreground)]">
-                                                Notifications
+                                                <Text id="Notifications" />
                                             </p>
                                             <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">
-                                                {unreadCount} unread
+                                                {unreadCount} <Text id="unread" />
                                             </p>
                                         </div>
 
-                                        {notificationError && <p role="alert" className="px-4 py-3 text-sm text-[var(--danger)]">{notificationError}</p>}
+                                        {notificationError && <p role="alert" className="px-4 py-3 text-sm text-[var(--danger)]"><AppMessage text={notificationError} /></p>}
                                         <div className="max-h-[min(24rem,calc(100dvh-10rem))] overflow-y-auto overscroll-contain">
                                             {notifications.length === 0 ? (
                                                 <p className="px-4 py-8 text-center text-sm text-[var(--foreground-muted)]">
-                                                    No notifications yet.
+                                                    <Text id="No notifications yet." />
                                                 </p>
                                             ) : (
                                                 notifications.map((notification) => (
@@ -385,7 +390,7 @@ function AuthenticatedShell({ children, pathname }: {
                             <div>
                                 <button
                                     type="button"
-                                    aria-label="Account menu"
+                                    aria-label={t("Account menu")}
                                     aria-controls="account-panel"
                                     aria-expanded={profileOpen}
                                     onClick={() => {
@@ -412,20 +417,22 @@ function AuthenticatedShell({ children, pathname }: {
                                                 {profile.full_name}
                                             </p>
                                             <p className="mt-1 text-xs font-semibold text-[var(--success)]">
-                                                {profile.role}
+                                                <DisplayValue value={profile.role} />
                                             </p>
                                         </div>
 
                                         <button
                                             type="button"
                                             onClick={toggleTheme}
-                                            aria-label={`Appearance: ${theme === "dark" ? "Dark" : "Light"}. Switch to ${theme === "dark" ? "Light" : "Dark"} mode`}
+                                            aria-label={t(theme === "dark" ? "Switch to light mode" : "Switch to dark mode")}
                                             aria-pressed={theme === "dark"}
                                             className="flex min-h-11 w-full items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3 text-left text-sm text-[var(--foreground)] transition hover:bg-[var(--surface-soft)]"
                                         >
-                                            <span>Appearance</span>
-                                            <span className="text-[var(--foreground-muted)]">{theme === "dark" ? "Dark" : "Light"}</span>
+                                            <span><Text id="Appearance" /></span>
+                                            <span className="text-[var(--foreground-muted)]">{theme === "dark" ? <Text id="Dark" /> : <Text id="Light" />}</span>
                                         </button>
+
+                                        <LanguageControl />
 
                                         <button
                                             type="button"
@@ -433,9 +440,9 @@ function AuthenticatedShell({ children, pathname }: {
                                             disabled={signingOut}
                                             className="w-full px-4 py-3 text-left text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)]"
                                         >
-                                            {signingOut ? "Signing out..." : "Sign out"}
+                                            {signingOut ? <Text id="Signing out..." /> : <Text id="Sign out" />}
                                         </button>
-                                        {logoutError && <p role="alert" className="px-4 pb-3 text-xs text-[var(--danger)]">{logoutError}</p>}
+                                        {logoutError && <p role="alert" className="px-4 pb-3 text-xs text-[var(--danger)]"><AppMessage text={logoutError} /></p>}
                                     </div>
                                 )}
                             </div>
@@ -449,7 +456,7 @@ function AuthenticatedShell({ children, pathname }: {
                     <div className="app-container pt-3">
                         <Link href="/" className="inline-flex min-h-9 items-center gap-2 rounded-md text-sm text-[var(--foreground-muted)] transition hover:text-[var(--success)]">
                             <span aria-hidden="true">&larr;</span>
-                            Back to Home
+                            <Text id="Back to Home" />
                         </Link>
                     </div>
                 )}
@@ -460,9 +467,9 @@ function AuthenticatedShell({ children, pathname }: {
                 <div className="app-container py-6">
                     <div className="flex flex-col gap-2 text-sm text-[var(--foreground-muted)] sm:flex-row sm:items-center sm:justify-between">
                         <p>
-                            Lost &amp; Found &amp; Safety Incident Reporting System
+                            <Text id="Lost & Found & Safety Incident Reporting System" />
                         </p>
-                        <p>Walailak University</p>
+                        <p><Text id="Walailak University" /></p>
                     </div>
                 </div>
             </footer>
@@ -471,7 +478,7 @@ function AuthenticatedShell({ children, pathname }: {
                 <dialog
                     ref={sidebarRef}
                     id="app-sidebar"
-                    aria-label="Main navigation"
+                    aria-label={t("Main navigation")}
                     onCancel={() => setSidebarOpen(false)}
                     onClick={(event) => {
                         if (event.target === event.currentTarget) setSidebarOpen(false);
@@ -482,16 +489,16 @@ function AuthenticatedShell({ children, pathname }: {
                         <div className="flex min-h-16 shrink-0 items-center justify-between border-b border-[var(--border)] px-5">
                             <div>
                                 <p className="font-bold text-[var(--foreground)]">
-                                    Campus Lost &amp; Safety
+                                    Campus Lost & Safety
                                 </p>
                                 <p className="text-xs text-[var(--foreground-muted)]">
-                                    Navigation
+                                    <Text id="Navigation" />
                                 </p>
                             </div>
 
                             <button
                                 type="button"
-                                aria-label="Close navigation menu"
+                                aria-label={t("Close navigation menu")}
                                 onClick={() => setSidebarOpen(false)}
                                 className="flex h-9 w-9 items-center justify-center rounded-xl text-[var(--foreground-muted)] transition hover:bg-[var(--surface-soft)]"
                             >
@@ -610,7 +617,7 @@ function AuthenticatedShell({ children, pathname }: {
                                     {profile.full_name}
                                 </p>
                                 <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">
-                                    {profile.role}
+                                    <DisplayValue value={profile.role} />
                                 </p>
                             </div>
                         </div>
@@ -631,7 +638,7 @@ function NavSection({
     return (
         <section className="mb-6 last:mb-0">
             <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
-                {title}
+                <UiText text={title} />
             </p>
             <div className="space-y-1">{children}</div>
         </section>
@@ -667,7 +674,7 @@ function SideLink({
                         : "text-[var(--foreground-muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)]"
                 }`}
         >
-            {label}
+            <UiText text={label} />
         </Link>
     );
 }

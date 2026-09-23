@@ -1,3 +1,4 @@
+import { Text } from "@/components/i18n/Text";
 import LostReportForm from "@/components/lost/LostReportForm";
 
 export default function LostReportPage() {
@@ -6,13 +7,12 @@ export default function LostReportPage() {
             <div className="app-container">
                 <div className="mx-auto max-w-3xl">
                     <header className="mb-7">
-                        <p className="page-eyebrow">Lost &amp; Found</p>
+                        <p className="page-eyebrow"><Text id="Lost & Found" /></p>
 
-                        <h1 className="page-title">Report a lost item</h1>
+                        <h1 className="page-title"><Text id="Report a lost item" /></h1>
 
                         <p className="page-description">
-                            Tell us what you lost and where you last saw it. Your report
-                            will be reviewed by Staff before it is published.
+                            <Text id="Tell us what you lost and where you last saw it. Your report will be reviewed by Staff before it is published." />
                         </p>
                     </header>
 

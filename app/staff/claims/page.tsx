@@ -1,3 +1,4 @@
+import { Text } from "@/components/i18n/Text";
 import StaffClaimCard from "@/components/claims/StaffClaimCard";
 import { requireStaff } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
@@ -40,31 +41,30 @@ export default async function StaffClaimsPage() {
       <div className="app-container">
         <div className="mx-auto max-w-5xl">
           <header className="mb-7">
-            <p className="page-eyebrow">Staff Operations</p>
+            <p className="page-eyebrow"><Text id="Staff Operations" /></p>
 
             <h1 className="page-title">
-              Claim Review &amp; Handover
+              <Text id="Claim Review & Handover" />
             </h1>
 
             <p className="page-description">
-              Review ownership claims and record the final handover when an
-              approved item is returned to its claimant.
+              <Text id="Review ownership claims and record the final handover when an approved item is returned to its claimant." />
             </p>
           </header>
 
           {error ? (
             <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-5 text-sm text-[var(--danger)]">
-              <p className="font-semibold">Unable to load claims</p>
+              <p className="font-semibold"><Text id="Unable to load claims" /></p>
               <p className="mt-1">{error.message}</p>
             </div>
           ) : !claims || claims.length === 0 ? (
             <div className="ui-card p-6 sm:p-8">
               <h2 className="text-lg font-semibold text-[var(--foreground)]">
-                No claims
+                <Text id="No claims" />
               </h2>
 
               <p className="mt-2 text-sm text-[var(--foreground-muted)]">
-                There are currently no claims to review.
+                <Text id="There are currently no claims to review." />
               </p>
             </div>
           ) : (
@@ -72,7 +72,7 @@ export default async function StaffClaimsPage() {
               <div className="mb-5 grid gap-3 sm:grid-cols-2">
                 <div className="ui-card p-4">
                   <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                    Waiting for review
+                    <Text id="Waiting for review" />
                   </p>
 
                   <p className="mt-2 text-2xl font-bold text-[var(--warning)]">
@@ -82,7 +82,7 @@ export default async function StaffClaimsPage() {
 
                 <div className="ui-card p-4">
                   <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                    Ready for handover
+                    <Text id="Ready for handover" />
                   </p>
 
                   <p className="mt-2 text-2xl font-bold text-[var(--success)]">

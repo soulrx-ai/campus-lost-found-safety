@@ -1,9 +1,13 @@
 "use client";
 
+import { DisplayValue, AppMessage, Text } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function NotificationForm() {
+  const { t } = useLanguage();
   const supabase = createClient();
 
   const [userId, setUserId] = useState("");
@@ -96,11 +100,11 @@ export default function NotificationForm() {
     >
       <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
         <h2 className="font-semibold text-[var(--foreground)]">
-          Notification details
+          <Text id="Notification details" />
         </h2>
 
         <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-          Fields marked with * are required.
+          <Text id="Fields marked with * are required." />
         </p>
       </div>
 
@@ -110,7 +114,7 @@ export default function NotificationForm() {
             htmlFor="notification-user"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            User ID *
+            <Text id="User ID *" />
           </label>
 
           <input
@@ -121,12 +125,12 @@ export default function NotificationForm() {
             onChange={(event) =>
               setUserId(event.target.value)
             }
-            placeholder="User UUID"
+            placeholder={t("User UUID")}
             className="ui-input"
           />
 
           <p className="mt-1.5 text-xs text-[var(--foreground-muted)]">
-            Enter the UUID of an existing registered user.
+            <Text id="Enter the UUID of an existing registered user." />
           </p>
         </div>
 
@@ -135,7 +139,7 @@ export default function NotificationForm() {
             htmlFor="notification-type"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            Notification type *
+            <Text id="Notification type *" />
           </label>
 
           <select
@@ -147,12 +151,12 @@ export default function NotificationForm() {
             }
             className="ui-input"
           >
-            <option value="SYSTEM">SYSTEM</option>
-            <option value="ITEM">ITEM</option>
-            <option value="CLAIM">CLAIM</option>
-            <option value="SAFETY">SAFETY</option>
+            <option value="SYSTEM"><DisplayValue value="SYSTEM" /></option>
+            <option value="ITEM"><DisplayValue value="ITEM" /></option>
+            <option value="CLAIM"><DisplayValue value="CLAIM" /></option>
+            <option value="SAFETY"><DisplayValue value="SAFETY" /></option>
             <option value="SERVICE_TICKET">
-              SERVICE TICKET
+              <Text id="SERVICE TICKET" />
             </option>
           </select>
         </div>
@@ -162,7 +166,7 @@ export default function NotificationForm() {
             htmlFor="notification-title"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            Title *
+            <Text id="Title *" />
           </label>
 
           <input
@@ -173,7 +177,7 @@ export default function NotificationForm() {
             onChange={(event) =>
               setTitle(event.target.value)
             }
-            placeholder="Notification title"
+            placeholder={t("Notification title")}
             className="ui-input"
           />
         </div>
@@ -183,7 +187,7 @@ export default function NotificationForm() {
             htmlFor="notification-message"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            Message *
+            <Text id="Message *" />
           </label>
 
           <textarea
@@ -194,7 +198,7 @@ export default function NotificationForm() {
             onChange={(event) =>
               setMessageText(event.target.value)
             }
-            placeholder="Write the notification message"
+            placeholder={t("Write the notification message")}
             className="ui-input min-h-32 resize-y"
           />
         </div>
@@ -204,7 +208,7 @@ export default function NotificationForm() {
             role="status"
             className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm text-[var(--foreground)]"
           >
-            {message}
+            <AppMessage text={message} />
           </div>
         )}
 
@@ -215,8 +219,8 @@ export default function NotificationForm() {
             className="ui-button-primary w-full"
           >
             {loading
-              ? "Sending..."
-              : "Send notification"}
+              ? <Text id="Sending..." />
+              : <Text id="Send notification" />}
           </button>
         </div>
       </div>
