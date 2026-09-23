@@ -1,3 +1,4 @@
+import { Text } from "@/components/i18n/Text";
 import ItemReviewCard from "@/components/staff/ItemReviewCard";
 import { requireStaff } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
@@ -19,22 +20,21 @@ export default async function StaffItemsPage() {
             <div className="app-container">
                 <div className="mx-auto max-w-5xl">
                     <header className="mb-7">
-                        <p className="page-eyebrow">Staff Operations</p>
+                        <p className="page-eyebrow"><Text id="Staff Operations" /></p>
 
                         <h1 className="page-title">
-                            Lost &amp; Found Review
+                            <Text id="Lost & Found Review" />
                         </h1>
 
                         <p className="page-description">
-                            Review pending lost and found reports before they become
-                            visible in the published item workflow.
+                            <Text id="Review pending lost and found reports before they become visible in the published item workflow." />
                         </p>
                     </header>
 
                     {error ? (
                         <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-5 text-sm text-[var(--danger)]">
                             <p className="font-semibold">
-                                Unable to load pending reports
+                                <Text id="Unable to load pending reports" />
                             </p>
 
                             <p className="mt-1">{error.message}</p>
@@ -46,12 +46,11 @@ export default async function StaffItemsPage() {
                             </div>
 
                             <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
-                                No pending reports
+                                <Text id="No pending reports" />
                             </h2>
 
                             <p className="mt-2 max-w-lg text-sm leading-6 text-[var(--foreground-muted)]">
-                                There are currently no lost or found reports waiting for
-                                Staff review.
+                                <Text id="There are currently no lost or found reports waiting for Staff review." />
                             </p>
                         </div>
                     ) : (
@@ -59,11 +58,11 @@ export default async function StaffItemsPage() {
                             <div className="ui-card mb-5 flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <p className="font-medium text-[var(--foreground)]">
-                                        Review queue
+                                        <Text id="Review queue" />
                                     </p>
 
                                     <p className="mt-0.5 text-sm text-[var(--foreground-muted)]">
-                                        Oldest reports are shown first.
+                                        <Text id="Oldest reports are shown first." />
                                     </p>
                                 </div>
 
@@ -73,7 +72,7 @@ export default async function StaffItemsPage() {
                                         className="h-2 w-2 rounded-full bg-[var(--warning)]"
                                     />
 
-                                    {items.length} pending
+                                    {items.length} <Text id="pending" />
                                 </div>
                             </div>
 

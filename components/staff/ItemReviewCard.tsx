@@ -1,5 +1,8 @@
 "use client";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -37,6 +40,7 @@ export default function ItemReviewCard({
     staffId,
 }: Props) {
     const router = useRouter();
+    const { t } = useLanguage();
     const supabase = createClient();
 
     const [loading, setLoading] = useState(false);
@@ -134,11 +138,11 @@ export default function ItemReviewCard({
                                     : "bg-[var(--success-soft)] text-[var(--success)]"
                                 }`}
                         >
-                            {item.report_type}
+                            <DisplayValue value={item.report_type} />
                         </span>
 
                         <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
-                            {item.status}
+                            <DisplayValue value={item.status} />
                         </span>
                     </div>
 
@@ -147,7 +151,7 @@ export default function ItemReviewCard({
                     </h2>
 
                     <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                        Waiting for Staff review
+                        <Text id="Waiting for Staff review" />
                     </p>
                 </div>
 
@@ -160,17 +164,17 @@ export default function ItemReviewCard({
                 <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                     <InfoField
                         label="Category"
-                        value={item.category}
+                        value=<DisplayValue value={item.category} />
                     />
 
                     <InfoField
                         label="Brand"
-                        value={item.brand || "Not specified"}
+                        value={item.brand || <Text id="Not specified" />}
                     />
 
                     <InfoField
                         label="Color"
-                        value={item.color || "Not specified"}
+                        value={item.color || <Text id="Not specified" />}
                     />
 
                     <InfoField
@@ -193,7 +197,7 @@ export default function ItemReviewCard({
                 {item.description && (
                     <div className="mt-6 rounded-xl bg-[var(--surface-soft)] p-4">
                         <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                            Description
+                            <Text id="Description" />
                         </p>
 
                         <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
@@ -206,11 +210,11 @@ export default function ItemReviewCard({
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h3 className="text-sm font-semibold text-[var(--foreground)]">
-                                Private report image
+                                <Text id="Private report image" />
                             </h3>
 
                             <p className="mt-1 text-xs text-[var(--foreground-muted)]">
-                                Only authorized Staff can load this image for review.
+                                <Text id="Only authorized Staff can load this image for review." />
                             </p>
                         </div>
 
@@ -222,8 +226,8 @@ export default function ItemReviewCard({
                                 className="ui-button-secondary mt-3 w-full sm:mt-0 sm:w-auto"
                             >
                                 {imageLoading
-                                    ? "Loading..."
-                                    : "View report image"}
+                                    ? <Text id="Loading..." />
+                                    : <Text id="View report image" />}
                             </button>
                         )}
                     </div>
@@ -234,7 +238,7 @@ export default function ItemReviewCard({
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={imageUrl}
-                                alt={`${item.report_type.toLowerCase()} item`}
+                                alt={t("Private report image")}
                                 className="mx-auto max-h-[28rem] w-full rounded-lg object-contain"
                             />
                         </div>
@@ -246,7 +250,7 @@ export default function ItemReviewCard({
                         role="alert"
                         className="mt-5 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-3 text-sm leading-6 text-[var(--danger)]"
                     >
-                        {errorMessage}
+                        <AppMessage text={errorMessage} />
                     </div>
                 )}
 
@@ -259,7 +263,7 @@ export default function ItemReviewCard({
                         }
                         className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                        Reject
+                        <Text id="Reject" />
                     </button>
 
                     <button
@@ -271,8 +275,8 @@ export default function ItemReviewCard({
                         className="ui-button-primary w-full sm:w-auto"
                     >
                         {loading
-                            ? "Processing..."
-                            : "Publish report"}
+                            ? <Text id="Processing..." />
+                            : <Text id="Publish report" />}
                     </button>
                 </div>
             </div>
@@ -286,13 +290,13 @@ function InfoField({
     breakAll = false,
 }: {
     label: string;
-    value: string;
+    value: React.ReactNode;
     breakAll?: boolean;
 }) {
     return (
         <div className="min-w-0">
             <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-                {label}
+                <UiText text={label} />
             </p>
 
             <p

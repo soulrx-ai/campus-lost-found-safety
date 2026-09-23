@@ -1,9 +1,13 @@
 "use client";
 
+import { AppMessage, Text, UiText } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function FoundReportForm() {
+  const { t } = useLanguage();
     const supabase = createClient();
 
     const [name, setName] = useState("");
@@ -133,11 +137,11 @@ export default function FoundReportForm() {
         >
             <div className="border-b border-[var(--border)] bg-[var(--success-soft)] px-5 py-4 sm:px-6">
                 <p className="text-sm font-semibold text-[var(--success)]">
-                    Found Item Information
+                    <Text id="Found Item Information" />
                 </p>
 
                 <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    Fields marked with * are required.
+                    <Text id="Fields marked with * are required." />
                 </p>
             </div>
 
@@ -149,7 +153,7 @@ export default function FoundReportForm() {
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="e.g. AirPods"
+                            placeholder={t("e.g. AirPods")}
                             className="ui-input"
                         />
                     </Field>
@@ -161,14 +165,14 @@ export default function FoundReportForm() {
                             onChange={(e) => setCategory(e.target.value)}
                             className="ui-input"
                         >
-                            <option value="">Select category</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Wallet">Wallet</option>
-                            <option value="Bag">Bag</option>
-                            <option value="Document">Document</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Accessory">Accessory</option>
-                            <option value="Other">Other</option>
+                            <option value=""><Text id="Select category" /></option>
+                            <option value="Electronics"><Text id="Electronics" /></option>
+                            <option value="Wallet"><Text id="Wallet" /></option>
+                            <option value="Bag"><Text id="Bag" /></option>
+                            <option value="Document"><Text id="Document" /></option>
+                            <option value="Clothing"><Text id="Clothing" /></option>
+                            <option value="Accessory"><Text id="Accessory" /></option>
+                            <option value="Other"><Text id="Other" /></option>
                         </select>
                     </Field>
 
@@ -177,7 +181,7 @@ export default function FoundReportForm() {
                             type="text"
                             value={brand}
                             onChange={(e) => setBrand(e.target.value)}
-                            placeholder="e.g. Apple"
+                            placeholder={t("e.g. Apple")}
                             className="ui-input"
                         />
                     </Field>
@@ -187,7 +191,7 @@ export default function FoundReportForm() {
                             type="text"
                             value={color}
                             onChange={(e) => setColor(e.target.value)}
-                            placeholder="e.g. White"
+                            placeholder={t("e.g. White")}
                             className="ui-input"
                         />
                     </Field>
@@ -208,7 +212,7 @@ export default function FoundReportForm() {
                             type="text"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            placeholder="e.g. Thaiburi Building"
+                            placeholder={t("e.g. Thaiburi Building")}
                             className="ui-input"
                         />
                     </Field>
@@ -219,7 +223,7 @@ export default function FoundReportForm() {
                         rows={4}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Describe the found item"
+                        placeholder={t("Describe the found item")}
                         className="ui-input resize-y"
                     />
                 </Field>
@@ -229,7 +233,7 @@ export default function FoundReportForm() {
                         htmlFor="found-image"
                         className="mb-2 block text-sm font-semibold text-[var(--foreground)]"
                     >
-                        Item Image *
+                        <Text id="Item Image *" />
                     </label>
 
                     <input
@@ -244,8 +248,7 @@ export default function FoundReportForm() {
                     />
 
                     <p className="mt-3 text-xs leading-5 text-[var(--foreground-muted)]">
-                        JPG, PNG or WEBP · Maximum 5 MB. The image is kept
-                        private and is not displayed in public search.
+                        <Text id="JPG, PNG or WEBP · Maximum 5 MB. The image is kept private and is not displayed in public search." />
                     </p>
                 </div>
 
@@ -254,13 +257,13 @@ export default function FoundReportForm() {
                         role="status"
                         className="rounded-[var(--radius-md)] bg-[var(--primary-soft)] p-4 text-sm text-[var(--foreground)]"
                     >
-                        {message}
+                        <AppMessage text={message} />
                     </div>
                 )}
 
                 <div className="flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs leading-5 text-[var(--foreground-muted)]">
-                        Staff approval is required before this report is published.
+                        <Text id="Staff approval is required before this report is published." />
                     </p>
 
                     <button
@@ -269,8 +272,8 @@ export default function FoundReportForm() {
                         className="ui-button-primary w-full sm:w-auto"
                     >
                         {loading
-                            ? "Submitting..."
-                            : "Submit Found Report"}
+                            ? <Text id="Submitting..." />
+                            : <Text id="Submit Found Report" />}
                     </button>
                 </div>
             </div>
@@ -288,7 +291,7 @@ function Field({
     return (
         <div>
             <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
-                {label}
+                <UiText text={label} />
             </label>
             {children}
         </div>

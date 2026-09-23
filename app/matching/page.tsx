@@ -1,3 +1,4 @@
+import { DisplayValue, Text } from "@/components/i18n/Text";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/guards";
@@ -22,17 +23,15 @@ export default async function MatchingPage() {
                 <div className="mx-auto max-w-5xl">
                     <header className="mb-7">
                         <p className="page-eyebrow">
-                            Lost & Found
+                            <Text id="Lost & Found" />
                         </p>
 
                         <h1 className="page-title">
-                            Find Potential Matches
+                            <Text id="Find Potential Matches" />
                         </h1>
 
                         <p className="page-description">
-                            Select one of your published lost reports.
-                            The system will compare it with published
-                            found items.
+                            <Text id="Select one of your published lost reports. The system will compare it with published found items." />
                         </p>
                     </header>
 
@@ -40,24 +39,22 @@ export default async function MatchingPage() {
                         <div className="ui-card p-6 sm:p-8">
                             <div className="max-w-lg">
                                 <span className="inline-flex rounded-full bg-[var(--warning-soft)] px-3 py-1 text-xs font-semibold text-[var(--warning)]">
-                                    NO LOST REPORTS
+                                    <Text id="NO LOST REPORTS" />
                                 </span>
 
                                 <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
-                                    No published lost reports available
+                                    <Text id="No published lost reports available" />
                                 </h2>
 
                                 <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
-                                    Submit a lost item report first. Once Staff
-                                    approves it, you can use it to find potential
-                                    matches.
+                                    <Text id="Submit a lost item report first. Once Staff approves it, you can use it to find potential matches." />
                                 </p>
 
                                 <Link
                                     href="/lost/report"
                                     className="ui-button-primary mt-5"
                                 >
-                                    Report Lost Item
+                                    <Text id="Report Lost Item" />
                                 </Link>
                             </div>
                         </div>
@@ -65,12 +62,11 @@ export default async function MatchingPage() {
                         <>
                             <div className="mb-4 flex items-center justify-between">
                                 <p className="text-sm text-[var(--foreground-muted)]">
-                                    Your published lost reports
+                                    <Text id="Your published lost reports" />
                                 </p>
 
                                 <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-medium text-[var(--primary)]">
-                                    {lostItems.length} item
-                                    {lostItems.length === 1 ? "" : "s"}
+                                    <Text id={lostItems.length === 1 ? "{count} item" : "{count} items"} params={{ count: lostItems.length }} />
                                 </span>
                             </div>
 
@@ -82,7 +78,7 @@ export default async function MatchingPage() {
                                     >
                                         <div>
                                             <span className="inline-flex rounded-full bg-[var(--warning-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--warning)]">
-                                                LOST
+                                                <DisplayValue value="LOST" />
                                             </span>
 
                                             <h2 className="mt-3 text-lg font-semibold text-[var(--foreground)]">
@@ -92,15 +88,15 @@ export default async function MatchingPage() {
                                             <dl className="mt-4 space-y-2 text-sm text-[var(--foreground-muted)]">
                                                 <p>
                                                     <span className="font-medium text-[var(--foreground)]">
-                                                        Category:
+                                                        <Text id="Category:" />
                                                     </span>{" "}
-                                                    {item.category}
+                                                    <DisplayValue value={item.category} />
                                                 </p>
 
                                                 {item.brand && (
                                                     <p>
                                                         <span className="font-medium text-[var(--foreground)]">
-                                                            Brand:
+                                                            <Text id="Brand:" />
                                                         </span>{" "}
                                                         {item.brand}
                                                     </p>
@@ -109,7 +105,7 @@ export default async function MatchingPage() {
                                                 {item.color && (
                                                     <p>
                                                         <span className="font-medium text-[var(--foreground)]">
-                                                            Color:
+                                                            <Text id="Color:" />
                                                         </span>{" "}
                                                         {item.color}
                                                     </p>
@@ -117,7 +113,7 @@ export default async function MatchingPage() {
 
                                                 <p>
                                                     <span className="font-medium text-[var(--foreground)]">
-                                                        Location:
+                                                        <Text id="Location:" />
                                                     </span>{" "}
                                                     {item.location}
                                                 </p>
@@ -129,7 +125,7 @@ export default async function MatchingPage() {
                                                 href={`/matching/${item.id}`}
                                                 className="ui-button-primary w-full"
                                             >
-                                                Find Matches
+                                                <Text id="Find Matches" />
                                             </Link>
                                         </div>
                                     </article>

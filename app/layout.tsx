@@ -1,3 +1,4 @@
+import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import type { Metadata } from "next";
 import { Noto_Sans_Thai } from "next/font/google";
 import AppShell from "@/components/navigation/AppShell";
@@ -41,7 +42,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${notoSansThai.variable} antialiased`}>
-        <AppShell>{children}</AppShell>
+        <LanguageProvider>
+          <AppShell>{children}</AppShell>
+        </LanguageProvider>
       </body>
     </html>
   );

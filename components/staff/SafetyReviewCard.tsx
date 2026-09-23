@@ -1,5 +1,8 @@
 "use client";
 
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -33,6 +36,7 @@ export default function SafetyReviewCard({
   incident,
   staffId,
 }: Props) {
+  const { t } = useLanguage();
   const router = useRouter();
   const supabase = createClient();
 
@@ -113,7 +117,7 @@ export default function SafetyReviewCard({
       <div className="flex flex-col gap-4 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--danger)]">
-            Safety Incident
+            <Text id="Safety Incident" />
           </p>
 
           <h2 className="mt-1 break-words text-xl font-semibold text-[var(--foreground)]">
@@ -121,12 +125,12 @@ export default function SafetyReviewCard({
           </h2>
 
           <p className="mt-1 text-xs text-[var(--foreground-muted)]">
-            Submitted {formatDateTime(incident.created_at)}
+            <Text id="Submitted" /> {formatDateTime(incident.created_at)}
           </p>
         </div>
 
         <span className="inline-flex w-fit shrink-0 rounded-full bg-[var(--danger-soft)] px-3 py-1 text-xs font-semibold text-[var(--danger)]">
-          {incident.status.replaceAll("_", " ")}
+          <DisplayValue value={incident.status} />
         </span>
       </div>
 
@@ -146,7 +150,7 @@ export default function SafetyReviewCard({
 
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-            Description
+            <Text id="Description" />
           </p>
 
           <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
@@ -158,11 +162,11 @@ export default function SafetyReviewCard({
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-[var(--foreground)]">
-                Private incident image
+                <Text id="Private incident image" />
               </p>
 
               <p className="mt-1 text-xs text-[var(--foreground-muted)]">
-                Available to authorized Staff for incident review.
+                <Text id="Available to authorized Staff for incident review." />
               </p>
             </div>
 
@@ -174,8 +178,8 @@ export default function SafetyReviewCard({
                 className="ui-button-secondary mt-3 w-full sm:mt-0 sm:w-auto"
               >
                 {imageLoading
-                  ? "Loading..."
-                  : "View incident image"}
+                  ? <Text id="Loading..." />
+                  : <Text id="View incident image" />}
               </button>
             )}
           </div>
@@ -186,7 +190,7 @@ export default function SafetyReviewCard({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={imageUrl}
-                alt="Safety incident evidence"
+                alt={t("Safety incident evidence")}
                 className="mx-auto max-h-[28rem] w-full rounded-lg object-contain"
               />
             </div>
@@ -198,7 +202,7 @@ export default function SafetyReviewCard({
             role="alert"
             className="rounded-xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-3 text-sm leading-6 text-[var(--danger)]"
           >
-            {errorMessage}
+            <AppMessage text={errorMessage} />
           </div>
         )}
 
@@ -209,7 +213,7 @@ export default function SafetyReviewCard({
             onClick={() => reviewIncident("REJECTED")}
             className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
-            Reject
+            <Text id="Reject" />
           </button>
 
           <button
@@ -218,7 +222,7 @@ export default function SafetyReviewCard({
             onClick={() => reviewIncident("PUBLISHED")}
             className="ui-button-primary w-full sm:w-auto"
           >
-            {loading ? "Processing..." : "Publish incident"}
+            {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
           </button>
         </div>
       </div>
@@ -238,7 +242,7 @@ function InfoField({
   return (
     <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
-        {label}
+        <UiText text={label} />
       </p>
 
       <p

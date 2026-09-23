@@ -1,3 +1,4 @@
+import { Text } from "@/components/i18n/Text";
 import ClaimForm from "@/components/claims/ClaimForm";
 
 type Props = {
@@ -16,13 +17,12 @@ export default async function NewClaimPage({
       <div className="app-container">
         <div className="mx-auto max-w-3xl">
           <header className="mb-7">
-            <p className="page-eyebrow">Lost &amp; Found</p>
+            <p className="page-eyebrow"><Text id="Lost & Found" /></p>
 
-            <h1 className="page-title">Submit a claim</h1>
+            <h1 className="page-title"><Text id="Submit a claim" /></h1>
 
             <p className="page-description">
-              Explain why you believe the found item belongs to you. Staff
-              will review your claim before any handover can take place.
+              <Text id="Explain why you believe the found item belongs to you. Staff will review your claim before any handover can take place." />
             </p>
           </header>
 

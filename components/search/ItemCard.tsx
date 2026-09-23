@@ -1,3 +1,4 @@
+import { DisplayValue, Text, UiText } from "@/components/i18n/Text";
 type ItemCardProps = {
     item: {
         id: string;
@@ -26,7 +27,7 @@ export default function ItemCard({
                                 : "bg-[var(--success-soft)] text-[var(--success)]"
                             }`}
                     >
-                        {item.report_type}
+                        <DisplayValue value={item.report_type} />
                     </span>
 
                     <h2 className="mt-3 break-words text-lg font-semibold text-[var(--foreground)]">
@@ -35,7 +36,7 @@ export default function ItemCard({
                 </div>
 
                 <span className="shrink-0 rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-medium text-[var(--primary)]">
-                    {item.category}
+                    <DisplayValue value={item.category} />
                 </span>
             </div>
 
@@ -63,8 +64,7 @@ export default function ItemCard({
 
             <div className="mt-5 border-t border-[var(--border)] pt-4">
                 <p className="text-xs leading-5 text-[var(--foreground-muted)]">
-                    Item images and ownership verification details are
-                    hidden to protect the claim process.
+                    <Text id="Item images and ownership verification details are hidden to protect the claim process." />
                 </p>
             </div>
         </article>
@@ -81,7 +81,7 @@ function Detail({
     return (
         <div className="grid grid-cols-[5rem_1fr] gap-2">
             <dt className="font-medium text-[var(--foreground)]">
-                {label}
+                <UiText text={label} />
             </dt>
 
             <dd className="break-words text-[var(--foreground-muted)]">

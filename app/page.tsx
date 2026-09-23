@@ -1,3 +1,4 @@
+import { DisplayValue, Text, UiText } from "@/components/i18n/Text";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
@@ -158,21 +159,20 @@ export default async function Home() {
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--success)]">
-                  Campus Services
+                  <Text id="Campus Services" />
                 </p>
 
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--success)] [overflow-wrap:anywhere] sm:text-4xl">
-                  Welcome, {profile.full_name}
+                  <Text id="Welcome," /> {profile.full_name}
                 </h1>
 
                 <p className="mt-2 max-w-2xl [overflow-wrap:anywhere] text-sm leading-6 text-[var(--foreground-muted)] sm:text-base">
-                  Search for lost items, follow your reports and
-                  stay informed about campus safety.
+                  <Text id="Search for lost items, follow your reports and stay informed about campus safety." />
                 </p>
               </div>
 
               <span className="w-fit shrink-0 rounded-full border border-[var(--success)]/25 bg-[var(--success)]/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--success)]">
-                {profile.role}
+                <DisplayValue value={profile.role} />
               </span>
             </div>
           </section>
@@ -192,17 +192,17 @@ export default async function Home() {
 
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--danger)]">
-                        Safety Update
+                        <Text id="Safety Update" />
                       </p>
                       <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">
-                        Latest published campus incident
+                        <Text id="Latest published campus incident" />
                       </p>
                     </div>
                   </div>
 
                   {latestIncident && (
                     <span className="inline-flex shrink-0 rounded-full border border-[var(--danger)]/20 bg-[var(--surface)]/70 px-3 py-1 text-[11px] font-semibold text-[var(--danger)]">
-                      PUBLISHED
+                      <DisplayValue value="PUBLISHED" />
                     </span>
                   )}
                 </div>
@@ -240,7 +240,7 @@ export default async function Home() {
                         href="/safety"
                         className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger-solid)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
                       >
-                        View safety details
+                        <Text id="View safety details" />
                         <span className="ml-2" aria-hidden="true">
                           →
                         </span>
@@ -251,12 +251,11 @@ export default async function Home() {
                   <div className="flex min-w-0 flex-col gap-5 lg:flex-1">
                     <div>
                       <h2 className="text-xl font-bold text-[var(--foreground)]">
-                        No active safety incidents
+                        <Text id="No active safety incidents" />
                       </h2>
 
                       <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
-                        There are currently no published safety
-                        incidents.
+                        <Text id="There are currently no published safety incidents." />
                       </p>
                     </div>
 
@@ -264,7 +263,7 @@ export default async function Home() {
                       href="/safety"
                       className="ui-button-secondary w-fit lg:mt-auto"
                     >
-                      View Safety
+                      <Text id="View Safety" />
                     </Link>
                   </div>
                 )}
@@ -274,10 +273,10 @@ export default async function Home() {
             <div className="ui-card p-5 sm:p-6">
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
-                  Quick Actions
+                  <Text id="Quick Actions" />
                 </p>
                 <h2 className="mt-1 text-xl font-bold text-[var(--foreground)]">
-                  What do you need?
+                  <Text id="What do you need?" />
                 </h2>
               </div>
 
@@ -374,22 +373,21 @@ export default async function Home() {
 
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/75">
-                      Campus Safety
+                      <Text id="Campus Safety" />
                     </p>
 
                     <h2 className="mt-1 text-xl font-bold">
-                      Report a Safety Incident
+                      <Text id="Report a Safety Incident" />
                     </h2>
 
                     <p className="mt-1 max-w-2xl text-sm leading-6 text-white/80">
-                      Report an accident, hazard or safety concern
-                      for Staff review.
+                      <Text id="Report an accident, hazard or safety concern for Staff review." />
                     </p>
                   </div>
                 </div>
 
                 <span className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--surface)] px-5 py-2.5 text-sm font-semibold text-[var(--danger)]">
-                  Report Incident →
+                  <Text id="Report Incident →" />
                 </span>
               </div>
             </Link>
@@ -406,7 +404,7 @@ export default async function Home() {
 
               {activities.length > 0 && (
                 <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-semibold text-[var(--primary)]">
-                  Latest {activities.length}
+                  <Text id="Latest" /> {activities.length}
                 </span>
               )}
             </div>
@@ -421,12 +419,11 @@ export default async function Home() {
 
                     <div>
                       <h3 className="font-semibold text-[var(--foreground)]">
-                        No activity yet
+                        <Text id="No activity yet" />
                       </h3>
 
                       <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
-                        Your reports, claims and service tickets
-                        will appear here after you submit them.
+                        <Text id="Your reports, claims and service tickets will appear here after you submit them." />
                       </p>
                     </div>
                   </div>
@@ -492,18 +489,18 @@ export default async function Home() {
               >
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--success)]">
-                    Staff
+                    <Text id="Staff" />
                   </p>
                   <h2 className="mt-1 text-lg font-bold text-[var(--foreground)]">
-                    Staff Operations
+                    <Text id="Staff Operations" />
                   </h2>
                   <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    Review claims and manage item handovers.
+                    <Text id="Review claims and manage item handovers." />
                   </p>
                 </div>
 
                 <span className="font-semibold text-[var(--primary)]">
-                  Open workspace →
+                  <Text id="Open workspace →" />
                 </span>
               </Link>
             </section>
@@ -517,18 +514,18 @@ export default async function Home() {
               >
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--info)]">
-                    Admin
+                    <Text id="Admin" />
                   </p>
                   <h2 className="mt-1 text-lg font-bold text-[var(--foreground)]">
-                    Admin Dashboard
+                    <Text id="Admin Dashboard" />
                   </h2>
                   <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    Manage users, notifications and system activity.
+                    <Text id="Manage users, notifications and system activity." />
                   </p>
                 </div>
 
                 <span className="font-semibold text-[var(--primary)]">
-                  Open dashboard →
+                  <Text id="Open dashboard →" />
                 </span>
               </Link>
             </section>
@@ -551,13 +548,13 @@ function SectionHeading({
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--success)]">
-        {eyebrow}
+        <UiText text={eyebrow} />
       </p>
       <h2 className="mt-1 text-xl font-bold text-[var(--success)] sm:text-2xl">
-        {title}
+        <UiText text={title} />
       </h2>
       <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--foreground-muted)]">
-        {description}
+        <UiText text={description} />
       </p>
     </div>
   );
@@ -600,10 +597,10 @@ function QuickAction({
 
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold text-[var(--foreground)]">
-          {title}
+          <UiText text={title} />
         </span>
         <span className="mt-0.5 block text-xs text-[var(--foreground-muted)]">
-          {description}
+          <UiText text={description} />
         </span>
       </span>
 
@@ -675,22 +672,22 @@ function MenuCard({
         </span>
 
         <span className="rounded-full bg-[var(--surface)]/70 px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] text-[var(--foreground-muted)]">
-          {label}
+          <UiText text={label} />
         </span>
       </div>
 
       <div className="mt-6">
         <h3 className="text-lg font-bold text-[var(--foreground)]">
-          {title}
+          <UiText text={title} />
         </h3>
 
         <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
-          {description}
+          <UiText text={description} />
         </p>
       </div>
 
       <span className="mt-auto pt-5 text-sm font-semibold text-[var(--primary)]">
-        Open
+        <Text id="Open" />
         <span
           aria-hidden="true"
           className="ml-2 inline-block transition group-hover:translate-x-1"
@@ -719,7 +716,7 @@ function ActivityRow({
 
       <div className="min-w-0">
         <p className="truncate font-medium text-[var(--foreground)]">
-          {activity.title}
+          {activity.type === "CLAIM" ? <><Text id="Claim #" />{activity.title.slice(7)}</> : activity.title}
         </p>
 
         <p className="mt-1 text-xs text-[var(--foreground-muted)]">
@@ -761,7 +758,7 @@ function ActivityTypeBadge({
     <span
       className={`w-fit rounded-full px-2.5 py-1 text-[11px] font-semibold ${classes}`}
     >
-      {activity.label}
+      <UiText text={activity.label} />
     </span>
   );
 }
@@ -798,13 +795,9 @@ function StatusBadge({ status }: { status: string }) {
     <span
       className={`w-fit whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold ${classes}`}
     >
-      {formatStatus(status)}
+      <DisplayValue value={status} />
     </span>
   );
-}
-
-function formatStatus(status: string) {
-  return status.replaceAll("_", " ");
 }
 
 function MenuIcon({ name }: { name: MenuIcon | "safety" }) {

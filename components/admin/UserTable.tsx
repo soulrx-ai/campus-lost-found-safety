@@ -1,5 +1,8 @@
 "use client";
 
+import { DisplayValue, useLanguage } from "@/components/i18n/LanguageProvider";
+import { AppMessage, Text } from "@/components/i18n/Text";
+
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -23,6 +26,7 @@ function formatDate(value: string) {
 }
 
 export default function UserTable() {
+  const { t } = useLanguage();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -203,7 +207,7 @@ export default function UserTable() {
     return (
       <div className="ui-card p-6">
         <p className="text-sm text-[var(--foreground-muted)]">
-          Loading users...
+          <Text id="Loading users..." />
         </p>
       </div>
     );
@@ -216,7 +220,7 @@ export default function UserTable() {
           role="status"
           className="ui-card mb-4 p-4 text-sm text-[var(--foreground)]"
         >
-          {message}
+          <AppMessage text={message} />
         </div>
       )}
 
@@ -225,16 +229,16 @@ export default function UserTable() {
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="font-semibold text-[var(--foreground)]">
-                Registered users
+                <Text id="Registered users" />
               </h2>
 
               <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                {users.length} user{users.length === 1 ? "" : "s"}
+                <Text id={users.length === 1 ? "{count} user" : "{count} users"} params={{ count: users.length }} />
               </p>
             </div>
 
             <p className="text-xs text-[var(--foreground-muted)]">
-              Changes are saved immediately
+              <Text id="Changes are saved immediately" />
             </p>
           </div>
         </div>
@@ -243,11 +247,11 @@ export default function UserTable() {
           <table className="min-w-[760px] w-full text-left text-sm">
             <thead className="border-b border-[var(--border)] bg-[var(--surface-soft)]">
               <tr className="text-xs uppercase tracking-wide text-[var(--foreground-muted)]">
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Email</th>
-                <th className="px-4 py-3 font-medium">Phone</th>
-                <th className="px-4 py-3 font-medium">Role</th>
-                <th className="px-4 py-3 font-medium">Created</th>
+                <th className="px-4 py-3 font-medium"><Text id="Name" /></th>
+                <th className="px-4 py-3 font-medium"><Text id="Email" /></th>
+                <th className="px-4 py-3 font-medium"><Text id="Phone" /></th>
+                <th className="px-4 py-3 font-medium"><Text id="Role" /></th>
+                <th className="px-4 py-3 font-medium"><Text id="Created" /></th>
               </tr>
             </thead>
 
@@ -271,7 +275,7 @@ export default function UserTable() {
 
                   <td className="px-4 py-4">
                     <select
-                      aria-label={`Role for ${user.full_name}`}
+                      aria-label={t("Change role for {name}", { name: user.full_name })}
                       value={user.role}
                       disabled={updatingUserId === user.id}
                       onChange={(event) =>
@@ -279,9 +283,9 @@ export default function UserTable() {
                       }
                       className="ui-input min-h-9 min-w-28 py-1.5 text-sm disabled:opacity-50"
                     >
-                      <option value="USER">USER</option>
-                      <option value="STAFF">STAFF</option>
-                      <option value="ADMIN">ADMIN</option>
+                      <option value="USER"><DisplayValue value="USER" /></option>
+                      <option value="STAFF"><DisplayValue value="STAFF" /></option>
+                      <option value="ADMIN"><DisplayValue value="ADMIN" /></option>
                     </select>
                   </td>
 
@@ -296,9 +300,7 @@ export default function UserTable() {
                           type="button"
                           role="switch"
                           aria-checked={user.status === "ACTIVE"}
-                          aria-label={`Set ${user.full_name} ${
-                            user.status === "ACTIVE" ? "inactive" : "active"
-                          }`}
+                          aria-label={t(user.status === "ACTIVE" ? "Deactivate {name}" : "Activate {name}", { name: user.full_name })}
                           disabled={updatingUserId === user.id}
                           onClick={() =>
                             updateStatus(
@@ -323,7 +325,7 @@ export default function UserTable() {
 
                         <button
                           type="button"
-                          aria-label={`Delete ${user.full_name}`}
+                          aria-label={t("Delete {name}", { name: user.full_name })}
                           onClick={() => openDeleteModal(user)}
                           className="rounded-md p-1.5 text-[var(--foreground-muted)] transition hover:bg-red-50 hover:text-red-600"
                         >
@@ -341,7 +343,7 @@ export default function UserTable() {
                     colSpan={5}
                     className="px-4 py-10 text-center text-[var(--foreground-muted)]"
                   >
-                    No users found.
+                    <Text id="No users found." />
                   </td>
                 </tr>
               )}
@@ -362,11 +364,11 @@ export default function UserTable() {
               id="delete-user-title"
               className="text-lg font-semibold text-[var(--foreground)]"
             >
-              Delete account?
+              <Text id="Delete account?" />
             </h2>
 
             <p className="mt-2 text-sm text-[var(--foreground-muted)]">
-              Are you sure you want to delete this account?
+              <Text id="Are you sure you want to delete this account?" />
             </p>
 
             <p className="mt-3 text-sm font-medium text-[var(--foreground)]">
@@ -383,7 +385,7 @@ export default function UserTable() {
                   className="mt-0.5 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
                 />
 
-                <span>I understand that this action cannot be undone.</span>
+                <span><Text id="I understand that this action cannot be undone." /></span>
               </label>
 
               <div className="flex shrink-0 gap-2">
@@ -393,7 +395,7 @@ export default function UserTable() {
                   disabled={deleting}
                   className="ui-button-secondary disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Cancel
+                  <Text id="Cancel" />
                 </button>
 
                 <button
@@ -402,7 +404,7 @@ export default function UserTable() {
                   onClick={confirmDeleteUser}
                   className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-[var(--border-strong)] dark:disabled:text-[var(--foreground-muted)]"
                 >
-                  {deleting ? "Deleting..." : "Delete"}
+                  {deleting ? <Text id="Deleting..." /> : <Text id="Delete" />}
                 </button>
               </div>
             </div>
@@ -422,11 +424,11 @@ export default function UserTable() {
               id="delete-success-title"
               className="text-lg font-semibold text-[var(--foreground)]"
             >
-              Account deleted successfully
+              <Text id="Account deleted successfully" />
             </h2>
 
             <p className="mt-2 text-sm text-[var(--foreground-muted)]">
-              The user account has been deleted successfully.
+              <Text id="The user account has been deleted successfully." />
             </p>
 
             <button
@@ -434,7 +436,7 @@ export default function UserTable() {
               onClick={() => setDeleteSuccess(false)}
               className="ui-button-primary mt-6"
             >
-              OK
+              <Text id="OK" />
             </button>
           </div>
         </div>
@@ -452,11 +454,11 @@ export default function UserTable() {
               id="delete-warning-title"
               className="text-lg font-semibold text-[var(--foreground)]"
             >
-              Cannot delete this account
+              <Text id="Cannot delete this account" />
             </h2>
 
             <p className="mt-2 text-sm text-[var(--foreground-muted)]">
-              {deleteWarning}
+              <AppMessage text={deleteWarning} />
             </p>
 
             <button
@@ -464,7 +466,7 @@ export default function UserTable() {
               onClick={() => setDeleteWarning("")}
               className="ui-button-primary mt-6"
             >
-              OK
+              <Text id="OK" />
             </button>
           </div>
         </div>

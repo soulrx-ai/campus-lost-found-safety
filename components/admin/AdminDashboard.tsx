@@ -1,5 +1,7 @@
 "use client";
 
+import { AppMessage, Text, UiText } from "@/components/i18n/Text";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -84,7 +86,7 @@ export default function AdminDashboard() {
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-[var(--primary)]" />
 
           <p className="text-sm text-[var(--foreground-muted)]">
-            Loading dashboard...
+            <Text id="Loading dashboard..." />
           </p>
         </div>
       </div>
@@ -130,7 +132,7 @@ export default function AdminDashboard() {
           role="alert"
           className="mb-5 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger-soft)] p-4 text-sm text-[var(--danger)]"
         >
-          {message}
+          <AppMessage text={message} />
         </div>
       )}
 
@@ -138,16 +140,16 @@ export default function AdminDashboard() {
         <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-[var(--foreground)]">
-              System overview
+              <Text id="System overview" />
             </h2>
 
             <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-              Current record counts available to the Admin role.
+              <Text id="Current record counts available to the Admin role." />
             </p>
           </div>
 
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
-            Live records
+            <Text id="Live records" />
           </p>
         </div>
 
@@ -160,7 +162,7 @@ export default function AdminDashboard() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium text-[var(--foreground-muted)]">
-                    {card.label}
+                    <UiText text={card.label} />
                   </p>
 
                   <p className="mt-3 text-3xl font-bold tracking-tight text-[var(--foreground)]">
@@ -185,15 +187,15 @@ export default function AdminDashboard() {
       <section className="mt-10">
         <div className="mb-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--foreground-muted)]">
-            Quick access
+            <Text id="Quick access" />
           </p>
 
           <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)]">
-            Administration tools
+            <Text id="Administration tools" />
           </h2>
 
           <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-            Manage system-level records and administrative workflows.
+            <Text id="Manage system-level records and administrative workflows." />
           </p>
         </div>
 
@@ -206,7 +208,7 @@ export default function AdminDashboard() {
             >
               <div className="flex items-center justify-between gap-4">
                 <h3 className="font-semibold text-[var(--foreground)]">
-                  {tool.title}
+                  <UiText text={tool.title} />
                 </h3>
 
                 <span
@@ -218,7 +220,7 @@ export default function AdminDashboard() {
               </div>
 
               <p className="mt-3 text-sm leading-6 text-[var(--foreground-muted)]">
-                {tool.description}
+                <UiText text={tool.description} />
               </p>
             </Link>
           ))}

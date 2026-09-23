@@ -1,5 +1,9 @@
 "use client";
 
+import AuthPreferences from "@/components/i18n/AuthPreferences";
+import { AppMessage, Text } from "@/components/i18n/Text";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const supabase = createClient();
 
@@ -103,44 +108,47 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f1e9] px-4 py-6 sm:px-6 lg:flex lg:items-center lg:justify-center lg:p-10">
-      <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-[#d9d5c9] bg-[#fffdfa] shadow-[0_24px_70px_rgba(41,62,55,0.16)] lg:min-h-[650px] lg:grid-cols-[0.9fr_1.1fr]">
+    <main className="min-h-screen bg-[var(--background)] px-4 py-6 sm:px-6 lg:flex lg:items-center lg:justify-center lg:p-10">
+      <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_70px_rgba(41,62,55,0.16)] lg:min-h-[650px] lg:grid-cols-[0.9fr_1.1fr]">
         <div className="order-2 px-6 py-9 sm:px-10 lg:order-1 lg:flex lg:items-center lg:px-14">
           <div className="w-full">
+            <div className="mb-4">
+              <AuthPreferences />
+            </div>
             <div className="mb-8 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d9ebe4] text-lg font-bold text-[#187f7a]">
                 ✦
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#187f7a]">
-                  Lost &amp; Found
+                  <Text id="Lost & Found" />
                 </p>
-                <p className="text-sm font-semibold text-[#263a36]">
-                  Safety System
+                <p className="text-sm font-semibold text-[var(--foreground)]">
+                  <Text id="Safety System" />
                 </p>
               </div>
             </div>
 
             <div className="mb-7">
-              <p className="text-sm font-medium text-[#187f7a]">Welcome back</p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#263a36] sm:text-4xl">
-                Sign in to your account
+              <p className="text-sm font-medium text-[#187f7a]"><Text id="Welcome back" /></p>
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
+                <Text id="Sign in to your account" />
               </h1>
-              <p className="mt-3 text-sm leading-6 text-[#68756f]">
-                Access campus lost &amp; found and safety services in one place.
+              <p className="mt-3 text-sm leading-6 text-[var(--foreground-muted)]">
+                <Text id="Access campus lost & found and safety services in one place." />
               </p>
             </div>
 
             {errorMessage && (
               <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {errorMessage}
+                <AppMessage text={errorMessage} />
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[#354640]">
-                  Email address
+                <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[var(--foreground)]">
+                  <Text id="Email address" />
                 </label>
                 <input
                   id="email"
@@ -149,18 +157,18 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full rounded-xl border border-[#cfd6d0] bg-white px-4 py-3 text-sm text-[#263a36] outline-none transition placeholder:text-[#9aa39f] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
-                  placeholder="you@example.com"
+                  className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--placeholder)] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
+                  placeholder={t("you@example.com")}
                 />
               </div>
 
               <div>
                 <div className="mb-2 flex items-center justify-between gap-4">
-                  <label htmlFor="password" className="text-sm font-semibold text-[#354640]">
-                    Password
+                  <label htmlFor="password" className="text-sm font-semibold text-[var(--foreground)]">
+                    <Text id="Password" />
                   </label>
                   <Link href="/forgot-password" className="text-xs font-semibold text-[#187f7a] hover:text-[#106661] hover:underline">
-                    Forgot password?
+                    <Text id="Forgot password?" />
                   </Link>
                 </div>
                 <input
@@ -170,32 +178,32 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="w-full rounded-xl border border-[#cfd6d0] bg-white px-4 py-3 text-sm text-[#263a36] outline-none transition placeholder:text-[#9aa39f] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
-                  placeholder="Enter your password"
+                  className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--placeholder)] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
+                  placeholder={t("Enter your password")}
                 />
               </div>
 
-              <label htmlFor="rememberMe" className="flex w-fit cursor-pointer items-center gap-2 text-sm text-[#5f6d67]">
+              <label htmlFor="rememberMe" className="flex w-fit cursor-pointer items-center gap-2 text-sm text-[var(--foreground-muted)]">
                 <input
                   id="rememberMe"
                   name="rememberMe"
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(event) => setRememberMe(event.target.checked)}
-                  className="h-4 w-4 rounded border-[#b8c4be] accent-[#187f7a]"
+                  className="h-4 w-4 rounded border-[var(--border-strong)] accent-[#187f7a]"
                 />
-                Remember me
+                <Text id="Remember me" />
               </label>
 
               <button type="submit" disabled={loading} className="w-full rounded-xl bg-[#187f7a] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#106661] focus:outline-none focus:ring-4 focus:ring-[#b9ddd5] disabled:cursor-not-allowed disabled:opacity-60">
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? <Text id="Signing in..." /> : <Text id="Sign in" />}
               </button>
             </form>
 
-            <p className="mt-7 text-center text-sm text-[#68756f]">
-              Don&apos;t have an account?{" "}
+            <p className="mt-7 text-center text-sm text-[var(--foreground-muted)]">
+              <Text id="Don't have an account?" />{" "}
               <Link href="/register" className="font-semibold text-[#187f7a] hover:underline">
-                Create an account
+                <Text id="Create an account" />
               </Link>
             </p>
           </div>

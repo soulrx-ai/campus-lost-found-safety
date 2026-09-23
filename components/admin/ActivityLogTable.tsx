@@ -1,5 +1,7 @@
 "use client";
 
+import { AppMessage, DisplayValue, Text } from "@/components/i18n/Text";
+
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -106,7 +108,7 @@ export default function ActivityLogTable() {
     return (
       <div className="ui-card p-6">
         <p className="text-sm text-[var(--foreground-muted)]">
-          Loading activity logs...
+          <Text id="Loading activity logs..." />
         </p>
       </div>
     );
@@ -119,18 +121,18 @@ export default function ActivityLogTable() {
           role="alert"
           className="ui-card mb-4 p-4 text-sm text-[var(--foreground)]"
         >
-          {message}
+          <AppMessage text={message} />
         </div>
       )}
 
       <div className="ui-card overflow-hidden">
         <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4">
           <h2 className="font-semibold text-[var(--foreground)]">
-            Recent activity
+            <Text id="Recent activity" />
           </h2>
 
           <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-            Showing up to 100 most recent records.
+            <Text id="Showing up to 100 most recent records." />
           </p>
         </div>
 
@@ -138,15 +140,15 @@ export default function ActivityLogTable() {
           <table className="min-w-[800px] w-full text-left text-sm">
             <thead className="border-b border-[var(--border)] bg-[var(--surface-soft)]">
               <tr className="text-xs uppercase tracking-wide text-[var(--foreground-muted)]">
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Action</th>
+                <th className="px-4 py-3 font-medium"><Text id="Name" /></th>
+                <th className="px-4 py-3 font-medium"><Text id="Action" /></th>
                 <th className="px-4 py-3 font-medium">
-                  Entity Type
+                  <Text id="Entity Type" />
                 </th>
                 <th className="px-4 py-3 font-medium">
-                  Entity ID
+                  <Text id="Entity ID" />
                 </th>
-                <th className="px-4 py-3 font-medium">Time</th>
+                <th className="px-4 py-3 font-medium"><Text id="Time" /></th>
               </tr>
             </thead>
 
@@ -160,16 +162,16 @@ export default function ActivityLogTable() {
                     {log.actor_id
                       ? profiles[log.actor_id]
                           ?.full_name ||
-                        "Unknown User"
-                      : "System"}
+                        <Text id="Unknown User" />
+                      : <Text id="System" />}
                   </td>
 
                   <td className="px-4 py-4 text-[var(--foreground)]">
-                    {log.action}
+                    <DisplayValue value={log.action} />
                   </td>
 
                   <td className="px-4 py-4 text-[var(--foreground-muted)]">
-                    {log.entity_type}
+                    <DisplayValue value={log.entity_type} />
                   </td>
 
                   <td className="px-4 py-4 font-mono text-xs text-[var(--foreground-muted)]">
@@ -190,7 +192,7 @@ export default function ActivityLogTable() {
                     colSpan={5}
                     className="px-4 py-10 text-center text-[var(--foreground-muted)]"
                   >
-                    No activity logs found.
+                    <Text id="No activity logs found." />
                   </td>
                 </tr>
               )}
