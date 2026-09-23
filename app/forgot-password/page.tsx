@@ -73,10 +73,10 @@ function ForgotPasswordContent() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#187f7a]">
-                  Campus Care
+                  Lost &amp; Found
                 </p>
                 <p className="text-sm font-semibold text-[#263a36]">
-                  Lost &amp; Found Safety
+                  Safety System
                 </p>
               </div>
             </div>
