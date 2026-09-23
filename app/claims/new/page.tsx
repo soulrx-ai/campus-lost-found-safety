@@ -12,21 +12,20 @@ export default async function NewClaimPage({
   const params = await searchParams;
 
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-10">
-      <div className="mx-auto max-w-2xl">
-        <p className="text-sm font-medium text-stone-500">
-          Lost & Found
-        </p>
+    <main className="page-shell">
+      <div className="app-container">
+        <div className="mx-auto max-w-3xl">
+          <header className="mb-7">
+            <p className="page-eyebrow">Lost &amp; Found</p>
 
-        <h1 className="mt-1 text-3xl font-bold text-stone-900">
-          Submit Claim
-        </h1>
+            <h1 className="page-title">Submit a claim</h1>
 
-        <p className="mt-2 text-stone-600">
-          Explain why you believe this item belongs to you.
-        </p>
+            <p className="page-description">
+              Explain why you believe the found item belongs to you. Staff
+              will review your claim before any handover can take place.
+            </p>
+          </header>
 
-        <div className="mt-6">
           <ClaimForm initialItemId={params.item ?? ""} />
         </div>
       </div>

@@ -13,6 +13,31 @@ type Claim = {
   handover_at: string | null;
 };
 
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Bangkok",
+  }).format(new Date(value));
+}
+
+function statusClass(status: string) {
+  switch (status) {
+    case "APPROVED":
+    case "COMPLETED":
+      return "bg-[var(--success-soft)] text-[var(--success)]";
+
+    case "REJECTED":
+      return "bg-[var(--danger-soft)] text-[var(--danger)]";
+
+    case "PENDING_REVIEW":
+      return "bg-[var(--warning-soft)] text-[var(--warning)]";
+
+    default:
+      return "bg-[var(--surface-soft)] text-[var(--foreground-muted)]";
+  }
+}
+
 export default function MyClaims() {
   const supabase = createClient();
 
@@ -53,60 +78,113 @@ export default function MyClaims() {
   }, [supabase]);
 
   if (loading) {
-    return <p>Loading claims...</p>;
+    return (
+      <div className="ui-card p-6">
+        <div className="flex items-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-[var(--primary)]" />
+
+          <p className="text-sm text-[var(--foreground-muted)]">
+            Loading claims...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       {message && (
-        <div className="rounded-lg bg-white p-4 text-sm">
+        <div className="ui-card p-5 text-sm text-[var(--foreground)]">
           {message}
         </div>
       )}
 
       {!message && claims.length === 0 && (
-        <div className="rounded-lg bg-white p-4">
-          You have not submitted any claims.
+        <div className="ui-card p-6 sm:p-8">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+            No claims yet
+          </h2>
+
+          <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
+            You have not submitted any ownership claims.
+          </p>
         </div>
       )}
 
       {claims.map((claim) => (
         <article
           key={claim.id}
-          className="rounded-2xl bg-white p-5 shadow-sm"
+          className="ui-card overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="font-semibold">
-              Claim #{claim.id.slice(0, 8)}
-            </h2>
+          <div className="flex flex-col gap-3 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
+            <div className="min-w-0">
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                Claim
+              </p>
 
-            <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium">
-              {claim.status}
+              <h2 className="mt-1 font-semibold text-[var(--foreground)]">
+                #{claim.id.slice(0, 8)}
+              </h2>
+
+              <p className="mt-1 text-xs text-[var(--foreground-muted)]">
+                Submitted {formatDateTime(claim.created_at)}
+              </p>
+            </div>
+
+            <span
+              className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold ${statusClass(
+                claim.status
+              )}`}
+            >
+              {claim.status.replaceAll("_", " ")}
             </span>
           </div>
 
-          <p className="mt-3 text-sm text-stone-700">
-            {claim.claim_reason}
-          </p>
+          <div className="space-y-5 p-5 sm:p-6">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                Item ID
+              </p>
 
-          {claim.staff_note && (
-            <p className="mt-3 text-sm">
-              <strong>Staff note:</strong>{" "}
-              {claim.staff_note}
-            </p>
-          )}
+              <p className="mt-1 break-all text-sm text-[var(--foreground)]">
+                {claim.item_id}
+              </p>
+            </div>
 
-          {claim.handover_at && (
-            <p className="mt-2 text-sm">
-              <strong>Handover:</strong>{" "}
-              {new Date(claim.handover_at).toLocaleString()}
-            </p>
-          )}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                Your claim reason
+              </p>
 
-          <p className="mt-3 text-xs text-stone-500">
-            Submitted{" "}
-            {new Date(claim.created_at).toLocaleString()}
-          </p>
+              <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
+                {claim.claim_reason}
+              </p>
+            </div>
+
+            {claim.staff_note && (
+              <div className="rounded-xl bg-[var(--surface-soft)] p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                  Staff note
+                </p>
+
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
+                  {claim.staff_note}
+                </p>
+              </div>
+            )}
+
+            {claim.handover_at && (
+              <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4">
+                <p className="text-sm font-semibold text-[var(--success)]">
+                  Handover completed
+                </p>
+
+                <p className="mt-1 text-sm text-[var(--success)]">
+                  {formatDateTime(claim.handover_at)}
+                </p>
+              </div>
+            )}
+          </div>
         </article>
       ))}
     </div>
