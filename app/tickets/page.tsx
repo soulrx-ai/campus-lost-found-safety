@@ -7,7 +7,6 @@ export default function TicketsPage() {
       <div className="app-container">
         <div className="mx-auto max-w-4xl">
           <header className="mb-7">
-    
             <h1 className="page-title">My Service Tickets</h1>
 
             <div className="flex items-center justify-between gap-4">
