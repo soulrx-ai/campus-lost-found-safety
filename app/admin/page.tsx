@@ -2,23 +2,23 @@ import AdminDashboard from "@/components/admin/AdminDashboard";
 
 export default function AdminPage() {
   return (
-    <main className="page-shell">
-      <div className="app-container">
-        <div className="mx-auto max-w-6xl">
-          <header className="mb-7">
-            <p className="page-eyebrow">Administration</p>
+    <div className="space-y-8">
+      <header>
+        <p className="page-eyebrow">Administration</p>
 
+        <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
             <h1 className="page-title">Admin Dashboard</h1>
 
             <p className="page-description">
-              Monitor system-level information and access administrative
-              tools for users, notifications, and activity logs.
+              Overview of users, lost and found records, safety incidents, and
+              service tickets across the campus system.
             </p>
-          </header>
-
-          <AdminDashboard />
+          </div>
         </div>
-      </div>
-    </main>
+      </header>
+
+      <AdminDashboard />
+    </div>
   );
 }
