@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { calculateMatch, MatchableItem } from "@/lib/matching/calculateMatch";
+import {
+    calculateMatch,
+    MatchableItem,
+} from "@/lib/matching/calculateMatch";
 
 type Item = MatchableItem & {
     id: string;
@@ -20,7 +23,10 @@ export default function PotentialMatches({
 }: Props) {
     const matches = foundItems
         .map((foundItem) => {
-            const result = calculateMatch(lostItem, foundItem);
+            const result = calculateMatch(
+                lostItem,
+                foundItem
+            );
 
             return {
                 item: foundItem,
@@ -31,9 +37,14 @@ export default function PotentialMatches({
 
     if (matches.length === 0) {
         return (
-            <div className="rounded-2xl border border-stone-200 bg-white p-6">
-                <p className="text-stone-600">
-                    No published found items are available for comparison.
+            <div className="ui-card p-6 sm:p-8">
+                <h2 className="font-semibold text-[var(--foreground)]">
+                    No found items available
+                </h2>
+
+                <p className="mt-2 text-sm text-[var(--foreground-muted)]">
+                    There are currently no published found items
+                    available for comparison.
                 </p>
             </div>
         );
@@ -41,75 +52,99 @@ export default function PotentialMatches({
 
     return (
         <div className="space-y-4">
-            {matches.map(({ item, score, isPotentialMatch }) => (
-                <div
-                    key={item.id}
-                    className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm"
-                >
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div>
-                            <p className="text-sm font-medium text-stone-500">
-                                Found Item
-                            </p>
+            {matches.map(
+                ({
+                    item,
+                    isPotentialMatch,
+                }) => (
+                    <article
+                        key={item.id}
+                        className="ui-card overflow-hidden"
+                    >
+                        <div className="p-5 sm:p-6">
+                            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                                <div className="min-w-0">
+                                    <span className="inline-flex rounded-full bg-[var(--success-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--success)]">
+                                        FOUND
+                                    </span>
 
-                            <h2 className="mt-1 text-lg font-semibold text-stone-900">
-                                {item.name}
-                            </h2>
+                                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--foreground)]">
+                                        {item.name}
+                                    </h2>
 
-                            <div className="mt-3 space-y-1 text-sm text-stone-600">
-                                <p>Category: {item.category}</p>
+                                    <div className="mt-4 grid gap-2 text-sm text-[var(--foreground-muted)]">
+                                        <p>
+                                            <strong className="font-medium text-[var(--foreground)]">
+                                                Category:
+                                            </strong>{" "}
+                                            {item.category}
+                                        </p>
 
-                                {item.brand && <p>Brand: {item.brand}</p>}
+                                        {item.brand && (
+                                            <p>
+                                                <strong className="font-medium text-[var(--foreground)]">
+                                                    Brand:
+                                                </strong>{" "}
+                                                {item.brand}
+                                            </p>
+                                        )}
 
-                                {item.color && <p>Color: {item.color}</p>}
+                                        {item.color && (
+                                            <p>
+                                                <strong className="font-medium text-[var(--foreground)]">
+                                                    Color:
+                                                </strong>{" "}
+                                                {item.color}
+                                            </p>
+                                        )}
 
-                                <p>Location: {item.location}</p>
+                                        <p>
+                                            <strong className="font-medium text-[var(--foreground)]">
+                                                Location:
+                                            </strong>{" "}
+                                            {item.location}
+                                        </p>
 
-                                <p>
-                                    Date:{" "}
-                                    {new Date(item.date_time).toLocaleDateString()}
-                                </p>
+                                        <p>
+                                            <strong className="font-medium text-[var(--foreground)]">
+                                                Date:
+                                            </strong>{" "}
+                                            {new Date(
+                                                item.date_time
+                                            ).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="text-right">
-                            <p className="text-2xl font-bold text-stone-900">
-                                {score}%
-                            </p>
+                        {isPotentialMatch ? (
+                            <div className="border-t border-[var(--border)] bg-[var(--success-soft)] p-4 sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+                                <div>
+                                    <p className="font-semibold text-[var(--success)]">
+                                        Potential Match
+                                    </p>
 
-                            <p className="text-sm text-stone-500">
-                                Match Score
-                            </p>
-                        </div>
-                    </div>
+                                    <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+                                        This found item has similar details to your lost report.
+                                    </p>
+                                </div>
 
-                    {isPotentialMatch ? (
-                        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-stone-100 p-4">
-                            <div>
-                                <p className="font-semibold text-stone-900">
-                                    Potential Match
-                                </p>
-
-                                <p className="text-sm text-stone-600">
-                                    This item scored more than 70%.
-                                </p>
+                                <Link
+                                    href={`/claims/new?item=${item.id}`}
+                                    className="ui-button-primary mt-4 w-full sm:mt-0 sm:w-auto"
+                                >
+                                    Claim Item
+                                </Link>
                             </div>
-
-                            <Link
-                                href={`/claims/new?item=${item.id}`}
-                                className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700"
-                            >
-                                Claim Item
-                            </Link>
-                        </div>
-                    ) : (
-                        <p className="mt-4 text-sm text-stone-500">
-                            Match score is not high enough to be considered a potential
-                            match.
-                        </p>
-                    )}
-                </div>
-            ))}
+                        ) : (
+                            <div className="border-t border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 text-sm text-[var(--foreground-muted)] sm:px-6">
+                                This item does not currently meet the potential-match criteria.
+                            </div>
+                        )}
+                    </article>
+                )
+            )}
         </div>
     );
 }

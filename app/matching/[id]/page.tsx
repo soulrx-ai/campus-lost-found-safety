@@ -41,30 +41,45 @@ export default async function MatchDetailPage({
         .eq("status", "PUBLISHED");
 
     return (
-        <main className="min-h-screen bg-stone-50 px-4 py-10">
-            <div className="mx-auto max-w-4xl">
-                <div className="mb-8">
-                    <p className="text-sm font-medium text-stone-500">
-                        Matching
-                    </p>
+        <main className="page-shell">
+            <div className="app-container">
+                <div className="mx-auto max-w-5xl">
+                    <header className="mb-7">
+                        <p className="page-eyebrow">
+                            Matching
+                        </p>
 
-                    <h1 className="mt-1 text-3xl font-bold text-stone-900">
-                        Potential Matches
-                    </h1>
+                        <h1 className="page-title">
+                            Potential Matches
+                        </h1>
 
-                    <p className="mt-2 text-stone-600">
-                        Comparing published found items with your lost report:
-                        {" "}
-                        <span className="font-medium text-stone-900">
-                            {lostItem.name}
-                        </span>
-                    </p>
+                        <p className="page-description">
+                            Comparing published found items with your lost
+                            report{" "}
+                            <span className="font-semibold text-[var(--foreground)]">
+                                {lostItem.name}
+                            </span>
+                            .
+                        </p>
+                    </header>
+
+                    <div className="mb-6 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--warning-soft)] p-4">
+                        <p className="text-sm font-medium text-[var(--warning)]">
+                            Matching is only a suggestion
+                        </p>
+
+                        <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
+                            A match score does not confirm ownership. Items
+                            scoring more than 70% can proceed to the claim
+                            process for Staff review.
+                        </p>
+                    </div>
+
+                    <PotentialMatches
+                        lostItem={lostItem}
+                        foundItems={foundItems ?? []}
+                    />
                 </div>
-
-                <PotentialMatches
-                    lostItem={lostItem}
-                    foundItems={foundItems ?? []}
-                />
             </div>
         </main>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import ItemCard from "@/components/search/ItemCard";
 import SearchFilters, {
@@ -37,7 +37,39 @@ export default function SearchPage() {
     const [items, setItems] = useState<SearchItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+    useEffect(() => {
+        void loadLatestItems();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
+    async function loadLatestItems() {
+        setLoading(true);
+        setMessage("");
+
+        const { data, error } = await supabase
+            .from("items")
+            .select(
+                "id, report_type, name, category, brand, color, date_time, location"
+            )
+            .eq("status", "PUBLISHED")
+            .order("created_at", { ascending: false });
+
+        setLoading(false);
+
+        if (error) {
+            setItems([]);
+            setMessage(error.message);
+            return;
+        }
+
+        const results = (data ?? []) as SearchItem[];
+
+        setItems(results);
+
+        if (results.length === 0) {
+            setMessage("No published items are available yet.");
+        }
+    }
     async function searchItems() {
         setLoading(true);
         setMessage("");
@@ -119,45 +151,74 @@ export default function SearchPage() {
 
     function clearFilters() {
         setFilters(initialFilters);
-        setItems([]);
-        setMessage("");
+        void loadLatestItems();
     }
 
     return (
-        <main className="min-h-screen bg-stone-50 px-4 py-10">
-            <div className="mx-auto max-w-5xl">
-                <div className="mb-6">
-                    <p className="text-sm font-medium text-stone-500">
-                        Lost & Found
-                    </p>
+        <main className="page-shell">
+            <div className="app-container">
+                <div className="mx-auto max-w-6xl">
+                    <header className="mb-7">
+                        <p className="page-eyebrow">
+                            Lost & Found
+                        </p>
 
-                    <h1 className="mt-1 text-3xl font-bold">
-                        Search Items
-                    </h1>
+                        <h1 className="page-title">
+                            Search Items
+                        </h1>
 
-                    <p className="mt-2 text-stone-600">
-                        Search approved lost and found reports.
-                    </p>
-                </div>
+                        <p className="page-description">
+                            Search approved lost and found reports using
+                            item details, location, date or report type.
+                        </p>
+                    </header>
 
-                <SearchFilters
-                    filters={filters}
-                    onChange={setFilters}
-                    onSearch={searchItems}
-                    onClear={clearFilters}
-                    loading={loading}
-                />
+                    <SearchFilters
+                        filters={filters}
+                        onChange={setFilters}
+                        onSearch={searchItems}
+                        onClear={clearFilters}
+                        loading={loading}
+                    />
 
-                {message && (
-                    <p className="mt-6 rounded-lg bg-white p-4 text-sm">
-                        {message}
-                    </p>
-                )}
+                    {message && (
+                        <div
+                            role="status"
+                            className="ui-card mt-6 p-4 text-sm text-[var(--foreground-muted)]"
+                        >
+                            {message}
+                        </div>
+                    )}
 
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                    {items.map((item) => (
-                        <ItemCard key={item.id} item={item} />
-                    ))}
+                    {items.length > 0 && (
+                        <section className="mt-7">
+                            <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+                                <div>
+                                    <h2 className="text-lg font-semibold text-[var(--foreground)]">
+                                        Published Items
+                                    </h2>
+
+                                    <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+                                        Latest published lost and found reports.
+                                    </p>
+                                </div>
+
+                                <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-medium text-[var(--primary)]">
+                                    {items.length} result
+                                    {items.length === 1 ? "" : "s"}
+                                </span>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                {items.map((item) => (
+                                    <ItemCard
+                                        key={item.id}
+                                        item={item}
+                                    />
+                                ))}
+                            </div>
+                        </section>
+                    )}
                 </div>
             </div>
         </main>
