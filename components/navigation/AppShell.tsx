@@ -380,6 +380,14 @@ function AuthenticatedShell({ children, pathname }: {
                                             </p>
                                         </div>
 
+                                        <Link
+                                            href="/profile"
+                                            onClick={() => setProfileOpen(false)}
+                                            className="block w-full px-4 py-3 text-left text-sm font-medium text-[var(--foreground)] transition hover:bg-[var(--surface-soft)]"
+                                        >
+                                            My Profile
+                                        </Link>
+
                                         <button
                                             type="button"
                                             onClick={() => void handleLogout()}
