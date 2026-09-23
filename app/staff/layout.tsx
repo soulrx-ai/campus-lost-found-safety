@@ -1,4 +1,3 @@
-import StaffNavigation from "@/components/staff/StaffNavigation";
 import { requireStaff } from "@/lib/auth/guards";
 
 export default async function StaffLayout({
@@ -8,10 +7,5 @@ export default async function StaffLayout({
 }>) {
     await requireStaff();
 
-    return (
-        <>
-            <StaffNavigation />
-            {children}
-        </>
-    );
+    return children;
 }
