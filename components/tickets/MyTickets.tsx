@@ -14,6 +14,27 @@ type Ticket = {
   updated_at: string;
 };
 
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Bangkok",
+  }).format(new Date(value));
+}
+
+function statusClass(status: string) {
+  switch (status) {
+    case "RESOLVED":
+      return "bg-[var(--success-soft)] text-[var(--success)]";
+
+    case "IN_PROGRESS":
+      return "bg-[var(--info-soft)] text-[var(--info)]";
+
+    default:
+      return "bg-[var(--warning-soft)] text-[var(--warning)]";
+  }
+}
+
 export default function MyTickets() {
   const supabase = createClient();
 
@@ -54,58 +75,84 @@ export default function MyTickets() {
   }, [supabase]);
 
   if (loading) {
-    return <p>Loading tickets...</p>;
+    return (
+      <div className="ui-card p-6">
+        <div className="flex items-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-[var(--primary)]" />
+          <p className="text-sm text-[var(--foreground-muted)]">
+            Loading tickets...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       {message && (
-        <div className="rounded-lg bg-white p-4 text-sm">
+        <div className="ui-card p-4 text-sm text-[var(--foreground)]">
           {message}
         </div>
       )}
 
       {!message && tickets.length === 0 && (
-        <div className="rounded-lg bg-white p-4">
-          You have no service tickets.
+        <div className="ui-card p-6 sm:p-8">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+            No service tickets
+          </h2>
+
+          <p className="mt-2 text-sm text-[var(--foreground-muted)]">
+            You have not submitted any service tickets.
+          </p>
         </div>
       )}
 
       {tickets.map((ticket) => (
         <article
           key={ticket.id}
-          className="rounded-2xl bg-white p-5 shadow-sm"
+          className="ui-card overflow-hidden"
         >
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium text-stone-500">
-                {ticket.ticket_type}
+          <div className="flex flex-col gap-3 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
+            <div className="min-w-0">
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                {ticket.ticket_type.replaceAll("_", " ")}
               </p>
 
-              <h2 className="mt-1 text-lg font-semibold">
+              <h2 className="mt-1 break-words text-lg font-semibold text-[var(--foreground)]">
                 {ticket.subject}
               </h2>
             </div>
 
-            <span className="rounded-full bg-stone-100 px-3 py-1 text-xs">
-              {ticket.status}
+            <span
+              className={`inline-flex w-fit shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusClass(
+                ticket.status
+              )}`}
+            >
+              {ticket.status.replaceAll("_", " ")}
             </span>
           </div>
 
-          <p className="mt-3 text-sm text-stone-700">
-            {ticket.description}
-          </p>
-
-          {ticket.claim_id && (
-            <p className="mt-3 text-xs text-stone-500">
-              Related claim: {ticket.claim_id}
+          <div className="space-y-4 p-5 sm:p-6">
+            <p className="whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
+              {ticket.description}
             </p>
-          )}
 
-          <p className="mt-2 text-xs text-stone-500">
-            Created{" "}
-            {new Date(ticket.created_at).toLocaleString()}
-          </p>
+            {ticket.claim_id && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                  Related claim
+                </p>
+
+                <p className="mt-1 break-all text-sm text-[var(--foreground)]">
+                  {ticket.claim_id}
+                </p>
+              </div>
+            )}
+
+            <div className="border-t border-[var(--border)] pt-4 text-xs text-[var(--foreground-muted)]">
+              Created {formatDateTime(ticket.created_at)}
+            </div>
+          </div>
         </article>
       ))}
     </div>
