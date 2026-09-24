@@ -207,3 +207,71 @@ test("cleanup refuses invalid retention settings", async () => {
   assert.equal((await handler.GET(cleanupRequest())).status, 503);
   assert.equal(handler.events.length, 0);
 });
+
+test("Admin settings are rendered in an expanded section with both inputs and a save button", () => {
+  const { default: Manager } = load("components/admin/AdminItemManager.tsx", {
+    react: { useEffect() {}, useState: value => [value === true ? false : value, () => {}] },
+    "@/components/i18n/Text": { Text: "Text", AppMessage: "AppMessage", DisplayValue: "DisplayValue" },
+    "@/components/i18n/LanguageProvider": { useLanguage: () => ({ t: value => value }) },
+    "@/components/admin/CategoryManager": { default: "CategoryManager" },
+    "@/components/categories/useCategories": { useCategories: () => ({ categories: [], error: "", refreshCategories() {} }) },
+  });
+  function nodes(node) {
+    if (Array.isArray(node)) return node.flatMap(nodes);
+    if (!node || typeof node !== "object") return [];
+    return [node, ...nodes(node.props?.children)];
+  }
+  const tree = nodes(Manager());
+  assert.ok(tree.some(node => node.type === "section" && node.props["aria-labelledby"] === "system-settings-title"));
+  assert.ok(!tree.some(node => node.type === "details" && !node.props.open));
+  for (const id of ["System Settings", "Matching Threshold", "Data Retention Period", "Save settings"]) {
+    assert.ok(tree.some(node => node.props.id === id), id);
+  }
+});
+
+function settingsHandler(role = "ADMIN", status = "ACTIVE", failWrite = false) {
+  let settings = { matching_threshold: 70, data_retention_days: 30 };
+  let writes = 0;
+  const session = database(() => ({ data: { role, status }, error: null }));
+  session.auth = { getUser: async () => ({ data: { user: { id: "account" } }, error: null }) };
+  const admin = database((table, calls) => {
+    assert.equal(table, "system_settings");
+    const update = calls.find(call => call[0] === "upsert");
+    if (update) {
+      writes++;
+      if (failWrite) return { data: null, error: { message: "failed" } };
+      settings = { ...update[1] };
+    }
+    return { data: settings, error: null };
+  });
+  return { ...load("app/api/admin/system-settings/route.ts", {
+    "@/lib/supabase/server": { createClient: async () => session },
+    "@/lib/supabase/admin": { createAdminClient: () => admin },
+  }), writes: () => writes };
+}
+
+test("settings API saves and reloads both values for an active ADMIN", async () => {
+  const handler = settingsHandler();
+  assert.equal((await handler.PUT(request({ matching_threshold: 85, data_retention_days: 60 }))).status, 200);
+  const { settings } = await (await handler.GET()).json();
+  assert.equal(settings.matching_threshold, 85);
+  assert.equal(settings.data_retention_days, 60);
+  assert.equal(handler.writes(), 1);
+});
+
+test("settings API rejects USER, STAFF, and inactive ADMIN writes", async () => {
+  for (const [role, status] of [["USER", "ACTIVE"], ["STAFF", "ACTIVE"], ["ADMIN", "INACTIVE"]]) {
+    const handler = settingsHandler(role, status);
+    assert.equal((await handler.GET()).status, 403);
+    assert.equal((await handler.PUT(request({ matching_threshold: 85, data_retention_days: 60 }))).status, 403);
+    assert.equal(handler.writes(), 0);
+  }
+});
+
+test("settings API reports validation and database errors without success", async () => {
+  const handler = settingsHandler("ADMIN", "ACTIVE", true);
+  assert.equal((await handler.PUT(request({ matching_threshold: 101, data_retention_days: 30 }))).status, 400);
+  assert.equal((await handler.PUT(request({ matching_threshold: 70, data_retention_days: 0 }))).status, 400);
+  assert.equal(handler.writes(), 0);
+  assert.equal((await handler.PUT(request({ matching_threshold: 80, data_retention_days: 60 }))).status, 500);
+});

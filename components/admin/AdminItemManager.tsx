@@ -445,15 +445,10 @@ export default function AdminItemManager() {
         </div>
       </div>
 
-      <details className="border-b border-[var(--border)]">
-        <summary className="cursor-pointer list-none px-5 py-4 font-semibold text-[var(--foreground)] sm:px-6">
-          <span className="flex items-center justify-between gap-3">
+      <section aria-labelledby="system-settings-title" className="border-b border-[var(--border)]">
+        <h2 id="system-settings-title" className="px-5 py-4 font-semibold text-[var(--heading)] sm:px-6">
             <Text id="System Settings" />
-            <span aria-hidden="true" className="text-[var(--foreground-muted)]">
-              +
-            </span>
-          </span>
-        </summary>
+        </h2>
 
         <div className="border-t border-[var(--border)] bg-[var(--surface-soft)] p-5 sm:p-6">
           <p className="mb-5 text-sm text-[var(--foreground-muted)]">
@@ -552,7 +547,7 @@ export default function AdminItemManager() {
             </form>
           )}
         </div>
-      </details>
+      </section>
 
       <form
         onSubmit={applyFilters}
