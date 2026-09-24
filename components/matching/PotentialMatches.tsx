@@ -17,17 +17,20 @@ type Item = MatchableItem & {
 type Props = {
     lostItem: Item;
     foundItems: Item[];
+    matchingThreshold: number;
 };
 
 export default function PotentialMatches({
     lostItem,
     foundItems,
+    matchingThreshold
 }: Props) {
     const matches = foundItems
         .map((foundItem) => {
             const result = calculateMatch(
                 lostItem,
-                foundItem
+                foundItem,
+                matchingThreshold
             );
 
             return {

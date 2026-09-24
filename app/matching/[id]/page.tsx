@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/guards";
 import PotentialMatches from "@/components/matching/PotentialMatches";
 
+import { createAdminClient } from "@/lib/supabase/admin";
+
 type PageProps = {
     params: Promise<{
         id: string;
@@ -41,6 +43,11 @@ export default async function MatchDetailPage({
         .eq("report_type", "FOUND")
         .eq("status", "PUBLISHED");
 
+    const admin = createAdminClient();
+    const { data: settings, error: settingsError } = await admin.from("system_settings").select("matching_threshold").eq("id", "global").maybeSingle();
+    if (settingsError) throw new Error("Unable to load matching settings.");
+    const matchingThreshold = settings?.matching_threshold ?? 70;
+
     return (
         <main className="page-shell">
             <div className="app-container">
@@ -69,13 +76,14 @@ export default async function MatchDetailPage({
                         </p>
 
                         <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
-                            <Text id="A match score does not confirm ownership. Items scoring more than 70% can proceed to the claim process for Staff review." />
+                            <Text id="Match threshold guidance" params={{ threshold: matchingThreshold }} />
                         </p>
                     </div>
 
                     <PotentialMatches
                         lostItem={lostItem}
                         foundItems={foundItems ?? []}
+                        matchingThreshold={matchingThreshold}
                     />
                 </div>
             </div>

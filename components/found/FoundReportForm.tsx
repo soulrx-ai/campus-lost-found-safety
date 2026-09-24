@@ -1,13 +1,15 @@
 "use client";
 
-import { AppMessage, Text, UiText } from "@/components/i18n/Text";
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useCategories } from "@/components/categories/useCategories";
 
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function FoundReportForm() {
   const { t } = useLanguage();
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
     const supabase = createClient();
 
     const [name, setName] = useState("");
@@ -161,19 +163,23 @@ export default function FoundReportForm() {
                     <Field label="Category *">
                         <select
                             required
+                            disabled={categoriesLoading || Boolean(categoriesError) || categories.length === 0}
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             className="ui-input"
                         >
                             <option value=""><Text id="Select category" /></option>
-                            <option value="Electronics"><Text id="Electronics" /></option>
-                            <option value="Wallet"><Text id="Wallet" /></option>
-                            <option value="Bag"><Text id="Bag" /></option>
-                            <option value="Document"><Text id="Document" /></option>
-                            <option value="Clothing"><Text id="Clothing" /></option>
-                            <option value="Accessory"><Text id="Accessory" /></option>
-                            <option value="Other"><Text id="Other" /></option>
+                            {categories.map((itemCategory) => (
+                                <option key={itemCategory.id} value={itemCategory.name}>
+                                    <DisplayValue value={itemCategory.name} />
+                                </option>
+                            ))}
                         </select>
+                        {categoriesError && (
+                            <p role="alert" className="mt-1 text-xs text-[var(--danger)]">
+                                <AppMessage text={categoriesError} />
+                            </p>
+                        )}
                     </Field>
 
                     <Field label="Brand">

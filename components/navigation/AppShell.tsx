@@ -609,6 +609,11 @@ function AuthenticatedShell({ children, pathname }: {
                                         pathname={pathname}
                                     />
                                     <SideLink
+                                        href="/admin/items"
+                                        label="Item Management"
+                                        pathname={pathname}
+                                    />
+                                    <SideLink
                                         href="/admin/logs"
                                         label="Activity Logs"
                                         pathname={pathname}

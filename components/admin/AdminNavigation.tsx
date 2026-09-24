@@ -15,6 +15,7 @@ export default function AdminNavigation() {
       <div className="flex gap-2 overflow-x-auto p-3 sm:flex-wrap sm:p-4">
         <AdminLink href="/admin">Dashboard</AdminLink>
         <AdminLink href="/admin/users">Users</AdminLink>
+        <AdminLink href="/admin/items">Item Management</AdminLink>
         <AdminLink href="/admin/notifications">
           Notifications
         </AdminLink>
