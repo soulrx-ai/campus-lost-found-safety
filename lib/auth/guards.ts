@@ -45,7 +45,7 @@ export async function requireUser(): Promise<Profile> {
 export async function requireStaff(): Promise<Profile> {
     const profile = await requireUser();
 
-    if (profile.role !== "STAFF") {
+    if (profile.role !== "STAFF" && profile.role !== "ADMIN") {
         redirect("/");
     }
 

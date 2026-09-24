@@ -786,6 +786,9 @@ function StatusBadge({ status }: { status: string }) {
   } else if (status === "IN_PROGRESS") {
     classes =
       "bg-[var(--info-soft)] text-[var(--info)]";
+  } else if (["HIDDEN", "CLOSED"].includes(status)) {
+    classes =
+      "bg-[var(--surface-soft)] text-[var(--foreground-muted)] border border-[var(--border)]";
   } else if (status === "REJECTED") {
     classes =
       "bg-[var(--danger-soft)] text-[var(--danger)]";

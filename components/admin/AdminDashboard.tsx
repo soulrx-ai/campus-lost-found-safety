@@ -94,16 +94,18 @@ export default function AdminDashboard() {
   }
 
   const cards = [
-    { label: "Users", value: counts.users },
-    { label: "Items", value: counts.items },
-    { label: "Claims", value: counts.claims },
+    { label: "Users", value: counts.users, href: "/admin/users" },
+    { label: "Items", value: counts.items, href: "/staff/items" },
+    { label: "Claims", value: counts.claims, href: "/staff/claims" },
     {
       label: "Safety Incidents",
       value: counts.incidents,
+      href: "/staff/safety",
     },
     {
       label: "Service Tickets",
       value: counts.tickets,
+      href: "/staff/tickets",
     },
   ];
 
@@ -155,13 +157,14 @@ export default function AdminDashboard() {
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {cards.map((card) => (
-            <div
+            <Link
               key={card.label}
-              className="ui-card group relative overflow-hidden p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-md"
+              href={card.href}
+              className="ui-card group relative block overflow-hidden p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground-muted)]">
+                  <p className="text-sm font-medium text-[var(--foreground-muted)] group-hover:text-[var(--primary)]">
                     <UiText text={card.label} />
                   </p>
 
@@ -172,14 +175,19 @@ export default function AdminDashboard() {
 
                 <div
                   aria-hidden="true"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--primary-soft)] text-sm font-bold text-[var(--primary)]"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--primary-soft)] text-sm font-bold text-[var(--primary)] transition group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-contrast)]"
                 >
                   {card.label.charAt(0)}
                 </div>
               </div>
 
-              <div className="mt-5 h-1 w-10 rounded-full bg-[var(--primary)] opacity-70 transition-all duration-200 group-hover:w-16" />
-            </div>
+              <div className="mt-5 flex items-center justify-between text-xs font-semibold text-[var(--primary)]">
+                <div className="h-1 w-10 rounded-full bg-[var(--primary)] opacity-70 transition-all duration-200 group-hover:w-16" />
+                <span className="opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <Text id="Open" /> →
+                </span>
+              </div>
+            </Link>
           ))}
         </div>
       </section>

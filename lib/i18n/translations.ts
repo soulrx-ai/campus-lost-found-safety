@@ -2110,6 +2110,62 @@ export const translations = {
     "en": "Published",
     "th": "เผยแพร่แล้ว"
   },
+  "Hidden": {
+    "en": "Hidden",
+    "th": "ซ่อนอยู่"
+  },
+  "HIDDEN": {
+    "en": "HIDDEN",
+    "th": "ซ่อนอยู่"
+  },
+  "Hide incident": {
+    "en": "Hide incident",
+    "th": "ซ่อนเหตุการณ์"
+  },
+  "Show incident": {
+    "en": "Show incident",
+    "th": "แสดงเหตุการณ์"
+  },
+  "Delete incident": {
+    "en": "Delete incident",
+    "th": "ลบเหตุการณ์"
+  },
+  "Are you sure you want to delete this incident report? This action cannot be undone.": {
+    "en": "Are you sure you want to delete this incident report? This action cannot be undone.",
+    "th": "คุณแน่ใจหรือไม่ว่าต้องการลบรายงานเหตุการณ์นี้? การดำเนินการนี้ไม่สามารถยกเลิกได้"
+  },
+  "Visible to users on Campus Safety page": {
+    "en": "Visible to users on Campus Safety page",
+    "th": "กำลังแสดงบนหน้ารายงานความปลอดภัยสำหรับผู้ใช้ทั่วไป"
+  },
+  "Hidden from public view": {
+    "en": "Hidden from public view",
+    "th": "ซ่อนอยู่ ไม่แสดงที่หน้าผู้ใช้"
+  },
+  "All": {
+    "en": "All",
+    "th": "ทั้งหมด"
+  },
+  "All Incidents": {
+    "en": "All Incidents",
+    "th": "เหตุการณ์ทั้งหมด"
+  },
+  "Total incidents": {
+    "en": "Total incidents",
+    "th": "เหตุการณ์ทั้งหมด"
+  },
+  "No incidents found in this category.": {
+    "en": "No incidents found in this category.",
+    "th": "ไม่พบเหตุการณ์ในหมวดหมู่นี้"
+  },
+  "There are currently no safety incidents matching this filter.": {
+    "en": "There are currently no safety incidents matching this filter.",
+    "th": "ขณะนี้ไม่มีรายงานเหตุการณ์ความปลอดภัยที่ตรงกับตัวกรองนี้"
+  },
+  "Safety Review": {
+    "en": "Safety Review",
+    "th": "ตรวจสอบความปลอดภัย"
+  },
   "Approved": {
     "en": "Approved",
     "th": "อนุมัติแล้ว"

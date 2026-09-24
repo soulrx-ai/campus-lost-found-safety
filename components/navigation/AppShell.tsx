@@ -566,7 +566,7 @@ function AuthenticatedShell({ children, pathname }: {
                                 />
                             </NavSection>
 
-                            {profile.role === "STAFF" && (
+                            {(profile.role === "STAFF" || profile.role === "ADMIN") && (
                                 <NavSection title="Staff">
                                     <SideLink
                                         href="/staff/items"

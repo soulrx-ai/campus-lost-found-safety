@@ -64,6 +64,8 @@ export default function AppNavigation({
                 Notifications
               </NavLink>
               <NavLink href="/admin/logs">Activity Logs</NavLink>
+              <NavLink href="/staff/safety">Review Safety</NavLink>
+              <NavLink href="/staff/tickets">Manage Tickets</NavLink>
             </>
           )}
         </nav>

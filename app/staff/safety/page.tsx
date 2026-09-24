@@ -1,5 +1,5 @@
 import { Text } from "@/components/i18n/Text";
-import SafetyReviewCard from "@/components/staff/SafetyReviewCard";
+import StaffSafetyReviewList from "@/components/staff/StaffSafetyReviewList";
 import { requireStaff } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,8 +12,7 @@ export default async function StaffSafetyPage() {
     .select(
       "id, reporter_id, title, description, location, incident_time, image_url, status, created_at"
     )
-    .eq("status", "PENDING_REVIEW")
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false });
 
   return (
     <main className="page-shell">
@@ -51,33 +50,10 @@ export default async function StaffSafetyPage() {
               </p>
             </div>
           ) : (
-            <>
-              <div className="ui-card mb-5 flex items-center justify-between gap-4 p-4">
-                <div>
-                  <p className="font-medium text-[var(--foreground)]">
-                    <Text id="Review queue" />
-                  </p>
-
-                  <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    <Text id="Oldest reports are shown first." />
-                  </p>
-                </div>
-
-                <span className="shrink-0 rounded-full bg-[var(--danger-soft)] px-3 py-1.5 text-sm font-semibold text-[var(--danger)]">
-                  {incidents.length} <Text id="pending" />
-                </span>
-              </div>
-
-              <div className="space-y-5">
-                {incidents.map((incident) => (
-                  <SafetyReviewCard
-                    key={incident.id}
-                    incident={incident}
-                    staffId={staff.id}
-                  />
-                ))}
-              </div>
-            </>
+            <StaffSafetyReviewList
+              incidents={incidents}
+              staffId={staff.id}
+            />
           )}
         </div>
       </div>

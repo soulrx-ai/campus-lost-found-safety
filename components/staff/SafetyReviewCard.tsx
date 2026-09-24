@@ -32,9 +32,30 @@ type Props = {
   staffId: string;
 };
 
+function getStatusBadgeClass(status: string) {
+  switch (status) {
+    case "PUBLISHED":
+      return "bg-[var(--success-soft)] text-[var(--success)] border border-[var(--success)]/20";
+    case "PENDING_REVIEW":
+      return "bg-[var(--warning-soft)] text-[var(--warning)] border border-[var(--warning)]/20";
+    default:
+      return "bg-[var(--primary-soft)] text-[var(--primary)] border border-[var(--primary)]/20";
+  }
+}
+
+function getBorderClass(status: string) {
+  switch (status) {
+    case "PUBLISHED":
+      return "border-l-[var(--success)]";
+    case "PENDING_REVIEW":
+      return "border-l-[var(--warning)]";
+    default:
+      return "border-l-[var(--danger)]";
+  }
+}
+
 export default function SafetyReviewCard({
   incident,
-  staffId,
 }: Props) {
   const { t } = useLanguage();
   const router = useRouter();
@@ -45,33 +66,26 @@ export default function SafetyReviewCard({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
 
-  async function reviewIncident(
+  async function updateStatus(
     newStatus: "PUBLISHED" | "REJECTED"
   ) {
     setLoading(true);
     setErrorMessage("");
 
     try {
-      const { data, error } = await supabase
-        .from("security_incidents")
-        .update({
-          status: newStatus,
-          reviewed_by: staffId,
-          reviewed_at: new Date().toISOString(),
-        })
-        .eq("id", incident.id)
-        .eq("status", "PENDING_REVIEW")
-        .select("id")
-        .maybeSingle();
+      const response = await fetch(`/api/staff/safety/${incident.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
 
-      if (error) {
-        setErrorMessage(error.message);
-        return;
-      }
+      const result = await response.json();
 
-      if (!data) {
+      if (!response.ok) {
         setErrorMessage(
-          "This incident has already been reviewed. Refresh the page and try again."
+          result.error ?? "Unable to update incident. Please try again."
         );
         return;
       }
@@ -79,8 +93,41 @@ export default function SafetyReviewCard({
       router.refresh();
     } catch {
       setErrorMessage(
-        "Unable to review incident. Please try again."
+        "Unable to update incident. Please try again."
       );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteIncident() {
+    const confirmed = window.confirm(
+      t(
+        "Are you sure you want to delete this incident report? This action cannot be undone."
+      )
+    );
+    if (!confirmed) return;
+
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(`/api/staff/safety/${incident.id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(
+          result.error ?? "Unable to delete incident. Please try again."
+        );
+        return;
+      }
+
+      router.refresh();
+    } catch {
+      setErrorMessage("Unable to delete incident. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -113,7 +160,11 @@ export default function SafetyReviewCard({
   }
 
   return (
-    <article className="ui-card overflow-hidden border-l-4 border-l-[var(--danger)]">
+    <article
+      className={`ui-card overflow-hidden border-l-4 ${getBorderClass(
+        incident.status
+      )}`}
+    >
       <div className="flex flex-col gap-4 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--danger)]">
@@ -129,12 +180,24 @@ export default function SafetyReviewCard({
           </p>
         </div>
 
-        <span className="inline-flex w-fit shrink-0 rounded-full bg-[var(--danger-soft)] px-3 py-1 text-xs font-semibold text-[var(--danger)]">
+        <span
+          className={`inline-flex w-fit shrink-0 items-center rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadgeClass(
+            incident.status
+          )}`}
+        >
           <DisplayValue value={incident.status} />
         </span>
       </div>
 
       <div className="space-y-6 p-5 sm:p-6">
+        {/* Status Indicator Banner */}
+        {incident.status === "PUBLISHED" && (
+          <div className="flex items-center gap-2 rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] px-3.5 py-2.5 text-xs font-medium text-[var(--success)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--success)]" />
+            <Text id="Visible to users on Campus Safety page" />
+          </div>
+        )}
+
         <div className="grid gap-5 sm:grid-cols-2">
           <InfoField label="Location" value={incident.location} />
           <InfoField
@@ -206,24 +269,31 @@ export default function SafetyReviewCard({
           </div>
         )}
 
-        <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => reviewIncident("REJECTED")}
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-          >
-            <Text id="Reject" />
-          </button>
+        {/* Action Buttons: Delete on left, Approve/Publish on right */}
+        <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={deleteIncident}
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              {loading ? <Text id="Processing..." /> : <Text id="Delete incident" />}
+            </button>
+          </div>
 
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => reviewIncident("PUBLISHED")}
-            className="ui-button-primary w-full sm:w-auto"
-          >
-            {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
-          </button>
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+            {incident.status === "PENDING_REVIEW" && (
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => updateStatus("PUBLISHED")}
+                className="ui-button-primary w-full sm:w-auto"
+              >
+                {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </article>

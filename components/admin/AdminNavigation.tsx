@@ -19,6 +19,8 @@ export default function AdminNavigation() {
           Notifications
         </AdminLink>
         <AdminLink href="/admin/logs">Activity Logs</AdminLink>
+        <AdminLink href="/staff/safety">Safety Review</AdminLink>
+        <AdminLink href="/staff/tickets">Manage Tickets</AdminLink>
         <AdminLink href="/">Back to Home</AdminLink>
       </div>
     </nav>

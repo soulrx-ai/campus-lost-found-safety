@@ -4,7 +4,7 @@ import { translate, type Language, type TranslationKey } from "./translations";
 const displayKeys = {
   USER: "User", STAFF: "Staff", ADMIN: "Admin",
   LOST: "Lost", FOUND: "Found",
-  PENDING_REVIEW: "Pending Review", PUBLISHED: "Published",
+  PENDING_REVIEW: "Pending Review", PUBLISHED: "Published", HIDDEN: "Hidden",
   APPROVED: "Approved", REJECTED: "Rejected", COMPLETED: "Completed",
   CLAIMED: "Claimed", RETURNED: "Returned", CLOSED: "Closed",
   OPEN: "Open", IN_PROGRESS: "In Progress", RESOLVED: "Resolved",
