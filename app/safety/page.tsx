@@ -1,7 +1,8 @@
 "use client";
 
 import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import SafetyFilters, {
   SafetyFilterValues,
@@ -48,9 +49,7 @@ export default function SafetyPage() {
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState("");
 
-  async function searchIncidents(activeFilters: SafetyFilterValues = filters) {
-    setLoading(true);
-    setMessage("");
+  const fetchIncidents = useCallback(async (activeFilters: SafetyFilterValues) => {
 
     let query = supabase
       .from("security_incidents")
@@ -76,7 +75,11 @@ export default function SafetyPage() {
         .lte("incident_time", end.toISOString());
     }
 
-    const { data, error } = await query;
+    return await query;
+  }, [supabase]);
+
+  const loadIncidents = useCallback(async (activeFilters: SafetyFilterValues) => {
+    const { data, error } = await fetchIncidents(activeFilters);
 
     setLoading(false);
 
@@ -90,15 +93,25 @@ export default function SafetyPage() {
 
     setIncidents(results);
 
-    if (results.length === 0) {
-      setMessage("No safety incidents found.");
-    }
+    setMessage(results.length === 0 ? "No safety incidents found." : "");
+  }, [fetchIncidents]);
+
+  function searchIncidents(activeFilters: SafetyFilterValues = filters) {
+    setLoading(true);
+    setMessage("");
+    return loadIncidents(activeFilters);
   }
 
   useEffect(() => {
-    searchIncidents(initialFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let active = true;
+    void fetchIncidents(initialFilters).then(({ data, error }) => {
+      if (!active) return;
+      setIncidents((data ?? []) as Incident[]);
+      setMessage(error ? error.message : !data?.length ? "No safety incidents found." : "");
+      setLoading(false);
+    });
+    return () => { active = false; };
+  }, [fetchIncidents]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -312,7 +325,10 @@ export default function SafetyPage() {
                     </div>
                   ) : selectedImageUrl ? (
                     <div>
-                      <img
+                      <Image
+                        width={960}
+                        height={640}
+                        unoptimized
                         src={selectedImageUrl}
                         alt={selectedIncident.title}
                         className="max-h-96 w-full object-contain"

@@ -25,16 +25,20 @@ export default function ClaimReviewCard() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const loadClaims = useCallback(async () => {
-    setLoading(true);
+  const fetchClaims = useCallback(async () => {
 
-    const { data, error } = await supabase
+    return await supabase
       .from("claims")
       .select(
         "id, item_id, claimant_id, claim_reason, evidence, status, staff_note, created_at"
       )
       .in("status", ["PENDING_REVIEW", "APPROVED"])
       .order("created_at", { ascending: true });
+
+  }, [supabase]);
+
+  const loadClaims = useCallback(async () => {
+    const { data, error } = await fetchClaims();
 
     if (error) {
       setMessage(error.message);
@@ -44,11 +48,18 @@ export default function ClaimReviewCard() {
     }
 
     setLoading(false);
-  }, [supabase]);
+  }, [fetchClaims]);
 
   useEffect(() => {
-    loadClaims();
-  }, [loadClaims]);
+    let active = true;
+    void fetchClaims().then(({ data, error }) => {
+      if (!active) return;
+      setClaims((data ?? []) as Claim[]);
+      setMessage(error?.message ?? "");
+      setLoading(false);
+    });
+    return () => { active = false; };
+  }, [fetchClaims]);
 
   async function reviewClaim(
     claimId: string,
@@ -81,6 +92,7 @@ export default function ClaimReviewCard() {
     }
 
     setMessage(`Claim ${status.toLowerCase()} successfully.`);
+    setLoading(true);
     await loadClaims();
   }
 
@@ -176,6 +188,7 @@ export default function ClaimReviewCard() {
     }
 
     setMessage("Handover completed successfully.");
+    setLoading(true);
     await loadClaims();
   }
 
