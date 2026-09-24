@@ -5,6 +5,9 @@ import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import type { Database } from "@/types/database";
+
+type TicketUpdate = Database["public"]["Tables"]["service_tickets"]["Update"];
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -31,6 +34,7 @@ type Ticket = {
   description: string;
   status: TicketStatus;
   assigned_to: string | null;
+  staff_note?: string | null;
   created_at: string;
 };
 
@@ -57,6 +61,7 @@ export default function TicketManagementCard({
   const router = useRouter();
   const supabase = createClient();
 
+  const [staffNote, setStaffNote] = useState(ticket.staff_note ?? "");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -72,12 +77,13 @@ export default function TicketManagementCard({
           ? "OPEN"
           : "IN_PROGRESS";
 
-      const updateData =
+      const updateData: TicketUpdate =
         newStatus === "RESOLVED"
           ? {
               status: newStatus,
               assigned_to: staffId,
               resolved_at: new Date().toISOString(),
+              staff_note: staffNote.trim() || null,
             }
           : {
               status: newStatus,
@@ -85,7 +91,7 @@ export default function TicketManagementCard({
               resolved_at: null,
             };
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("service_tickets")
         .update(updateData)
         .eq("id", ticket.id)
@@ -93,7 +99,32 @@ export default function TicketManagementCard({
         .select("id")
         .maybeSingle();
 
-      if (error) {
+      if (
+        error &&
+        (error.message.includes("staff_note") ||
+          error.message.includes("schema cache") ||
+          error.code === "42703")
+      ) {
+        // Fallback if staff_note column is not yet present in Supabase table
+        const fallbackUpdate: TicketUpdate = {
+          status: updateData.status,
+          assigned_to: updateData.assigned_to,
+          resolved_at: updateData.resolved_at,
+        };
+        const retry = await supabase
+          .from("service_tickets")
+          .update(fallbackUpdate)
+          .eq("id", ticket.id)
+          .eq("status", expectedStatus)
+          .select("id")
+          .maybeSingle();
+
+        if (retry.error) {
+          setErrorMessage(retry.error.message);
+          return;
+        }
+        data = retry.data;
+      } else if (error) {
         setErrorMessage(error.message);
         return;
       }
@@ -103,6 +134,22 @@ export default function TicketManagementCard({
           "This ticket has already been updated. Refresh the page and try again."
         );
         return;
+      }
+
+      if (newStatus === "RESOLVED") {
+        try {
+          await supabase.from("notifications").insert({
+            user_id: ticket.requester_id,
+            title: `Service Ticket Resolved: ${ticket.subject}`,
+            message:
+              staffNote.trim() ||
+              "Your service ticket has been resolved by staff.",
+            type: "INFO",
+            is_read: false,
+          });
+        } catch {
+          // ignore notification error
+        }
       }
 
       router.refresh();
@@ -186,21 +233,57 @@ export default function TicketManagementCard({
           )}
 
           {ticket.status === "IN_PROGRESS" && (
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => updateTicket("RESOLVED")}
-              className="ui-button-primary w-full sm:w-auto"
-            >
-              {loading ? <Text id="Processing..." /> : <Text id="Resolve ticket" />}
-            </button>
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor={`solution-${ticket.id}`}
+                  className="block text-sm font-semibold text-[var(--foreground)]"
+                >
+                  <Text id="Initial troubleshooting / Solution instructions" />
+                </label>
+                <p className="mt-1 text-xs text-[var(--foreground-muted)]">
+                  <Text id="Provide initial troubleshooting instructions or advice for the user before resolving." />
+                </p>
+
+                <textarea
+                  id={`solution-${ticket.id}`}
+                  rows={4}
+                  value={staffNote}
+                  onChange={(e) => setStaffNote(e.target.value)}
+                  placeholder="ระบุคำแนะนำ วิธีแก้ปัญหาเบื้องต้น หรือข้อความตอบกลับผู้แจ้งเรื่อง..."
+                  className="ui-input mt-2 min-h-24 resize-y"
+                />
+              </div>
+
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => updateTicket("RESOLVED")}
+                className="ui-button-primary w-full sm:w-auto"
+              >
+                {loading ? <Text id="Processing..." /> : <Text id="Resolve ticket" />}
+              </button>
+            </div>
           )}
 
           {ticket.status === "RESOLVED" && (
-            <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4">
-              <p className="text-sm font-semibold text-[var(--success)]">
-                <Text id="Ticket resolved" />
-              </p>
+            <div className="space-y-3">
+              <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4">
+                <p className="text-sm font-semibold text-[var(--success)]">
+                  <Text id="Ticket resolved" />
+                </p>
+              </div>
+
+              {ticket.staff_note && (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--foreground-muted)]">
+                    <Text id="Resolution notes sent to user" />
+                  </p>
+                  <p className="mt-2 whitespace-pre-wrap break-words text-sm text-[var(--foreground)]">
+                    {ticket.staff_note}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

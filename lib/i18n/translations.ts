@@ -554,6 +554,10 @@ export const translations = {
     "en": "Image must not exceed 5 MB.",
     "th": "รูปภาพต้องมีขนาดไม่เกิน 5 MB"
   },
+  "Initial troubleshooting / Solution instructions": {
+    "en": "Initial troubleshooting / Solution instructions",
+    "th": "วิธีแก้ปัญหาเบื้องต้น / คำแนะนำการแก้ไข"
+  },
   "In Progress": {
     "en": "In Progress",
     "th": "กำลังดำเนินการ"
@@ -1054,6 +1058,10 @@ export const translations = {
     "en": "Processing...",
     "th": "กำลังดำเนินการ..."
   },
+  "Provide initial troubleshooting instructions or advice for the user before resolving.": {
+    "en": "Provide initial troubleshooting instructions or advice for the user before resolving.",
+    "th": "ระบุคำแนะนำหรือวิธีแก้ไขปัญหาเบื้องต้นให้ผู้แจ้งทราบก่อนปิดคำร้อง"
+  },
   "Provide enough information for Staff to review your claim.": {
     "en": "Provide enough information for Staff to review your claim.",
     "th": "ระบุข้อมูลให้เพียงพอเพื่อให้เจ้าหน้าที่ตรวจสอบคำขอเคลม"
@@ -1209,6 +1217,14 @@ export const translations = {
   "Resolved": {
     "en": "Resolved",
     "th": "แก้ไขแล้ว"
+  },
+  "Resolution advice from Staff": {
+    "en": "Resolution advice from Staff",
+    "th": "คำแนะนำและวิธีแก้ปัญหาจากเจ้าหน้าที่"
+  },
+  "Resolution notes sent to user": {
+    "en": "Resolution notes sent to user",
+    "th": "คำแนะนำ / วิธีแก้ปัญหาที่แจ้งผู้ใช้"
   },
   "Review Claims": {
     "en": "Review Claims",

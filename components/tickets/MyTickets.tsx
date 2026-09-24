@@ -12,6 +12,7 @@ type Ticket = {
   subject: string;
   description: string;
   status: string;
+  staff_note?: string | null;
   resolved_at: string | null;
   created_at: string;
   updated_at: string;
@@ -92,18 +93,34 @@ export default function MyTickets() {
         return;
       }
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("service_tickets")
         .select(
-          "id, claim_id, ticket_type, subject, description, status, resolved_at, created_at, updated_at"
+          "id, claim_id, ticket_type, subject, description, status, staff_note, resolved_at, created_at, updated_at"
         )
         .eq("requester_id", user.id)
         .order("created_at", { ascending: false });
 
+      let loadedTickets: Ticket[] = [];
+
+      if (error && (error.message?.includes("staff_note") || error.code === "42703")) {
+        const fallback = await supabase
+          .from("service_tickets")
+          .select(
+            "id, claim_id, ticket_type, subject, description, status, resolved_at, created_at, updated_at"
+          )
+          .eq("requester_id", user.id)
+          .order("created_at", { ascending: false });
+        loadedTickets = (fallback.data ?? []).map((t) => ({ ...t, staff_note: null })) as Ticket[];
+        error = fallback.error;
+      } else if (data) {
+        loadedTickets = data as Ticket[];
+      }
+
       if (error) {
         setMessage(error.message);
       } else {
-        setTickets((data ?? []) as Ticket[]);
+        setTickets(loadedTickets);
       }
 
       setLoading(false);
@@ -240,6 +257,36 @@ export default function MyTickets() {
                 </p>
               </div>
             </div>
+
+            {/* 3. คำแนะนำและวิธีแก้ปัญหาจากเจ้าหน้าที่ (Staff Resolution Note) */}
+            {ticket.staff_note && (
+              <div>
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="h-4 w-4 text-[var(--primary)]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+                    />
+                  </svg>
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+                    <Text id="Resolution advice from Staff" />
+                  </p>
+                </div>
+
+                <div className="mt-2 rounded-xl border border-[var(--primary)]/30 bg-[var(--primary-soft)]/30 p-4 text-sm leading-relaxed text-[var(--foreground)]">
+                  <p className="whitespace-pre-wrap break-words font-medium">
+                    {ticket.staff_note}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* ข้อมูลสรุปเพิ่มเติม */}
             <div className="grid gap-3 border-t border-[var(--border)] pt-4 text-xs text-[var(--foreground-muted)] sm:grid-cols-2">

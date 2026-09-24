@@ -40,9 +40,9 @@ export type Database = {
                 Relationships: []
             }
             service_tickets: {
-                Row: { assigned_to: string | null; claim_id: string | null; created_at: string; description: string; id: string; requester_id: string; resolved_at: string | null; status: string; subject: string; ticket_type: string; updated_at: string }
-                Insert: { assigned_to?: string | null; claim_id?: string | null; created_at?: string; description: string; id?: string; requester_id: string; resolved_at?: string | null; status?: string; subject: string; ticket_type: string; updated_at?: string }
-                Update: { assigned_to?: string | null; claim_id?: string | null; created_at?: string; description?: string; id?: string; requester_id?: string; resolved_at?: string | null; status?: string; subject?: string; ticket_type?: string; updated_at?: string }
+                Row: { assigned_to: string | null; claim_id: string | null; created_at: string; description: string; id: string; requester_id: string; resolved_at: string | null; staff_note: string | null; status: string; subject: string; ticket_type: string; updated_at: string }
+                Insert: { assigned_to?: string | null; claim_id?: string | null; created_at?: string; description: string; id?: string; requester_id: string; resolved_at?: string | null; staff_note?: string | null; status?: string; subject: string; ticket_type: string; updated_at?: string }
+                Update: { assigned_to?: string | null; claim_id?: string | null; created_at?: string; description?: string; id?: string; requester_id?: string; resolved_at?: string | null; staff_note?: string | null; status?: string; subject?: string; ticket_type?: string; updated_at?: string }
                 Relationships: []
             }
         }

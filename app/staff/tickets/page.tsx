@@ -10,17 +10,33 @@ export default async function StaffTicketsPage() {
   const staff = await requireStaff();
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("service_tickets")
     .select(
-      "id, requester_id, claim_id, ticket_type, subject, description, status, assigned_to, created_at, updated_at"
+      "id, requester_id, claim_id, ticket_type, subject, description, status, assigned_to, staff_note, created_at, updated_at"
     )
     .in("status", ["OPEN", "IN_PROGRESS", "RESOLVED"])
     .order("created_at", {
       ascending: false,
     });
 
-  const tickets = (data ?? []) as Ticket[];
+  let tickets: Ticket[] = [];
+
+  if (error && (error.message?.includes("staff_note") || error.code === "42703")) {
+    const fallback = await supabase
+      .from("service_tickets")
+      .select(
+        "id, requester_id, claim_id, ticket_type, subject, description, status, assigned_to, created_at, updated_at"
+      )
+      .in("status", ["OPEN", "IN_PROGRESS", "RESOLVED"])
+      .order("created_at", {
+        ascending: false,
+      });
+    tickets = (fallback.data ?? []).map((t) => ({ ...t, staff_note: null })) as Ticket[];
+    error = fallback.error;
+  } else {
+    tickets = (data ?? []) as Ticket[];
+  }
 
   const openCount = tickets.filter(
     (ticket) => ticket.status === "OPEN"
