@@ -7,5 +7,5 @@ export default async function StaffLayout({
 }>) {
     await requireStaff();
 
-    return children;
+    return <div data-accent="staff">{children}</div>;
 }

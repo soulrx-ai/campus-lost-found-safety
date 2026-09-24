@@ -7,17 +7,17 @@ export default function TicketsPage() {
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-4xl">
-          <header className="mb-7">
+          <header className="page-header mb-7">
             <h1 className="page-title"><Text id="My Service Tickets" /></h1>
 
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <p className="page-description">
                 <Text id="Track service requests you have submitted to Staff and follow their current progress." />
               </p>
 
               <Link
                 href="/tickets/new"
-                className="shrink-0 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-[var(--primary-contrast)] shadow-sm transition hover:bg-[var(--primary-hover)]"
+                className="ui-button-primary shrink-0"
               >
                 <Text id="+ Create Ticket" />
               </Link>

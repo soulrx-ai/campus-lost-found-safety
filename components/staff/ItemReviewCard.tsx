@@ -146,7 +146,7 @@ export default function ItemReviewCard({
                         </span>
                     </div>
 
-                    <h2 className="mt-3 break-words text-xl font-semibold text-[var(--foreground)]">
+                    <h2 className="mt-3 break-words text-xl font-semibold text-[var(--heading)]">
                         {item.name}
                     </h2>
 
@@ -209,7 +209,7 @@ export default function ItemReviewCard({
                 <div className="mt-6 border-t border-[var(--border)] pt-6">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                            <h3 className="text-sm font-semibold text-[var(--heading)]">
                                 <Text id="Private report image" />
                             </h3>
 

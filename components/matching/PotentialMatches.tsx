@@ -40,7 +40,7 @@ export default function PotentialMatches({
     if (matches.length === 0) {
         return (
             <div className="ui-card p-6 sm:p-8">
-                <h2 className="font-semibold text-[var(--foreground)]">
+                <h2 className="font-semibold text-[var(--heading)]">
                     <Text id="No found items available" />
                 </h2>
 
@@ -69,7 +69,7 @@ export default function PotentialMatches({
                                         <DisplayValue value="FOUND" />
                                     </span>
 
-                                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--foreground)]">
+                                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--heading)]">
                                         {item.name}
                                     </h2>
 

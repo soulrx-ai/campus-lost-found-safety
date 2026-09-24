@@ -7,5 +7,5 @@ export default async function SafetyLayout({
 }>) {
     await requireUser();
 
-    return children;
+    return <div data-accent="safety">{children}</div>;
 }

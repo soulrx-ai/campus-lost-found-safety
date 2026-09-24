@@ -5,15 +5,23 @@ import { translateUiText, type TranslationKey, type TranslationParams } from "@/
 import { displayValue } from "@/lib/i18n/display";
 
 // Client leaves let server pages keep their queries and guards on the server.
-export function Text({ id, params }: { id: TranslationKey; params?: TranslationParams }) {
+export function Text({ id, params, requiredIndicator = false }: { id: TranslationKey; params?: TranslationParams; requiredIndicator?: boolean }) {
   const { t } = useLanguage();
-  return <>{t(id, params)}</>;
+  return <>{requiredIndicator ? highlightRequired(t(id, params)) : t(id, params)}</>;
 }
 
 // For existing helper props containing known application copy, never user content.
-export function UiText({ text }: { text: string }) {
+export function UiText({ text, requiredIndicator = false }: { text: string; requiredIndicator?: boolean }) {
   const { language } = useLanguage();
-  return <>{translateUiText(language, text)}</>;
+  const translated = translateUiText(language, text);
+  return <>{requiredIndicator ? highlightRequired(translated) : translated}</>;
+}
+
+// Opt in only for required-field labels and their explanatory copy.
+function highlightRequired(text: string) {
+  return text.split("*").map((part, index) => (
+    <span key={index}>{index > 0 && <span className="required-indicator">*</span>}{part}</span>
+  ));
 }
 
 export function DisplayValue({ value }: { value: string }) {

@@ -133,7 +133,7 @@ export default function SafetyReportForm() {
     >
       <div>
         <label className="mb-1 block text-sm font-medium">
-          <Text id="Incident Title" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Incident Title" /> <span className="required-indicator">*</span>
         </label>
 
         <input
@@ -148,7 +148,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          <Text id="Description" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Description" /> <span className="required-indicator">*</span>
         </label>
 
         <textarea
@@ -163,7 +163,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          <Text id="Location" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Location" /> <span className="required-indicator">*</span>
         </label>
 
         <input
@@ -178,7 +178,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          <Text id="Incident Date / Time" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Incident Date / Time" /> <span className="required-indicator">*</span>
         </label>
 
         <input
@@ -192,7 +192,7 @@ export default function SafetyReportForm() {
 
       <div>
         <label className="mb-1 block text-sm font-medium">
-          <Text id="Incident Image" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Incident Image" /> <span className="required-indicator">*</span>
         </label>
 
         <input
@@ -220,7 +220,7 @@ export default function SafetyReportForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-red-700 px-4 py-3 font-medium text-white disabled:opacity-50"
+        className="ui-button-primary ui-button-safety w-full"
       >
         {loading ? <Text id="Submitting..." /> : <Text id="Submit Safety Incident" />}
       </button>

@@ -21,7 +21,7 @@ export default async function MatchingPage() {
         <main className="page-shell">
             <div className="app-container">
                 <div className="mx-auto max-w-5xl">
-                    <header className="mb-7">
+                    <header className="page-header mb-7">
                         <p className="page-eyebrow">
                             <Text id="Lost & Found" />
                         </p>
@@ -42,7 +42,7 @@ export default async function MatchingPage() {
                                     <Text id="NO LOST REPORTS" />
                                 </span>
 
-                                <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
+                                <h2 className="mt-4 text-lg font-semibold text-[var(--heading)]">
                                     <Text id="No published lost reports available" />
                                 </h2>
 
@@ -81,7 +81,7 @@ export default async function MatchingPage() {
                                                 <DisplayValue value="LOST" />
                                             </span>
 
-                                            <h2 className="mt-3 text-lg font-semibold text-[var(--foreground)]">
+                                            <h2 className="mt-3 text-lg font-semibold text-[var(--heading)]">
                                                 {item.name}
                                             </h2>
 

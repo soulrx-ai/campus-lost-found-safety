@@ -123,7 +123,7 @@ export default function TicketManagementCard({
             <DisplayValue value={ticket.ticket_type} />
           </p>
 
-          <h2 className="mt-1 break-words text-lg font-semibold text-[var(--foreground)]">
+          <h2 className="mt-1 break-words text-lg font-semibold text-[var(--heading)]">
             {ticket.subject}
           </h2>
 
