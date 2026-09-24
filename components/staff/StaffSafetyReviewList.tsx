@@ -12,7 +12,7 @@ type Props = {
   staffId: string;
 };
 
-type TabKey = "ALL" | "PENDING_REVIEW" | "PUBLISHED";
+type TabKey = "ALL" | "PENDING_REVIEW" | "PUBLISHED" | "REJECTED";
 
 export default function StaffSafetyReviewList({
   incidents,
@@ -26,6 +26,10 @@ export default function StaffSafetyReviewList({
 
   const publishedCount = incidents.filter(
     (item) => item.status === "PUBLISHED"
+  ).length;
+
+  const rejectedCount = incidents.filter(
+    (item) => item.status === "REJECTED"
   ).length;
 
   const filteredIncidents = incidents.filter((item) => {
@@ -129,6 +133,29 @@ export default function StaffSafetyReviewList({
             {publishedCount}
           </span>
         </button>
+
+        {rejectedCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setActiveTab("REJECTED")}
+            className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition ${
+              activeTab === "REJECTED"
+                ? "bg-[var(--danger)] text-white shadow-sm"
+                : "text-[var(--foreground-muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            <span><Text id="Rejected" /></span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                activeTab === "REJECTED"
+                  ? "bg-white/20 text-white"
+                  : "bg-[var(--danger-soft)] text-[var(--danger)]"
+              }`}
+            >
+              {rejectedCount}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Incident List */}

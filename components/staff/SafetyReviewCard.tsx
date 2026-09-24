@@ -38,6 +38,8 @@ function getStatusBadgeClass(status: string) {
       return "bg-[var(--success-soft)] text-[var(--success)] border border-[var(--success)]/20";
     case "PENDING_REVIEW":
       return "bg-[var(--warning-soft)] text-[var(--warning)] border border-[var(--warning)]/20";
+    case "REJECTED":
+      return "bg-[var(--danger-soft)] text-[var(--danger)] border border-[var(--danger)]/20";
     default:
       return "bg-[var(--primary-soft)] text-[var(--primary)] border border-[var(--primary)]/20";
   }
@@ -49,8 +51,10 @@ function getBorderClass(status: string) {
       return "border-l-[var(--success)]";
     case "PENDING_REVIEW":
       return "border-l-[var(--warning)]";
-    default:
+    case "REJECTED":
       return "border-l-[var(--danger)]";
+    default:
+      return "border-l-[var(--border-strong)]";
   }
 }
 
@@ -284,6 +288,28 @@ export default function SafetyReviewCard({
 
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
             {incident.status === "PENDING_REVIEW" && (
+              <>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => updateStatus("REJECTED")}
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--foreground-muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                >
+                  <Text id="Reject" />
+                </button>
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => updateStatus("PUBLISHED")}
+                  className="ui-button-primary w-full sm:w-auto"
+                >
+                  {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
+                </button>
+              </>
+            )}
+
+            {incident.status === "REJECTED" && (
               <button
                 type="button"
                 disabled={loading}
