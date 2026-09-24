@@ -45,7 +45,8 @@ export async function requireUser(): Promise<Profile> {
 export async function requireStaff(): Promise<Profile> {
     const profile = await requireUser();
 
-    if (profile.role !== "STAFF") {
+    // STAFF และ ADMIN สามารถเข้า Staff area ได้
+    if (profile.role !== "STAFF" && profile.role !== "ADMIN") {
         redirect("/");
     }
 
@@ -55,6 +56,7 @@ export async function requireStaff(): Promise<Profile> {
 export async function requireAdmin(): Promise<Profile> {
     const profile = await requireUser();
 
+    // เฉพาะ ADMIN
     if (profile.role !== "ADMIN") {
         redirect("/");
     }

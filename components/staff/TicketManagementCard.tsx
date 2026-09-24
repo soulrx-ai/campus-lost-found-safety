@@ -6,6 +6,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import {
+  formatTicketWithResolution,
+  parseTicketContent,
+} from "@/lib/tickets/content";
 
 type TicketUpdate = Database["public"]["Tables"]["service_tickets"]["Update"];
 
@@ -61,7 +65,12 @@ export default function TicketManagementCard({
   const router = useRouter();
   const supabase = createClient();
 
-  const [staffNote, setStaffNote] = useState(ticket.staff_note ?? "");
+  const { userDescription, staffResolution } = parseTicketContent(
+    ticket.description,
+    ticket.staff_note
+  );
+
+  const [staffNote, setStaffNote] = useState(staffResolution ?? "");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -77,13 +86,19 @@ export default function TicketManagementCard({
           ? "OPEN"
           : "IN_PROGRESS";
 
+      const noteToSave = staffNote.trim();
+      const combinedDescription = noteToSave
+        ? formatTicketWithResolution(userDescription, noteToSave)
+        : userDescription;
+
       const updateData: TicketUpdate =
         newStatus === "RESOLVED"
           ? {
               status: newStatus,
               assigned_to: staffId,
               resolved_at: new Date().toISOString(),
-              staff_note: staffNote.trim() || null,
+              description: combinedDescription,
+              staff_note: noteToSave || null,
             }
           : {
               status: newStatus,
@@ -110,6 +125,7 @@ export default function TicketManagementCard({
           status: updateData.status,
           assigned_to: updateData.assigned_to,
           resolved_at: updateData.resolved_at,
+          description: combinedDescription,
         };
         const retry = await supabase
           .from("service_tickets")
@@ -142,7 +158,7 @@ export default function TicketManagementCard({
             user_id: ticket.requester_id,
             title: `Service Ticket Resolved: ${ticket.subject}`,
             message:
-              staffNote.trim() ||
+              noteToSave ||
               "Your service ticket has been resolved by staff.",
             type: "INFO",
             is_read: false,
@@ -157,6 +173,66 @@ export default function TicketManagementCard({
       setErrorMessage(
         "Unable to update ticket. Please try again."
       );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function saveResolvedNote() {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const noteToSave = staffNote.trim();
+      const combinedDescription = noteToSave
+        ? formatTicketWithResolution(userDescription, noteToSave)
+        : userDescription;
+
+      const updateData: TicketUpdate = {
+        description: combinedDescription,
+        staff_note: noteToSave || null,
+      };
+
+      let { data, error } = await supabase
+        .from("service_tickets")
+        .update(updateData)
+        .eq("id", ticket.id)
+        .select("id")
+        .maybeSingle();
+
+      if (
+        error &&
+        (error.message.includes("staff_note") ||
+          error.message.includes("schema cache") ||
+          error.code === "42703")
+      ) {
+        const retry = await supabase
+          .from("service_tickets")
+          .update({ description: combinedDescription })
+          .eq("id", ticket.id)
+          .select("id")
+          .maybeSingle();
+
+        if (retry.error) {
+          setErrorMessage(retry.error.message);
+          return;
+        }
+        data = retry.data;
+      } else if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      if (!data) {
+        setErrorMessage(
+          "This ticket has already been updated. Refresh the page and try again."
+        );
+        return;
+      }
+
+      router.refresh();
+    } catch {
+      setErrorMessage("Unable to save note. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -195,7 +271,7 @@ export default function TicketManagementCard({
           </p>
 
           <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--foreground)]">
-            {ticket.description}
+            {userDescription}
           </p>
         </div>
 
@@ -267,23 +343,44 @@ export default function TicketManagementCard({
           )}
 
           {ticket.status === "RESOLVED" && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4">
                 <p className="text-sm font-semibold text-[var(--success)]">
                   <Text id="Ticket resolved" />
                 </p>
               </div>
 
-              {ticket.staff_note && (
-                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--foreground-muted)]">
-                    <Text id="Resolution notes sent to user" />
-                  </p>
-                  <p className="mt-2 whitespace-pre-wrap break-words text-sm text-[var(--foreground)]">
-                    {ticket.staff_note}
-                  </p>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                <label
+                  htmlFor={`resolved-note-${ticket.id}`}
+                  className="block text-xs font-bold uppercase tracking-wider text-[var(--foreground-muted)]"
+                >
+                  <Text id="Resolution notes sent to user" />
+                </label>
+                <p className="mt-1 text-xs text-[var(--foreground-muted)]">
+                  <Text id="Provide initial troubleshooting instructions or advice for the user before resolving." />
+                </p>
+
+                <textarea
+                  id={`resolved-note-${ticket.id}`}
+                  rows={3}
+                  value={staffNote}
+                  onChange={(e) => setStaffNote(e.target.value)}
+                  placeholder="ระบุคำแนะนำหรือวิธีแก้ไขปัญหาเบื้องต้นสำหรับผู้แจ้งเรื่อง..."
+                  className="ui-input mt-2 min-h-20 resize-y"
+                />
+
+                <div className="mt-3 flex justify-end">
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={saveResolvedNote}
+                    className="ui-button-primary w-full text-xs sm:w-auto"
+                  >
+                    {loading ? <Text id="Processing..." /> : <Text id="Save resolution note" />}
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           )}
         </div>

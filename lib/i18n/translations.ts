@@ -2382,6 +2382,10 @@ export const translations = {
     en: "Save Changes",
     th: "บันทึกการเปลี่ยนแปลง",
   },
+  "Save resolution note": {
+    en: "Save resolution note",
+    th: "บันทึกคำแนะนำ",
+  },
   "Saving...": {
     en: "Saving...",
     th: "กำลังบันทึก...",

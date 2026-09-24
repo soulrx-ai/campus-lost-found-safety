@@ -4,6 +4,7 @@ import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { parseTicketContent } from "@/lib/tickets/content";
 
 type Ticket = {
   id: string;
@@ -162,11 +163,17 @@ export default function MyTickets() {
         </div>
       )}
 
-      {tickets.map((ticket) => (
-        <article
-          key={ticket.id}
-          className="ui-card overflow-hidden shadow-sm transition hover:shadow-md"
-        >
+      {tickets.map((ticket) => {
+        const { userDescription, staffResolution } = parseTicketContent(
+          ticket.description,
+          ticket.staff_note
+        );
+
+        return (
+          <article
+            key={ticket.id}
+            className="ui-card overflow-hidden shadow-sm transition hover:shadow-md"
+          >
           {/* Header */}
           <div className="flex flex-col gap-3 border-b border-[var(--border)] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
             <div className="min-w-0">
@@ -253,13 +260,13 @@ export default function MyTickets() {
 
               <div className="mt-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm leading-relaxed text-[var(--foreground)]">
                 <p className="whitespace-pre-wrap break-words">
-                  {ticket.description}
+                  {userDescription}
                 </p>
               </div>
             </div>
 
             {/* 3. คำแนะนำและวิธีแก้ปัญหาจากเจ้าหน้าที่ (Staff Resolution Note) */}
-            {ticket.staff_note && (
+            {staffResolution && (
               <div>
                 <div className="flex items-center gap-2">
                   <svg
@@ -282,7 +289,7 @@ export default function MyTickets() {
 
                 <div className="mt-2 rounded-xl border border-[var(--primary)]/30 bg-[var(--primary-soft)]/30 p-4 text-sm leading-relaxed text-[var(--foreground)]">
                   <p className="whitespace-pre-wrap break-words font-medium">
-                    {ticket.staff_note}
+                    {staffResolution}
                   </p>
                 </div>
               </div>
@@ -333,7 +340,8 @@ export default function MyTickets() {
             </div>
           </div>
         </article>
-      ))}
+      );
+      })}
     </div>
   );
 }
