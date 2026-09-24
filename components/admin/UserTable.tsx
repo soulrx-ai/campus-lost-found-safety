@@ -326,10 +326,25 @@ export default function UserTable() {
                         <button
                           type="button"
                           aria-label={t("Delete {name}", { name: user.full_name })}
+                          title={t("Delete {name}", { name: user.full_name })}
                           onClick={() => openDeleteModal(user)}
-                          className="rounded-md p-1.5 text-[var(--foreground-muted)] transition hover:bg-red-50 hover:text-red-600"
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--danger)]/30 text-[var(--danger)] transition hover:bg-[var(--danger-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--danger)]"
                         >
-                          🗑️
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-5 w-5"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M8 6V4h8v2" />
+                            <path d="m19 6-1 14H6L5 6" />
+                            <path d="M10 11v5M14 11v5" />
+                          </svg>
                         </button>
                       </div>
                     </div>

@@ -51,7 +51,8 @@ function dateMatches(first: string, second: string) {
 
 export function calculateMatch(
     lostItem: MatchableItem,
-    foundItem: MatchableItem
+    foundItem: MatchableItem,
+    threshold = 70
 ): MatchResult {
     let score = 0;
 
@@ -77,6 +78,6 @@ export function calculateMatch(
 
     return {
         score,
-        isPotentialMatch: score > 70,
+        isPotentialMatch: score >= threshold,
     };
 }
