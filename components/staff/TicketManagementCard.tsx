@@ -4,10 +4,6 @@ import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import type { Database } from "@/types/database";
-
-type TicketUpdate = Database["public"]["Tables"]["service_tickets"]["Update"];
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -56,10 +52,8 @@ function statusClass(status: TicketStatus) {
 
 export default function TicketManagementCard({
   ticket,
-  staffId,
 }: Props) {
   const router = useRouter();
-  const supabase = createClient();
 
   const [staffNote, setStaffNote] = useState(ticket.staff_note ?? "");
   const [loading, setLoading] = useState(false);
@@ -68,88 +62,24 @@ export default function TicketManagementCard({
   async function updateTicket(
     newStatus: TicketStatus
   ) {
+    const note = staffNote.trim();
+    if (newStatus === "RESOLVED" && !note) {
+      setErrorMessage("A Staff Note is required before resolving a ticket.");
+      return;
+    }
     setLoading(true);
     setErrorMessage("");
 
     try {
-      const expectedStatus =
-        newStatus === "IN_PROGRESS"
-          ? "OPEN"
-          : "IN_PROGRESS";
-
-      const updateData: TicketUpdate =
-        newStatus === "RESOLVED"
-          ? {
-              status: newStatus,
-              assigned_to: staffId,
-              resolved_at: new Date().toISOString(),
-              staff_note: staffNote.trim() || null,
-            }
-          : {
-              status: newStatus,
-              assigned_to: staffId,
-              resolved_at: null,
-            };
-
-      let { data, error } = await supabase
-        .from("service_tickets")
-        .update(updateData)
-        .eq("id", ticket.id)
-        .eq("status", expectedStatus)
-        .select("id")
-        .maybeSingle();
-
-      if (
-        error &&
-        (error.message.includes("staff_note") ||
-          error.message.includes("schema cache") ||
-          error.code === "42703")
-      ) {
-        // Fallback if staff_note column is not yet present in Supabase table
-        const fallbackUpdate: TicketUpdate = {
-          status: updateData.status,
-          assigned_to: updateData.assigned_to,
-          resolved_at: updateData.resolved_at,
-        };
-        const retry = await supabase
-          .from("service_tickets")
-          .update(fallbackUpdate)
-          .eq("id", ticket.id)
-          .eq("status", expectedStatus)
-          .select("id")
-          .maybeSingle();
-
-        if (retry.error) {
-          setErrorMessage(retry.error.message);
-          return;
-        }
-        data = retry.data;
-      } else if (error) {
-        setErrorMessage(error.message);
+      const response = await fetch(`/api/staff/tickets/${ticket.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus, staff_note: note }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setErrorMessage(typeof result.error === "string" ? result.error : "Unable to update ticket. Please try again.");
         return;
-      }
-
-      if (!data) {
-        setErrorMessage(
-          "This ticket has already been updated. Refresh the page and try again."
-        );
-        return;
-      }
-
-      if (newStatus === "RESOLVED") {
-        try {
-          await supabase.from("notifications").insert({
-            user_id: ticket.requester_id,
-            title: `Service Ticket Resolved: ${ticket.subject}`,
-            message:
-              staffNote.trim() ||
-              "Your service ticket has been resolved by staff.",
-            type: "INFO",
-            is_read: false,
-          });
-        } catch {
-          // ignore notification error
-        }
       }
 
       router.refresh();
@@ -247,6 +177,7 @@ export default function TicketManagementCard({
 
                 <textarea
                   id={`solution-${ticket.id}`}
+                  required
                   rows={4}
                   value={staffNote}
                   onChange={(e) => setStaffNote(e.target.value)}
@@ -257,7 +188,7 @@ export default function TicketManagementCard({
 
               <button
                 type="button"
-                disabled={loading}
+                disabled={loading || !staffNote.trim()}
                 onClick={() => updateTicket("RESOLVED")}
                 className="ui-button-primary w-full sm:w-auto"
               >

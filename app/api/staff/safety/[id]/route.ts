@@ -14,11 +14,16 @@ export async function PATCH(
   request: Request,
   context: RouteContext
 ) {
+  let staff;
   try {
-    const staff = await requireStaff();
+    staff = await requireStaff();
+  } catch {
+    return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+  }
+  try {
     const { id } = await context.params;
-    const body = await request.json();
-    const status = body.status as unknown;
+    const body: unknown = await request.json().catch(() => null);
+    const status = body && typeof body === "object" && "status" in body ? body.status : null;
 
     if (!id) {
       return NextResponse.json(
@@ -49,7 +54,7 @@ export async function PATCH(
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
-      .in("status", ["PENDING_REVIEW", "REJECTED"])
+      .eq("status", "PENDING_REVIEW")
       .select("id, status")
       .maybeSingle();
 
@@ -74,11 +79,8 @@ export async function PATCH(
       success: true,
       data,
     });
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Unable to update incident.";
+  } catch {
+    const message = "Unable to update incident.";
 
     return NextResponse.json(
       { error: message },

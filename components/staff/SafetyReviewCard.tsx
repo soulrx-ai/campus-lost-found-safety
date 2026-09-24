@@ -241,7 +241,7 @@ export default function SafetyReviewCard({
         )}
 
         {/* Action Buttons */}
-        {incident.status !== "PUBLISHED" && (
+        {incident.status === "PENDING_REVIEW" && (
           <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-end">
             {incident.status === "PENDING_REVIEW" && (
               <>
@@ -265,16 +265,6 @@ export default function SafetyReviewCard({
               </>
             )}
 
-            {incident.status === "REJECTED" && (
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => updateStatus("PUBLISHED")}
-                className="ui-button-primary ui-button-safety w-full sm:w-auto"
-              >
-                {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
-              </button>
-            )}
           </div>
         )}
       </div>

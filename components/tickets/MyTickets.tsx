@@ -93,7 +93,7 @@ export default function MyTickets() {
         return;
       }
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("service_tickets")
         .select(
           "id, claim_id, ticket_type, subject, description, status, staff_note, resolved_at, created_at, updated_at"
@@ -101,21 +101,7 @@ export default function MyTickets() {
         .eq("requester_id", user.id)
         .order("created_at", { ascending: false });
 
-      let loadedTickets: Ticket[] = [];
-
-      if (error && (error.message?.includes("staff_note") || error.code === "42703")) {
-        const fallback = await supabase
-          .from("service_tickets")
-          .select(
-            "id, claim_id, ticket_type, subject, description, status, resolved_at, created_at, updated_at"
-          )
-          .eq("requester_id", user.id)
-          .order("created_at", { ascending: false });
-        loadedTickets = (fallback.data ?? []).map((t) => ({ ...t, staff_note: null })) as Ticket[];
-        error = fallback.error;
-      } else if (data) {
-        loadedTickets = data as Ticket[];
-      }
+      const loadedTickets = (data ?? []) as Ticket[];
 
       if (error) {
         setMessage(error.message);

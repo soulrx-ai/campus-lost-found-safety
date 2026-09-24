@@ -42,11 +42,11 @@ export default async function StaffSafetyPage() {
           ) : !incidents || incidents.length === 0 ? (
             <div className="ui-card p-6 sm:p-8">
               <h2 className="text-lg font-semibold text-[var(--heading)]">
-                <Text id="No pending incidents" />
+                <Text id="No safety incidents found." />
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
-                <Text id="There are currently no safety incidents waiting for Staff review." />
+                <Text id="No safety reports have been submitted yet." />
               </p>
             </div>
           ) : (
