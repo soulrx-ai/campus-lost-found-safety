@@ -103,7 +103,7 @@ if (cleanClaimId) {
     >
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          <Text id="Ticket Type" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Ticket Type" /> <span className="required-indicator">*</span>
         </label>
         <select
           required
@@ -136,7 +136,7 @@ if (cleanClaimId) {
 
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          <Text id="Subject" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Subject" /> <span className="required-indicator">*</span>
         </label>
         <input
           required
@@ -149,7 +149,7 @@ if (cleanClaimId) {
 
       <div>
         <label className="mb-1 block text-sm font-medium text-stone-800 dark:text-[var(--foreground)]">
-          <Text id="Description" /> <span className="text-red-500 dark:text-[var(--danger)]">*</span>
+          <Text id="Description" /> <span className="required-indicator">*</span>
         </label>
         <textarea
           required
@@ -169,7 +169,7 @@ if (cleanClaimId) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-stone-800 px-4 py-3 font-medium text-white disabled:opacity-50 hover:bg-stone-900"
+        className="ui-button-primary w-full"
       >
         {loading ? <Text id="Creating..." /> : <Text id="Create Ticket" />}
       </button>

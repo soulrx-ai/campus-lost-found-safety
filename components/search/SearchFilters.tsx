@@ -41,7 +41,7 @@ export default function SearchFilters({
     return (
         <section className="ui-card overflow-hidden">
             <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
-                <h2 className="font-semibold text-[var(--foreground)]">
+                <h2 className="font-semibold text-[var(--heading)]">
                     <Text id="Search Filters" />
                 </h2>
 

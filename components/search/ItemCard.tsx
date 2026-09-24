@@ -30,7 +30,7 @@ export default function ItemCard({
                         <DisplayValue value={item.report_type} />
                     </span>
 
-                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--foreground)]">
+                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--heading)]">
                         {item.name}
                     </h2>
                 </div>

@@ -6,7 +6,7 @@ export default function ClaimsPage() {
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-4xl">
-          <header className="mb-7">
+          <header className="page-header mb-7">
             <p className="page-eyebrow"><Text id="Lost & Found" /></p>
 
             <h1 className="page-title"><Text id="My Claims" /></h1>

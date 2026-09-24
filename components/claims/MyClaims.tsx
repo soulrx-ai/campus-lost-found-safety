@@ -103,7 +103,7 @@ export default function MyClaims() {
 
       {!message && claims.length === 0 && (
         <div className="ui-card p-6 sm:p-8">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+          <h2 className="text-lg font-semibold text-[var(--heading)]">
             <Text id="No claims yet" />
           </h2>
 
@@ -124,7 +124,7 @@ export default function MyClaims() {
                 <Text id="Claim" />
               </p>
 
-              <h2 className="mt-1 font-semibold text-[var(--foreground)]">
+              <h2 className="mt-1 font-semibold text-[var(--heading)]">
                 #{claim.id.slice(0, 8)}
               </h2>
 

@@ -152,7 +152,7 @@ export default function MyTickets() {
 
       {!message && tickets.length === 0 && (
         <div className="ui-card p-6 sm:p-8">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+          <h2 className="text-lg font-semibold text-[var(--heading)]">
             <Text id="No service tickets" />
           </h2>
 
@@ -176,7 +176,7 @@ export default function MyTickets() {
                 <span><DisplayValue value={ticket.ticket_type} /></span>
               </div>
 
-              <h2 className="mt-1.5 break-words text-xl font-bold text-[var(--foreground)]">
+              <h2 className="mt-1.5 break-words text-xl font-bold text-[var(--heading)]">
                 {ticket.subject}
               </h2>
             </div>

@@ -45,7 +45,7 @@ export default async function MatchDetailPage({
         <main className="page-shell">
             <div className="app-container">
                 <div className="mx-auto max-w-5xl">
-                    <header className="mb-7">
+                    <header className="page-header mb-7">
                         <p className="page-eyebrow">
                             <Text id="Matching" />
                         </p>

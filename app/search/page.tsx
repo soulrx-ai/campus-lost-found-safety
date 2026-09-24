@@ -160,7 +160,7 @@ export default function SearchPage() {
         <main className="page-shell">
             <div className="app-container">
                 <div className="mx-auto max-w-6xl">
-                    <header className="mb-7">
+                    <header className="page-header mb-7">
                         <p className="page-eyebrow">
                             <Text id="Lost & Found" />
                         </p>
@@ -195,7 +195,7 @@ export default function SearchPage() {
                         <section className="mt-7">
                             <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
                                 <div>
-                                    <h2 className="text-lg font-semibold text-[var(--foreground)]">
+                                    <h2 className="text-lg font-semibold text-[var(--heading)]">
                                         <Text id="Published Items" />
                                     </h2>
 

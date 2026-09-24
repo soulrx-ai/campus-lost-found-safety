@@ -146,7 +146,7 @@ export default function ProfileForm({
     >
       <section className="ui-card p-5 sm:p-6">
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+          <h2 className="text-lg font-semibold text-[var(--heading)]">
             <Text id="Personal Information" />
           </h2>
 
@@ -163,7 +163,7 @@ export default function ProfileForm({
             >
               <Text id="Full Name" />
               <span
-                className="ml-1 text-[var(--danger)]"
+                className="ml-1 required-indicator"
                 aria-hidden="true"
               >
                 *
@@ -244,7 +244,7 @@ export default function ProfileForm({
 
       <section className="ui-card p-5 sm:p-6">
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+          <h2 className="text-lg font-semibold text-[var(--heading)]">
             <Text id="Account Information" />
           </h2>
 
@@ -260,7 +260,7 @@ export default function ProfileForm({
             </p>
 
             <div className="ui-input cursor-not-allowed bg-[var(--surface-soft)] text-[var(--foreground-muted)]">
-              <DisplayValue value={initialProfile.role} />
+              <span className="role-badge rounded-full px-2 py-1" data-accent={initialProfile.role.toLowerCase()}><DisplayValue value={initialProfile.role} /></span>
             </div>
           </div>
 

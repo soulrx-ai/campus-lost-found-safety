@@ -228,7 +228,7 @@ export default function UserTable() {
         <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-semibold text-[var(--foreground)]">
+              <h2 className="font-semibold text-[var(--heading)]">
                 <Text id="Registered users" />
               </h2>
 
@@ -362,7 +362,7 @@ export default function UserTable() {
           <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 shadow-xl">
             <h2
               id="delete-user-title"
-              className="text-lg font-semibold text-[var(--foreground)]"
+              className="text-lg font-semibold text-[var(--heading)]"
             >
               <Text id="Delete account?" />
             </h2>
@@ -422,7 +422,7 @@ export default function UserTable() {
           <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 text-center shadow-xl">
             <h2
               id="delete-success-title"
-              className="text-lg font-semibold text-[var(--foreground)]"
+              className="text-lg font-semibold text-[var(--heading)]"
             >
               <Text id="Account deleted successfully" />
             </h2>
@@ -434,7 +434,7 @@ export default function UserTable() {
             <button
               type="button"
               onClick={() => setDeleteSuccess(false)}
-              className="ui-button-primary mt-6"
+              className="ui-button-secondary mt-6"
             >
               <Text id="OK" />
             </button>
@@ -452,7 +452,7 @@ export default function UserTable() {
           <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 text-center shadow-xl">
             <h2
               id="delete-warning-title"
-              className="text-lg font-semibold text-[var(--foreground)]"
+              className="text-lg font-semibold text-[var(--heading)]"
             >
               <Text id="Cannot delete this account" />
             </h2>
@@ -464,7 +464,7 @@ export default function UserTable() {
             <button
               type="button"
               onClick={() => setDeleteWarning("")}
-              className="ui-button-primary mt-6"
+              className="ui-button-secondary mt-6"
             >
               <Text id="OK" />
             </button>

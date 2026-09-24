@@ -175,7 +175,7 @@ export default function SafetyReviewCard({
             <Text id="Safety Incident" />
           </p>
 
-          <h2 className="mt-1 break-words text-xl font-semibold text-[var(--foreground)]">
+          <h2 className="mt-1 break-words text-xl font-semibold text-[var(--heading)]">
             {incident.title}
           </h2>
 
@@ -302,7 +302,7 @@ export default function SafetyReviewCard({
                   type="button"
                   disabled={loading}
                   onClick={() => updateStatus("PUBLISHED")}
-                  className="ui-button-primary w-full sm:w-auto"
+                  className="ui-button-primary ui-button-safety w-full sm:w-auto"
                 >
                   {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
                 </button>
@@ -314,7 +314,7 @@ export default function SafetyReviewCard({
                 type="button"
                 disabled={loading}
                 onClick={() => updateStatus("PUBLISHED")}
-                className="ui-button-primary w-full sm:w-auto"
+                className="ui-button-primary ui-button-safety w-full sm:w-auto"
               >
                 {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
               </button>

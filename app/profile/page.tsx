@@ -38,7 +38,7 @@ export default async function ProfilePage() {
   return (
     <main className="page-shell">
       <div className="app-container">
-        <div className="mb-8">
+        <div className="page-header mb-8">
           <p className="page-eyebrow">
             <Text id="Account" />
           </p>

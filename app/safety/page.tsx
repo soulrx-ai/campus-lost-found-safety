@@ -157,7 +157,7 @@ export default function SafetyPage() {
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-5xl">
-          <header className="mb-7">
+          <header className="page-header mb-7">
             <p className="text-sm font-semibold text-[var(--danger)]">
               <Text id="Campus Safety" />
             </p>
@@ -208,7 +208,7 @@ export default function SafetyPage() {
                       <Text id="Safety Incident" />
                     </p>
 
-                    <h2 className="mt-1 break-words text-xl font-semibold text-[var(--foreground)]">
+                    <h2 className="mt-1 break-words text-xl font-semibold text-[var(--heading)]">
                       {incident.title}
                     </h2>
                   </div>
@@ -274,7 +274,7 @@ export default function SafetyPage() {
                   <Text id="Incident Details" />
                 </p>
 
-                <h2 className="mt-1 break-words text-xl font-semibold text-[var(--foreground)] sm:text-2xl">
+                <h2 className="mt-1 break-words text-xl font-semibold text-[var(--heading)] sm:text-2xl">
                   {selectedIncident.title}
                 </h2>
 
