@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { test } from "node:test";
 import vm from "node:vm";
@@ -87,6 +87,134 @@ for (const role of ["ADMIN", "USER", "STAFF"]) {
     else await assert.rejects(guards.requireStaff(), /redirect/);
   });
 }
+
+function searchClient({ user = { id: "user" }, status = "ACTIVE", items = [], itemError = null } = {}) {
+  const calls = [];
+  const client = {
+    calls,
+    auth: { getUser: async () => ({ data: { user }, error: null }) },
+    from(table) {
+      const queryCalls = [];
+      calls.push([table, queryCalls]);
+      const query = new Proxy({}, { get(_, method) {
+        if (method === "then") {
+          const result = table === "profiles"
+            ? { data: { status }, error: null }
+            : { data: items, error: itemError };
+          return (ok, fail) => Promise.resolve(result).then(ok, fail);
+        }
+        return (...args) => { queryCalls.push([method, ...args]); return query; };
+      } });
+      return query;
+    },
+  };
+  return client;
+}
+
+function searchRoute(client) {
+  return load("app/api/search/route.ts", {
+    "@/lib/supabase/server": { createClient: async () => client },
+    "@/lib/semanticSearch": load("lib/semanticSearch.ts"),
+  });
+}
+
+test("search API rejects anonymous and inactive accounts before item access", async () => {
+  for (const fixture of [
+    { client: searchClient({ user: null }), expected: 401 },
+    { client: searchClient({ status: "INACTIVE" }), expected: 403 },
+  ]) {
+    const response = await searchRoute(fixture.client).GET(
+      new Request("https://test.invalid/api/search?q=phone")
+    );
+    assert.equal(response.status, fixture.expected);
+    assert.equal(fixture.client.calls.some(([table]) => table === "items"), false);
+  }
+});
+
+test("search API requests only published public card fields and strips private data", async () => {
+  const privateRow = {
+    id: "item", report_type: "FOUND", name: "Phone", category: "Electronics",
+    brand: "Example", color: "Black", date_time: "2026-09-25", location: "Library",
+    image_url: "private.jpg", evidence: "secret", reporter_id: "private-user",
+  };
+  const client = searchClient({ items: Array.from({ length: 60 }, (_, index) => ({ ...privateRow, id: `item-${index}` })) });
+  const response = await searchRoute(client).GET(new Request("https://test.invalid/api/search?q=phone"));
+  const body = await response.json();
+  const itemCalls = client.calls.find(([table]) => table === "items")[1];
+
+  assert.equal(response.status, 200);
+  assert.equal(body.searchMode, "multilingual_dictionary");
+  assert.equal(body.results.length, 50);
+  assert.ok(itemCalls.some(call => call[0] === "select" && call[1] === "id, report_type, name, category, brand, color, date_time, location"));
+  assert.ok(itemCalls.some(call => call[0] === "eq" && call[1] === "status" && call[2] === "PUBLISHED"));
+  assert.ok(itemCalls.some(call => call[0] === "limit" && call[1] === 100));
+  assert.deepEqual(Object.keys(body.results[0]).sort(), ["brand", "category", "color", "date_time", "id", "location", "name", "report_type"]);
+  assert.equal(JSON.stringify(body).includes("private.jpg"), false);
+  assert.equal(JSON.stringify(body).includes("private-user"), false);
+});
+
+test("search API rejects oversized query parameters before item access", async () => {
+  const client = searchClient();
+  const response = await searchRoute(client).GET(
+    new Request(`https://test.invalid/api/search?q=${"x".repeat(101)}`)
+  );
+  assert.equal(response.status, 400);
+  assert.equal(client.calls.some(([table]) => table === "items"), false);
+});
+
+test("secure matching migration is timestamped, replay-safe, and authenticated-only", () => {
+  const path = "supabase/migrations/20260925103000_create_secure_match_items_function.sql";
+  const bytes = readFileSync(path);
+  const sql = bytes.toString("utf8").toLowerCase();
+  assert.equal(existsSync("supabase/migrations/match_items_function.sql"), false);
+  assert.equal(bytes.subarray(0, 3).equals(Buffer.from([0xef, 0xbb, 0xbf])), false);
+  assert.match(sql, /set search_path = public, extensions/);
+  assert.match(sql, /profiles\.status = 'active'/);
+  assert.match(sql, /items\.status = 'published'/);
+  assert.match(sql, /from public, anon, service_role/);
+  assert.match(sql, /to authenticated/);
+  assert.doesNotMatch(sql, /grant execute[\s\S]*to anon/);
+});
+
+test("embedding endpoint requires JWT verification, authentication, bounded input, and explicit prefixes", () => {
+  const config = readFileSync("supabase/config.toml", "utf8");
+  const source = readFileSync("supabase/functions/generate-embedding/index.ts", "utf8");
+  assert.match(config, /verify_jwt = true/);
+  assert.match(source, /request\.method !== "POST"/);
+  assert.match(source, /supabase\.auth\.getUser\(\)/);
+  assert.match(source, /\.from\("profiles"\)[\s\S]*\.select\("status"\)[\s\S]*\.eq\("id", user\.id\)[\s\S]*\.maybeSingle\(\)/);
+  assert.match(source, /profileError \|\| profile\?\.status !== "ACTIVE"/);
+  assert.match(source, /active account is required[\s\S]*403/i);
+  assert.match(source, /MAX_TEXT_LENGTH/);
+  assert.match(source, /prefix !== "query" && prefix !== "passage"/);
+  assert.doesNotMatch(source, /SERVICE_ROLE/);
+});
+
+test("embedding backfill uses the authenticated user token for function and database requests", () => {
+  const source = readFileSync("scripts/backfill-embeddings.ts", "utf8");
+  assert.match(source, /`\$\{SUPABASE_URL\}\/functions\/v1\/generate-embedding`/);
+  assert.match(source, /createClient\(SUPABASE_URL, SUPABASE_KEY, \{[\s\S]*Authorization: `Bearer \$\{ACCESS_TOKEN\}`/);
+  assert.match(source, /Unable to read items with the supplied user access token/);
+  assert.match(source, /\.update\(\{ embedding \}\)[\s\S]*\.select\("id"\)[\s\S]*\.maybeSingle\(\)/);
+  assert.match(source, /process\.exitCode = 1/);
+  assert.doesNotMatch(source, /SERVICE_ROLE/);
+});
+
+test("password visibility toggle is keyboard accessible and translated", () => {
+  const { default: PasswordInput } = load("components/auth/PasswordInput.tsx", {
+    react: { useState: value => [value, () => {}] },
+    "@/components/i18n/LanguageProvider": { useLanguage: () => ({ t: value => `translated:${value}` }) },
+  });
+  const html = require("react-dom/server").renderToStaticMarkup(
+    PasswordInput({ id: "password", autoComplete: "current-password", value: "secret", onChange() {} })
+  );
+  assert.match(html, /type="button"/);
+  assert.match(html, /aria-label="translated:Show password"/);
+  assert.match(html, /aria-pressed="false"/);
+  assert.match(html, /focus-visible:outline/);
+  assert.match(html, /autoComplete="current-password"/i);
+  assert.doesNotMatch(html, /tabindex="-1"/i);
+});
 
 test("Staff dashboard loads exact workflow counts and preserves query failures", async () => {
   const calls = [];

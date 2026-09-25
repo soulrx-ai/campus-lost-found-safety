@@ -2625,6 +2625,14 @@ export const translations = {
     en: "Loading Staff dashboard...",
     th: "กำลังโหลดแดชบอร์ดเจ้าหน้าที่...",
   },
+  "Show password": {
+    en: "Show password",
+    th: "แสดงรหัสผ่าน",
+  },
+  "Hide password": {
+    en: "Hide password",
+    th: "ซ่อนรหัสผ่าน",
+  },
 } as const satisfies Record<string, Record<Language, string>>;
 
 export type TranslationKey = keyof typeof translations;

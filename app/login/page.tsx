@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import AuthPreferences from "@/components/i18n/AuthPreferences";
 import { AppMessage, Text } from "@/components/i18n/Text";

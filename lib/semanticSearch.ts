@@ -1,4 +1,4 @@
-﻿// Keyboard layout mapping (Kedmanee <-> English)
+// Keyboard layout mapping (Kedmanee <-> English)
 const EN_TO_TH: Record<string, string> = {
   'q': 'ๆ', 'w': 'ไ', 'e': 'ำ', 'r': 'พ', 't': 'ะ', 'y': 'ั', 'u': 'ี', 'i': 'ร', 'o': 'น', 'p': 'ย', '[': 'บ', ']': 'ล',
   'a': 'ฟ', 's': 'ห', 'd': 'ก', 'f': 'ด', 'g': 'เ', 'h': '้', 'j': '่', 'k': 'า', 'l': 'ส', ';': 'ว', "'": 'ง',
@@ -30,7 +30,7 @@ export function getQueryVariants(text: string): string[] {
   return Array.from(set).filter(Boolean);
 }
 
-// Multilingual Semantic Concepts
+// Multilingual concept dictionary used as a non-vector search fallback.
 export interface SemanticConcept {
   id: string;
   categoryHints: string[];
