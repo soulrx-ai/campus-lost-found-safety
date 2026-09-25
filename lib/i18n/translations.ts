@@ -2553,6 +2553,78 @@ export const translations = {
     en: "Items with a match score of {threshold}% or higher can proceed to the claim process for Staff review.",
     th: "รายการที่มีคะแนนจับคู่ตั้งแต่ {threshold}% ขึ้นไปสามารถเข้าสู่ขั้นตอนเคลมเพื่อให้เจ้าหน้าที่ตรวจสอบ",
   },
+  "Staff Dashboard": {
+    en: "Staff Dashboard",
+    th: "แดชบอร์ดเจ้าหน้าที่",
+  },
+  "Review current operational workload and open each Staff workflow.": {
+    en: "Review current operational workload and open each Staff workflow.",
+    th: "ตรวจสอบภาระงานปัจจุบันและเข้าสู่ขั้นตอนงานของเจ้าหน้าที่แต่ละส่วน",
+  },
+  "Current workload": {
+    en: "Current workload",
+    th: "ภาระงานปัจจุบัน",
+  },
+  "Live records currently requiring Staff attention.": {
+    en: "Live records currently requiring Staff attention.",
+    th: "รายการปัจจุบันที่ต้องได้รับการดำเนินการจากเจ้าหน้าที่",
+  },
+  "tasks requiring attention": {
+    en: "tasks requiring attention",
+    th: "งานที่ต้องดำเนินการ",
+  },
+  "Items pending review": {
+    en: "Items pending review",
+    th: "รายการสิ่งของที่รอตรวจสอบ",
+  },
+  "Claims waiting for review": {
+    en: "Claims waiting for review",
+    th: "คำขอเคลมที่รอตรวจสอบ",
+  },
+  "Approved claims waiting for handover": {
+    en: "Approved claims waiting for handover",
+    th: "คำขอเคลมที่อนุมัติแล้วและรอส่งมอบ",
+  },
+  "Safety incidents pending review": {
+    en: "Safety incidents pending review",
+    th: "เหตุการณ์ความปลอดภัยที่รอตรวจสอบ",
+  },
+  "Tickets open or in progress": {
+    en: "Tickets open or in progress",
+    th: "คำร้องที่เปิดอยู่หรือกำลังดำเนินการ",
+  },
+  "Unable to load count": {
+    en: "Unable to load count",
+    th: "ไม่สามารถโหลดจำนวนรายการได้",
+  },
+  "No pending Staff work": {
+    en: "No pending Staff work",
+    th: "ไม่มีงานของเจ้าหน้าที่ที่รอดำเนินการ",
+  },
+  "There are no items, claims, handovers, incidents, or tickets waiting for attention.": {
+    en: "There are no items, claims, handovers, incidents, or tickets waiting for attention.",
+    th: "ไม่มีรายการสิ่งของ คำขอเคลม การส่งมอบ เหตุการณ์ หรือคำร้องที่รอดำเนินการ",
+  },
+  "Staff workflows": {
+    en: "Staff workflows",
+    th: "ขั้นตอนงานของเจ้าหน้าที่",
+  },
+  "Review pending lost and found reports.": {
+    en: "Review pending lost and found reports.",
+    th: "ตรวจสอบรายงานของหายและของที่พบซึ่งกำลังรอการพิจารณา",
+  },
+  "Review pending campus safety incidents.": {
+    en: "Review pending campus safety incidents.",
+    th: "ตรวจสอบเหตุการณ์ความปลอดภัยภายในมหาวิทยาลัยที่รอการพิจารณา",
+  },
+  "Process open and in-progress service tickets.": {
+    en: "Process open and in-progress service tickets.",
+    th: "ดำเนินการคำร้องบริการที่เปิดอยู่และกำลังดำเนินการ",
+  },
+  "Loading Staff dashboard...": {
+    en: "Loading Staff dashboard...",
+    th: "กำลังโหลดแดชบอร์ดเจ้าหน้าที่...",
+  },
 } as const satisfies Record<string, Record<Language, string>>;
 
 export type TranslationKey = keyof typeof translations;

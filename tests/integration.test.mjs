@@ -88,6 +88,64 @@ for (const role of ["ADMIN", "USER", "STAFF"]) {
   });
 }
 
+test("Staff dashboard loads exact workflow counts and preserves query failures", async () => {
+  const calls = [];
+  const client = database((table, queryCalls) => {
+    calls.push([table, queryCalls]);
+    const filter = queryCalls.find(call => call[0] === "eq" || call[0] === "in");
+    if (table === "security_incidents") {
+      return { count: null, error: { message: "incident count failed" } };
+    }
+    if (table === "service_tickets") return { count: 5, error: null };
+    if (table === "items") return { count: 2, error: null };
+    return { count: filter?.[2] === "APPROVED" ? 3 : 4, error: null };
+  });
+  const { loadStaffDashboard } = load("lib/staff/dashboard.ts");
+  const metrics = await loadStaffDashboard(client);
+
+  assert.deepEqual(Array.from(metrics, metric => [metric.key, metric.count, metric.error]), [
+    ["items", 2, null],
+    ["claims", 4, null],
+    ["handovers", 3, null],
+    ["safety", null, "incident count failed"],
+    ["tickets", 5, null],
+  ]);
+  assert.equal(calls.length, 5);
+  assert.ok(calls.every(([, queryCalls]) => queryCalls.some(call =>
+    call[0] === "select" && call[1] === "id" && call[2]?.count === "exact" && call[2]?.head === true
+  )));
+  assert.ok(calls.some(([table, queryCalls]) => table === "service_tickets" && queryCalls.some(call =>
+    call[0] === "in" && call[1] === "status" && Array.from(call[2]).join(",") === "OPEN,IN_PROGRESS"
+  )));
+});
+
+test("Staff dashboard renders partial errors and all workflow links after Staff authorization", async () => {
+  let authorized = 0;
+  const metrics = [
+    { key: "items", count: 2, error: null },
+    { key: "claims", count: null, error: "claims unavailable" },
+    { key: "handovers", count: 1, error: null },
+    { key: "safety", count: 0, error: null },
+    { key: "tickets", count: 3, error: null },
+  ];
+  const page = load("app/staff/page.tsx", {
+    "next/link": { default: "a" },
+    "@/components/i18n/Text": { Text: ({ id }) => id },
+    "@/lib/auth/guards": { requireStaff: async () => { authorized++; return staff; } },
+    "@/lib/staff/dashboard": { loadStaffDashboard: async () => metrics },
+    "@/lib/supabase/server": { createClient: async () => ({}) },
+  });
+  const html = require("react-dom/server").renderToStaticMarkup(await page.default());
+
+  assert.equal(authorized, 1);
+  assert.match(html, /claims unavailable/);
+  assert.match(html, /role="alert"/);
+  for (const href of ["/staff/items", "/staff/claims", "/staff/safety", "/staff/tickets"]) {
+    assert.match(html, new RegExp(`href="${href}"`));
+  }
+  assert.doesNotMatch(html, /image_url|evidence|requester_id|reporter_id/);
+});
+
 function ticketHandler({ updateError = null, notificationError = null, denied = false, missing = false } = {}) {
   const writes = [];
   const client = { rpc: async (name, args) => {

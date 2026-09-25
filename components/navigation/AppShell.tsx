@@ -569,6 +569,11 @@ function AuthenticatedShell({ children, pathname }: {
                             {profile.role === "STAFF" && (
                                 <NavSection title="Staff">
                                     <SideLink
+                                        href="/staff"
+                                        label="Dashboard"
+                                        pathname={pathname}
+                                    />
+                                    <SideLink
                                         href="/staff/items"
                                         label="Review Items"
                                         pathname={pathname}
