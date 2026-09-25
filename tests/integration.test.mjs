@@ -39,6 +39,42 @@ const context = { params: Promise.resolve({ id: "test-id" }) };
 const request = (body) => new Request("https://test.invalid/api", { method: "PATCH", body: JSON.stringify(body) });
 const staff = { id: "staff", role: "STAFF", status: "ACTIVE" };
 
+for (const role of [null, "USER", "STAFF", "ADMIN"]) {
+  for (const status of ["ACTIVE", "INACTIVE"]) {
+    test(`category routes enforce ${role ?? "anonymous"}/${status}`, async () => {
+      const reads = [];
+      let privileged = 0;
+      const client = database((table, calls) => {
+        if (table === "profiles") return { data: { role, status }, error: null };
+        reads.push(calls);
+        return { data: [], error: null };
+      });
+      client.auth = { getUser: async () => ({ data: { user: role ? { id: "user" } : null } }) };
+      const mocks = {
+        "@/lib/supabase/server": { createClient: async () => client },
+        "@/lib/supabase/admin": { createAdminClient: () => {
+          privileged++;
+          return { ...database(() => ({ data: { id: "category" }, error: null })), rpc: async () => ({ error: null }) };
+        } },
+      };
+      const collection = load("app/api/categories/route.ts", mocks);
+      const individual = load("app/api/categories/[id]/route.ts", mocks);
+      const baseStatus = !role ? 401 : status !== "ACTIVE" ? 403 : 200;
+      assert.equal((await collection.GET(new Request("https://test.invalid/api/categories"))).status, baseStatus);
+      if (baseStatus === 200) assert.ok(reads[0].some(call => call[0] === "eq" && call[1] === "is_active" && call[2] === true));
+      const adminStatus = !role ? 401 : status !== "ACTIVE" || role !== "ADMIN" ? 403 : 200;
+      assert.equal((await collection.GET(new Request("https://test.invalid/api/categories?includeInactive=true"))).status, adminStatus);
+      const ctx = { params: Promise.resolve({ id: "00000000-0000-0000-0000-000000000001" }) };
+      assert.equal((await collection.POST(request({ name: "New" }))).status, adminStatus === 200 ? 201 : adminStatus);
+      for (const is_active of [true, false]) {
+        assert.equal((await individual.PATCH(request({ name: "Renamed", is_active }), ctx)).status, adminStatus);
+      }
+      assert.equal((await individual.DELETE(request({}), ctx)).status, adminStatus);
+      assert.equal(privileged, adminStatus === 200 ? 4 : 0);
+    });
+  }
+}
+
 for (const role of ["ADMIN", "USER", "STAFF"]) {
   test(`requireStaff enforces the ${role} boundary`, async () => {
     const client = database(() => ({ data: { ...staff, role }, error: null }));

@@ -39,10 +39,14 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles").select("role, status").eq("id", user.id).single();
+    if (profileError || !profile || profile.status !== "ACTIVE") {
+      return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+    }
     const includeInactive = new URL(request.url).searchParams.get("includeInactive") === "true";
-    if (includeInactive) {
-      const denied = await requireAdmin();
-      if (denied) return denied;
+    if (includeInactive && profile.role !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden." }, { status: 403 });
     }
 
     let query = supabase
