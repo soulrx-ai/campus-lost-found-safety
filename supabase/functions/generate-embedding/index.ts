@@ -55,6 +55,15 @@ serve(async (request) => {
     return json({ error: "Authentication required." }, 401);
   }
 
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("status")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (profileError || profile?.status !== "ACTIVE") {
+    return json({ error: "An active account is required." }, 403);
+  }
+
   let body: unknown;
   try {
     body = await request.json();

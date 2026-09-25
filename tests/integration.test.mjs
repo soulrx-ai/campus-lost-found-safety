@@ -182,8 +182,21 @@ test("embedding endpoint requires JWT verification, authentication, bounded inpu
   assert.match(config, /verify_jwt = true/);
   assert.match(source, /request\.method !== "POST"/);
   assert.match(source, /supabase\.auth\.getUser\(\)/);
+  assert.match(source, /\.from\("profiles"\)[\s\S]*\.select\("status"\)[\s\S]*\.eq\("id", user\.id\)[\s\S]*\.maybeSingle\(\)/);
+  assert.match(source, /profileError \|\| profile\?\.status !== "ACTIVE"/);
+  assert.match(source, /active account is required[\s\S]*403/i);
   assert.match(source, /MAX_TEXT_LENGTH/);
   assert.match(source, /prefix !== "query" && prefix !== "passage"/);
+  assert.doesNotMatch(source, /SERVICE_ROLE/);
+});
+
+test("embedding backfill uses the authenticated user token for function and database requests", () => {
+  const source = readFileSync("scripts/backfill-embeddings.ts", "utf8");
+  assert.match(source, /`\$\{SUPABASE_URL\}\/functions\/v1\/generate-embedding`/);
+  assert.match(source, /createClient\(SUPABASE_URL, SUPABASE_KEY, \{[\s\S]*Authorization: `Bearer \$\{ACCESS_TOKEN\}`/);
+  assert.match(source, /Unable to read items with the supplied user access token/);
+  assert.match(source, /\.update\(\{ embedding \}\)[\s\S]*\.select\("id"\)[\s\S]*\.maybeSingle\(\)/);
+  assert.match(source, /process\.exitCode = 1/);
   assert.doesNotMatch(source, /SERVICE_ROLE/);
 });
 
