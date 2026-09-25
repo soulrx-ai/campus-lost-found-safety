@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import AuthPreferences from "@/components/i18n/AuthPreferences";
 import { AppMessage, Text } from "@/components/i18n/Text";
@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PasswordInput from "@/components/auth/PasswordInput";
 
 export default function ResetPasswordPage() {
   const { t } = useLanguage();
@@ -168,17 +169,15 @@ export default function ResetPasswordPage() {
                   <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[var(--foreground)]">
                     <Text id="New password" />
                   </label>
-                  <input
+                  <PasswordInput
                     id="password"
                     name="password"
-                    type="password"
                     autoComplete="new-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     placeholder={t("At least 6 characters")}
                     required
                     minLength={6}
-                    className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--placeholder)] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
                   />
                 </div>
 
@@ -186,17 +185,15 @@ export default function ResetPasswordPage() {
                   <label htmlFor="confirmPassword" className="mb-2 block text-sm font-semibold text-[var(--foreground)]">
                     <Text id="Confirm new password" />
                   </label>
-                  <input
+                  <PasswordInput
                     id="confirmPassword"
                     name="confirmPassword"
-                    type="password"
                     autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     placeholder={t("Enter your new password again")}
                     required
                     minLength={6}
-                    className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--placeholder)] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
                   />
                 </div>
 

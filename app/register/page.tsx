@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import AuthPreferences from "@/components/i18n/AuthPreferences";
 import { AppMessage, Text } from "@/components/i18n/Text";
@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PasswordInput from "@/components/auth/PasswordInput";
 
 export default function RegisterPage() {
   const { t } = useLanguage();
@@ -162,15 +163,13 @@ export default function RegisterPage() {
                 <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[var(--foreground)]">
                   <Text id="Password" />
                 </label>
-                <input
+                <PasswordInput
                   id="password"
-                  type="password"
                   required
                   minLength={6}
                   autoComplete="new-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--placeholder)] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
                   placeholder={t("At least 6 characters")}
                 />
               </div>
@@ -179,15 +178,13 @@ export default function RegisterPage() {
                 <label htmlFor="confirmPassword" className="mb-2 block text-sm font-semibold text-[var(--foreground)]">
                   <Text id="Confirm password" />
                 </label>
-                <input
+                <PasswordInput
                   id="confirmPassword"
-                  type="password"
                   required
                   minLength={6}
                   autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--placeholder)] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
                   placeholder={t("Enter your password again")}
                 />
               </div>

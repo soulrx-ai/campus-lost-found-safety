@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import AuthPreferences from "@/components/i18n/AuthPreferences";
 import { AppMessage, Text } from "@/components/i18n/Text";
@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PasswordInput from "@/components/auth/PasswordInput";
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -171,14 +172,12 @@ export default function LoginPage() {
                     <Text id="Forgot password?" />
                   </Link>
                 </div>
-                <input
+                <PasswordInput
                   id="password"
-                  type="password"
                   required
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--placeholder)] focus:border-[#187f7a] focus:ring-4 focus:ring-[#d9ebe4]"
                   placeholder={t("Enter your password")}
                 />
               </div>
