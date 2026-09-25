@@ -1,4 +1,4 @@
--- Additional hardening discovered during integration. Repository only; not applied.
+-- Additional hardening discovered during integration.
 -- Replace broad ALL access so direct Data API calls obey the review workflow too.
 drop policy if exists "Staff can manage safety incidents" on public.security_incidents;
 drop policy if exists "Staff can view safety incidents" on public.security_incidents;
