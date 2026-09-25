@@ -1,9 +1,8 @@
-﻿"use client";
+"use client";
 
 import { AppMessage, Text } from "@/components/i18n/Text";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import ItemCard from "@/components/search/ItemCard";
 import SearchFilters, {
     SearchFilterValues,
@@ -31,8 +30,6 @@ const initialFilters: SearchFilterValues = {
 };
 
 export default function SearchPage() {
-    const supabase = createClient();
-
     const [filters, setFilters] =
         useState<SearchFilterValues>(initialFilters);
 
@@ -45,114 +42,37 @@ export default function SearchPage() {
     }, []);
 
     async function loadLatestItems() {
+        await requestSearch(new URLSearchParams(), "No published items are available yet.");
+    }
+
+    async function requestSearch(params: URLSearchParams, emptyMessage: string) {
         setLoading(true);
         setMessage("");
-
-        const { data, error } = await supabase
-            .from("items")
-            .select(
-                "id, report_type, name, category, brand, color, date_time, location"
-            )
-            .eq("status", "PUBLISHED")
-            .order("created_at", { ascending: false });
-
-        setLoading(false);
-
-        if (error) {
+        try {
+            const response = await fetch(`/api/search?${params.toString()}`);
+            const body = await response.json() as { results?: SearchItem[]; error?: string };
+            if (!response.ok) throw new Error(body.error || "Unable to search items.");
+            const results = body.results ?? [];
+            setItems(results);
+            if (results.length === 0) setMessage(emptyMessage);
+        } catch (error: unknown) {
             setItems([]);
-            setMessage(error.message);
-            return;
-        }
-
-        const results = (data ?? []) as SearchItem[];
-
-        setItems(results);
-
-        if (results.length === 0) {
-            setMessage("No published items are available yet.");
+            setMessage(error instanceof Error ? error.message : "Unable to search items.");
+        } finally {
+            setLoading(false);
         }
     }
 
     async function searchItems() {
-        setLoading(true);
-        setMessage("");
-
-        try {
-            const params = new URLSearchParams();
-            if (filters.name.trim()) params.set("q", filters.name.trim());
-            if (filters.category) params.set("category", filters.category);
-            if (filters.brand.trim()) params.set("brand", filters.brand.trim());
-            if (filters.color.trim()) params.set("color", filters.color.trim());
-            if (filters.location.trim()) params.set("location", filters.location.trim());
-            if (filters.reportType) params.set("report_type", filters.reportType);
-            if (filters.date) params.set("date", filters.date);
-
-            const res = await fetch(`/api/search?${params.toString()}`);
-            if (res.ok) {
-                const data = await res.json();
-                const results = (data.results ?? []) as SearchItem[];
-                setItems(results);
-                setLoading(false);
-
-                if (results.length === 0) {
-                    setMessage("No published items matched your search.");
-                }
-                return;
-            }
-        } catch {
-            // Fall through to fallback
-        }
-
-        // Fallback: standard database query
-        let query = supabase
-            .from("items")
-            .select(
-                "id, report_type, name, category, brand, color, date_time, location"
-            )
-            .eq("status", "PUBLISHED")
-            .order("date_time", { ascending: false });
-
-        if (filters.name.trim()) {
-            query = query.ilike("name", `%${filters.name.trim()}%`);
-        }
-        if (filters.category) {
-            query = query.eq("category", filters.category);
-        }
-        if (filters.brand.trim()) {
-            query = query.ilike("brand", `%${filters.brand.trim()}%`);
-        }
-        if (filters.color.trim()) {
-            query = query.ilike("color", `%${filters.color.trim()}%`);
-        }
-        if (filters.location.trim()) {
-            query = query.ilike("location", `%${filters.location.trim()}%`);
-        }
-        if (filters.reportType) {
-            query = query.eq("report_type", filters.reportType);
-        }
-        if (filters.date) {
-            const start = new Date(`${filters.date}T00:00:00`);
-            const end = new Date(`${filters.date}T23:59:59.999`);
-            query = query
-                .gte("date_time", start.toISOString())
-                .lte("date_time", end.toISOString());
-        }
-
-        const { data, error } = await query;
-        setLoading(false);
-
-        if (error) {
-            setItems([]);
-            setMessage(error.message);
-            return;
-        }
-
-        const results = (data ?? []) as SearchItem[];
-        setItems(results);
-
-        if (results.length === 0) {
-            setMessage("No published items matched your search.");
-        }
+        const params = new URLSearchParams();
+        if (filters.name.trim()) params.set("q", filters.name.trim());
+        if (filters.category) params.set("category", filters.category);
+        if (filters.brand.trim()) params.set("brand", filters.brand.trim());
+        if (filters.color.trim()) params.set("color", filters.color.trim());
+        if (filters.location.trim()) params.set("location", filters.location.trim());
+        if (filters.reportType) params.set("report_type", filters.reportType);
+        if (filters.date) params.set("date", filters.date);
+        await requestSearch(params, "No published items matched your search.");
     }
 
     function clearFilters() {

@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { InputHTMLAttributes, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 interface PasswordInputProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
@@ -12,6 +13,8 @@ export default function PasswordInput({
   ...props
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useLanguage();
+  const toggleLabel = t(showPassword ? "Hide password" : "Show password");
 
   return (
     <div className="relative">
@@ -23,11 +26,11 @@ export default function PasswordInput({
       />
       <button
         type="button"
-        tabIndex={-1}
         onClick={() => setShowPassword((prev) => !prev)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-[var(--foreground-muted)] transition hover:text-[var(--foreground)] focus:outline-none"
-        aria-label={showPassword ? "Hide password" : "Show password"}
-        title={showPassword ? "Hide password" : "Show password"}
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-[var(--foreground-muted)] transition hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--heading)]"
+        aria-label={toggleLabel}
+        aria-pressed={showPassword}
+        title={toggleLabel}
       >
         {showPassword ? (
           <svg

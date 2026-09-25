@@ -1,7 +1,14 @@
-﻿import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = "https://cqdpfhptvyeskgkhziou.supabase.co/";
-const SUPABASE_KEY = "sb_publishable_xMQGa9c6280faQKHx4_u3A_94FfjyPG";
+function requireEnvironment(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`${name} is required.`);
+  return value;
+}
+
+const SUPABASE_URL = requireEnvironment("NEXT_PUBLIC_SUPABASE_URL").replace(/\/$/, "");
+const SUPABASE_KEY = requireEnvironment("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+const ACCESS_TOKEN = requireEnvironment("SUPABASE_USER_ACCESS_TOKEN");
 const EMBEDDING_URL = `${SUPABASE_URL}functions/v1/generate-embedding`;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -15,7 +22,11 @@ function buildItemText(item: Record<string, string | null>): string {
 async function generateEmbedding(text: string): Promise<number[]> {
   const res = await fetch(EMBEDDING_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_KEY}` },
+    headers: {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${ACCESS_TOKEN}`,
+    },
     body: JSON.stringify({ text, prefix: "passage" }),
   });
   if (!res.ok) throw new Error(await res.text());
