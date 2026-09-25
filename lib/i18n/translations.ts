@@ -2475,6 +2475,10 @@ export const translations = {
     en: "Configure matching and data retention.",
     th: "กำหนดเกณฑ์การจับคู่และระยะเวลาเก็บข้อมูล",
   },
+  "Matching percentage": {
+    en: "Matching percentage",
+    th: "เปอร์เซ็นต์ความตรงกัน",
+  },
   "Matching Threshold": {
     en: "Matching Threshold",
     th: "เกณฑ์คะแนนการจับคู่",

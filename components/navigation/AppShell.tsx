@@ -125,11 +125,11 @@ function AuthenticatedShell({ children, pathname }: {
                 return;
             }
 
-            const [{ data: profileData }, { data: notificationData, error: listError }, { count, error: countError }] =
+            const [{ data: profileData, error: profileError }, { data: notificationData, error: listError }, { count, error: countError }] =
                 await Promise.all([
                     supabase
                         .from("profiles")
-                        .select("id, full_name, role")
+                        .select("id, full_name, role, status")
                         .eq("id", user.id)
                         .single(),
 
@@ -150,7 +150,7 @@ function AuthenticatedShell({ children, pathname }: {
 
             if (!active) return;
 
-            setProfile((profileData as Profile | null) ?? null);
+            setProfile(!profileError && profileData?.status === "ACTIVE" ? profileData as Profile : null);
             setNotifications(
                 (notificationData as Notification[] | null) ?? []
             );

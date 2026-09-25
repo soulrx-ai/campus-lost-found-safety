@@ -101,7 +101,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       })
       .eq("id", id)
       .select(
-        "id, reporter_id, report_type, name, category, brand, color, description, location, date_time, image_url, status, created_at"
+        "id, reporter_id, report_type, name, category, brand, color, description, location, date_time, status, created_at"
       )
       .maybeSingle();
 
