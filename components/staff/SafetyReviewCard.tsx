@@ -104,39 +104,6 @@ export default function SafetyReviewCard({
     }
   }
 
-  async function deleteIncident() {
-    const confirmed = window.confirm(
-      t(
-        "Are you sure you want to delete this incident report? This action cannot be undone."
-      )
-    );
-    if (!confirmed) return;
-
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const response = await fetch(`/api/staff/safety/${incident.id}`, {
-        method: "DELETE",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setErrorMessage(
-          result.error ?? "Unable to delete incident. Please try again."
-        );
-        return;
-      }
-
-      router.refresh();
-    } catch {
-      setErrorMessage("Unable to delete incident. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function viewIncidentImage() {
     setImageLoading(true);
     setErrorMessage("");
@@ -175,7 +142,7 @@ export default function SafetyReviewCard({
             <Text id="Safety Incident" />
           </p>
 
-          <h2 className="mt-1 break-words text-xl font-semibold text-[var(--foreground)]">
+          <h2 className="mt-1 break-words text-xl font-semibold text-[var(--heading)]">
             {incident.title}
           </h2>
 
@@ -273,20 +240,9 @@ export default function SafetyReviewCard({
           </div>
         )}
 
-        {/* Action Buttons: Delete on left, Approve/Publish on right */}
-        <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={deleteIncident}
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--danger)]/30 bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-            >
-              {loading ? <Text id="Processing..." /> : <Text id="Delete incident" />}
-            </button>
-          </div>
-
-          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+        {/* Action Buttons */}
+        {incident.status === "PENDING_REVIEW" && (
+          <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-end">
             {incident.status === "PENDING_REVIEW" && (
               <>
                 <button
@@ -302,25 +258,15 @@ export default function SafetyReviewCard({
                   type="button"
                   disabled={loading}
                   onClick={() => updateStatus("PUBLISHED")}
-                  className="ui-button-primary w-full sm:w-auto"
+                  className="ui-button-primary ui-button-safety w-full sm:w-auto"
                 >
                   {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
                 </button>
               </>
             )}
 
-            {incident.status === "REJECTED" && (
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => updateStatus("PUBLISHED")}
-                className="ui-button-primary w-full sm:w-auto"
-              >
-                {loading ? <Text id="Processing..." /> : <Text id="Publish incident" />}
-              </button>
-            )}
           </div>
-        </div>
+        )}
       </div>
     </article>
   );

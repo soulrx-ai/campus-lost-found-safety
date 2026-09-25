@@ -40,7 +40,7 @@ export default async function StaffClaimsPage() {
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-5xl">
-          <header className="mb-7">
+          <header className="page-header mb-7">
             <p className="page-eyebrow"><Text id="Staff Operations" /></p>
 
             <h1 className="page-title">
@@ -59,7 +59,7 @@ export default async function StaffClaimsPage() {
             </div>
           ) : !claims || claims.length === 0 ? (
             <div className="ui-card p-6 sm:p-8">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">
+              <h2 className="text-lg font-semibold text-[var(--heading)]">
                 <Text id="No claims" />
               </h2>
 

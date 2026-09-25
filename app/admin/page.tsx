@@ -6,7 +6,7 @@ export default function AdminPage() {
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-6xl space-y-8">
-          <header>
+          <header className="page-header">
             <p className="page-eyebrow"><Text id="Administration" /></p>
 
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

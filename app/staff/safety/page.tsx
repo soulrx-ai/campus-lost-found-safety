@@ -15,10 +15,10 @@ export default async function StaffSafetyPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" data-accent="safety">
       <div className="app-container">
         <div className="mx-auto max-w-5xl">
-          <header className="mb-7">
+          <header className="page-header mb-7">
             <p className="text-sm font-semibold text-[var(--danger)]">
               <Text id="Staff Operations · Campus Safety" />
             </p>
@@ -41,12 +41,12 @@ export default async function StaffSafetyPage() {
             </div>
           ) : !incidents || incidents.length === 0 ? (
             <div className="ui-card p-6 sm:p-8">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">
-                <Text id="No pending incidents" />
+              <h2 className="text-lg font-semibold text-[var(--heading)]">
+                <Text id="No safety incidents found." />
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
-                <Text id="There are currently no safety incidents waiting for Staff review." />
+                <Text id="No safety reports have been submitted yet." />
               </p>
             </div>
           ) : (

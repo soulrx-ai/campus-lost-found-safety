@@ -15,6 +15,12 @@ export type Database = {
                 Update: { claim_reason?: string; claimant_id?: string; created_at?: string; evidence?: string | null; handover_at?: string | null; handover_confirmed_by?: string | null; handover_photo_url?: string | null; id?: string; item_id?: string; reviewed_at?: string | null; reviewed_by?: string | null; staff_note?: string | null; status?: string; updated_at?: string }
                 Relationships: []
             }
+            item_categories: {
+                Row: { created_at: string; id: string; is_active: boolean; name: string }
+                Insert: { created_at?: string; id?: string; is_active?: boolean; name: string }
+                Update: { created_at?: string; id?: string; is_active?: boolean; name?: string }
+                Relationships: []
+            }
             items: {
                 Row: { brand: string | null; category: string; color: string | null; created_at: string; date_time: string; description: string | null; id: string; image_url: string; location: string; name: string; report_type: string; reporter_id: string; reviewed_at: string | null; reviewed_by: string | null; status: string; updated_at: string }
                 Insert: { brand?: string | null; category: string; color?: string | null; created_at?: string; date_time: string; description?: string | null; id?: string; image_url: string; location: string; name: string; report_type: string; reporter_id: string; reviewed_at?: string | null; reviewed_by?: string | null; status?: string; updated_at?: string }
@@ -49,6 +55,10 @@ export type Database = {
         Views: { [_ in never]: never }
 
         Functions: {
+            update_staff_ticket: {
+                Args: { p_ticket_id: string; p_status: string; p_staff_note?: string | null }
+                Returns: boolean
+            }
             get_my_role: {
                 Args: Record<PropertyKey, never>
                 Returns: string
@@ -73,6 +83,21 @@ export type Database = {
                 Args: {
                     p_claim_id: string
                     p_handover_photo_url: string
+                }
+                Returns: undefined
+            }
+            rename_item_category: {
+                Args: {
+                    p_category_id: string
+                    p_new_name: string
+                }
+                Returns: undefined
+            }
+            update_item_category: {
+                Args: {
+                    p_category_id: string
+                    p_is_active: boolean
+                    p_new_name: string
                 }
                 Returns: undefined
             }

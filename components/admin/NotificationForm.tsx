@@ -96,12 +96,12 @@ export default function NotificationForm() {
       className="ui-card overflow-hidden"
     >
       <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
-        <h2 className="font-semibold text-[var(--foreground)]">
+        <h2 className="font-semibold text-[var(--heading)]">
           <Text id="Notification details" />
         </h2>
 
         <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-          <Text id="Fields marked with * are required." />
+          <Text id="Fields marked with * are required." requiredIndicator />
         </p>
       </div>
 
@@ -111,7 +111,7 @@ export default function NotificationForm() {
             htmlFor="notification-user"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            <Text id="User Email *" />
+            <Text id="User Email *" requiredIndicator />
           </label>
 
           <input
@@ -136,7 +136,7 @@ export default function NotificationForm() {
             htmlFor="notification-type"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            <Text id="Notification type *" />
+            <Text id="Notification type *" requiredIndicator />
           </label>
 
           <select
@@ -171,7 +171,7 @@ export default function NotificationForm() {
             htmlFor="notification-title"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            <Text id="Title *" />
+            <Text id="Title *" requiredIndicator />
           </label>
 
           <input
@@ -192,7 +192,7 @@ export default function NotificationForm() {
             htmlFor="notification-message"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            <Text id="Message *" />
+            <Text id="Message *" requiredIndicator />
           </label>
 
           <textarea

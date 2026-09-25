@@ -7,7 +7,7 @@ export default async function MatchingPage() {
     const profile = await requireUser();
     const supabase = await createClient();
 
-    const { data: lostItems } = await supabase
+    const { data: lostItems, error } = await supabase
         .from("items")
         .select(
             "id, name, category, brand, color, location, date_time, status"
@@ -17,11 +17,13 @@ export default async function MatchingPage() {
         .eq("status", "PUBLISHED")
         .order("created_at", { ascending: false });
 
+    if (error) throw new Error("Unable to load lost reports.");
+
     return (
         <main className="page-shell">
             <div className="app-container">
                 <div className="mx-auto max-w-5xl">
-                    <header className="mb-7">
+                    <header className="page-header mb-7">
                         <p className="page-eyebrow">
                             <Text id="Lost & Found" />
                         </p>
@@ -42,7 +44,7 @@ export default async function MatchingPage() {
                                     <Text id="NO LOST REPORTS" />
                                 </span>
 
-                                <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
+                                <h2 className="mt-4 text-lg font-semibold text-[var(--heading)]">
                                     <Text id="No published lost reports available" />
                                 </h2>
 
@@ -81,7 +83,7 @@ export default async function MatchingPage() {
                                                 <DisplayValue value="LOST" />
                                             </span>
 
-                                            <h2 className="mt-3 text-lg font-semibold text-[var(--foreground)]">
+                                            <h2 className="mt-3 text-lg font-semibold text-[var(--heading)]">
                                                 {item.name}
                                             </h2>
 

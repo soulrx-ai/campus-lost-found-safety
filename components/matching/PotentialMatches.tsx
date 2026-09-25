@@ -17,17 +17,20 @@ type Item = MatchableItem & {
 type Props = {
     lostItem: Item;
     foundItems: Item[];
+    matchingThreshold: number;
 };
 
 export default function PotentialMatches({
     lostItem,
     foundItems,
+    matchingThreshold
 }: Props) {
     const matches = foundItems
         .map((foundItem) => {
             const result = calculateMatch(
                 lostItem,
-                foundItem
+                foundItem,
+                matchingThreshold
             );
 
             return {
@@ -40,7 +43,7 @@ export default function PotentialMatches({
     if (matches.length === 0) {
         return (
             <div className="ui-card p-6 sm:p-8">
-                <h2 className="font-semibold text-[var(--foreground)]">
+                <h2 className="font-semibold text-[var(--heading)]">
                     <Text id="No found items available" />
                 </h2>
 
@@ -56,6 +59,7 @@ export default function PotentialMatches({
             {matches.map(
                 ({
                     item,
+                    score,
                     isPotentialMatch,
                 }) => (
                     <article
@@ -69,9 +73,12 @@ export default function PotentialMatches({
                                         <DisplayValue value="FOUND" />
                                     </span>
 
-                                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--foreground)]">
+                                    <h2 className="mt-3 break-words text-lg font-semibold text-[var(--heading)]">
                                         {item.name}
                                     </h2>
+                                    <p className="mt-2 font-semibold text-[var(--foreground)]">
+                                        <Text id="Matching percentage" />: {score}%
+                                    </p>
 
                                     <div className="mt-4 grid gap-2 text-sm text-[var(--foreground-muted)]">
                                         <p>

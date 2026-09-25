@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/guards";
 import PotentialMatches from "@/components/matching/PotentialMatches";
 
+import { createAdminClient } from "@/lib/supabase/admin";
+
 type PageProps = {
     params: Promise<{
         id: string;
@@ -18,7 +20,7 @@ export default async function MatchDetailPage({
     const profile = await requireUser();
     const supabase = await createClient();
 
-    const { data: lostItem } = await supabase
+    const { data: lostItem, error: lostError } = await supabase
         .from("items")
         .select(
             "id, report_type, name, category, brand, color, location, date_time"
@@ -27,13 +29,14 @@ export default async function MatchDetailPage({
         .eq("reporter_id", profile.id)
         .eq("report_type", "LOST")
         .eq("status", "PUBLISHED")
-        .single();
+        .maybeSingle();
 
+    if (lostError) throw new Error("Unable to load lost report.");
     if (!lostItem) {
         notFound();
     }
 
-    const { data: foundItems } = await supabase
+    const { data: foundItems, error: foundError } = await supabase
         .from("items")
         .select(
             "id, report_type, name, category, brand, color, location, date_time"
@@ -41,11 +44,17 @@ export default async function MatchDetailPage({
         .eq("report_type", "FOUND")
         .eq("status", "PUBLISHED");
 
+    if (foundError) throw new Error("Unable to load found reports.");
+    const admin = createAdminClient();
+    const { data: settings, error: settingsError } = await admin.from("system_settings").select("matching_threshold").eq("id", "global").maybeSingle();
+    if (settingsError || !settings || !Number.isInteger(settings.matching_threshold) || settings.matching_threshold < 0 || settings.matching_threshold > 100) throw new Error("Unable to load matching settings.");
+    const matchingThreshold = settings.matching_threshold;
+
     return (
         <main className="page-shell">
             <div className="app-container">
                 <div className="mx-auto max-w-5xl">
-                    <header className="mb-7">
+                    <header className="page-header mb-7">
                         <p className="page-eyebrow">
                             <Text id="Matching" />
                         </p>
@@ -69,13 +78,14 @@ export default async function MatchDetailPage({
                         </p>
 
                         <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
-                            <Text id="A match score does not confirm ownership. Items scoring more than 70% can proceed to the claim process for Staff review." />
+                            <Text id="Match threshold guidance" params={{ threshold: matchingThreshold }} />
                         </p>
                     </div>
 
                     <PotentialMatches
                         lostItem={lostItem}
                         foundItems={foundItems ?? []}
+                        matchingThreshold={matchingThreshold}
                     />
                 </div>
             </div>

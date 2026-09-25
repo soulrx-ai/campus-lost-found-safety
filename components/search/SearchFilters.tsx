@@ -1,7 +1,8 @@
 "use client";
 
-import { Text, UiText } from "@/components/i18n/Text";
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useCategories } from "@/components/categories/useCategories";
 export type SearchFilterValues = {
     name: string;
     category: string;
@@ -25,9 +26,10 @@ export default function SearchFilters({
     onChange,
     onSearch,
     onClear,
-    loading,
+  loading,
 }: Props) {
   const { t } = useLanguage();
+  const { categories, error: categoriesError } = useCategories();
     function update(
         field: keyof SearchFilterValues,
         value: string
@@ -41,7 +43,7 @@ export default function SearchFilters({
     return (
         <section className="ui-card overflow-hidden">
             <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-6">
-                <h2 className="font-semibold text-[var(--foreground)]">
+                <h2 className="font-semibold text-[var(--heading)]">
                     <Text id="Search Filters" />
                 </h2>
 
@@ -66,6 +68,7 @@ export default function SearchFilters({
 
                     <FilterField label="Category">
                         <select
+                            disabled={Boolean(categoriesError)}
                             value={filters.category}
                             onChange={(e) =>
                                 update("category", e.target.value)
@@ -73,16 +76,17 @@ export default function SearchFilters({
                             className="ui-input"
                         >
                             <option value=""><Text id="All categories" /></option>
-                            <option value="Electronics">
-                                <Text id="Electronics" />
-                            </option>
-                            <option value="Wallet"><Text id="Wallet" /></option>
-                            <option value="Bag"><Text id="Bag" /></option>
-                            <option value="Document"><Text id="Document" /></option>
-                            <option value="Clothing"><Text id="Clothing" /></option>
-                            <option value="Accessory"><Text id="Accessory" /></option>
-                            <option value="Other"><Text id="Other" /></option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.name}>
+                                    <DisplayValue value={category.name} />
+                                </option>
+                            ))}
                         </select>
+                        {categoriesError && (
+                            <span role="alert" className="mt-1 block text-xs text-[var(--danger)]">
+                                <AppMessage text={categoriesError} />
+                            </span>
+                        )}
                     </FilterField>
 
                     <FilterField label="Brand">

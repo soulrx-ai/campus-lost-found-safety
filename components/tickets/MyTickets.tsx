@@ -93,7 +93,7 @@ export default function MyTickets() {
         return;
       }
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("service_tickets")
         .select(
           "id, claim_id, ticket_type, subject, description, status, staff_note, resolved_at, created_at, updated_at"
@@ -101,21 +101,7 @@ export default function MyTickets() {
         .eq("requester_id", user.id)
         .order("created_at", { ascending: false });
 
-      let loadedTickets: Ticket[] = [];
-
-      if (error && (error.message?.includes("staff_note") || error.code === "42703")) {
-        const fallback = await supabase
-          .from("service_tickets")
-          .select(
-            "id, claim_id, ticket_type, subject, description, status, resolved_at, created_at, updated_at"
-          )
-          .eq("requester_id", user.id)
-          .order("created_at", { ascending: false });
-        loadedTickets = (fallback.data ?? []).map((t) => ({ ...t, staff_note: null })) as Ticket[];
-        error = fallback.error;
-      } else if (data) {
-        loadedTickets = data as Ticket[];
-      }
+      const loadedTickets = (data ?? []) as Ticket[];
 
       if (error) {
         setMessage(error.message);
@@ -152,7 +138,7 @@ export default function MyTickets() {
 
       {!message && tickets.length === 0 && (
         <div className="ui-card p-6 sm:p-8">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+          <h2 className="text-lg font-semibold text-[var(--heading)]">
             <Text id="No service tickets" />
           </h2>
 
@@ -176,7 +162,7 @@ export default function MyTickets() {
                 <span><DisplayValue value={ticket.ticket_type} /></span>
               </div>
 
-              <h2 className="mt-1.5 break-words text-xl font-bold text-[var(--foreground)]">
+              <h2 className="mt-1.5 break-words text-xl font-bold text-[var(--heading)]">
                 {ticket.subject}
               </h2>
             </div>

@@ -139,7 +139,7 @@ export default function AdminDashboard() {
       <section>
         <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">
+            <h2 className="text-lg font-semibold text-[var(--heading)]">
               <Text id="System overview" />
             </h2>
 
@@ -157,6 +157,7 @@ export default function AdminDashboard() {
           {cards.map((card) => (
             <div
               key={card.label}
+              data-accent={card.label === "Safety Incidents" ? "safety" : undefined}
               className="ui-card group relative overflow-hidden p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-4">
@@ -172,13 +173,13 @@ export default function AdminDashboard() {
 
                 <div
                   aria-hidden="true"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--primary-soft)] text-sm font-bold text-[var(--primary)]"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-soft)] text-sm font-bold text-[var(--heading)]"
                 >
                   {card.label.charAt(0)}
                 </div>
               </div>
 
-              <div className="mt-5 h-1 w-10 rounded-full bg-[var(--primary)] opacity-70 transition-all duration-200 group-hover:w-16" />
+              <div className="mt-5 h-1 w-10 rounded-full bg-[var(--heading)] opacity-70 transition-all duration-200 group-hover:w-16" />
             </div>
           ))}
         </div>
@@ -190,7 +191,7 @@ export default function AdminDashboard() {
             <Text id="Quick access" />
           </p>
 
-          <h2 className="mt-1 text-lg font-semibold text-[var(--foreground)]">
+          <h2 className="mt-1 text-lg font-semibold text-[var(--heading)]">
             <Text id="Administration tools" />
           </h2>
 
@@ -207,7 +208,7 @@ export default function AdminDashboard() {
               className="ui-card group block p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)] hover:shadow-md sm:p-6"
             >
               <div className="flex items-center justify-between gap-4">
-                <h3 className="font-semibold text-[var(--foreground)]">
+                <h3 className="font-semibold text-[var(--heading)]">
                   <UiText text={tool.title} />
                 </h3>
 

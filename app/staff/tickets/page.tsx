@@ -10,7 +10,7 @@ export default async function StaffTicketsPage() {
   const staff = await requireStaff();
   const supabase = await createClient();
 
-  let { data, error } = await supabase
+  const { data, error } = await supabase
     .from("service_tickets")
     .select(
       "id, requester_id, claim_id, ticket_type, subject, description, status, assigned_to, staff_note, created_at, updated_at"
@@ -20,23 +20,7 @@ export default async function StaffTicketsPage() {
       ascending: false,
     });
 
-  let tickets: Ticket[] = [];
-
-  if (error && (error.message?.includes("staff_note") || error.code === "42703")) {
-    const fallback = await supabase
-      .from("service_tickets")
-      .select(
-        "id, requester_id, claim_id, ticket_type, subject, description, status, assigned_to, created_at, updated_at"
-      )
-      .in("status", ["OPEN", "IN_PROGRESS", "RESOLVED"])
-      .order("created_at", {
-        ascending: false,
-      });
-    tickets = (fallback.data ?? []).map((t) => ({ ...t, staff_note: null })) as Ticket[];
-    error = fallback.error;
-  } else {
-    tickets = (data ?? []) as Ticket[];
-  }
+  const tickets = (data ?? []) as Ticket[];
 
   const openCount = tickets.filter(
     (ticket) => ticket.status === "OPEN"
@@ -50,7 +34,7 @@ export default async function StaffTicketsPage() {
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-5xl">
-          <header className="mb-7">
+          <header className="page-header mb-7">
             <p className="page-eyebrow"><Text id="Staff Operations" /></p>
 
             <h1 className="page-title"><Text id="Service Tickets" /></h1>
@@ -66,7 +50,7 @@ export default async function StaffTicketsPage() {
             </div>
           ) : tickets.length === 0 ? (
             <div className="ui-card p-6 sm:p-8">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">
+              <h2 className="text-lg font-semibold text-[var(--heading)]">
                 <Text id="No service tickets" />
               </h2>
 

@@ -8,13 +8,22 @@ type RouteContext = {
   }>;
 };
 
-export async function DELETE(
-  _request: Request,
+type ReviewStatus = "PUBLISHED" | "REJECTED";
+
+export async function PATCH(
+  request: Request,
   context: RouteContext
 ) {
+  let staff;
   try {
-    await requireStaff();
+    staff = await requireStaff();
+  } catch {
+    return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+  }
+  try {
     const { id } = await context.params;
+    const body: unknown = await request.json().catch(() => null);
+    const status = body && typeof body === "object" && "status" in body ? body.status : null;
 
     if (!id) {
       return NextResponse.json(
@@ -23,71 +32,29 @@ export async function DELETE(
       );
     }
 
-    const supabase = await createClient();
-
-    // 1. Fetch incident to retrieve storage image url
-    const { data: incident } = await supabase
-      .from("security_incidents")
-      .select("image_url")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (incident?.image_url) {
-      await supabase.storage
-        .from("safety-incidents")
-        .remove([incident.image_url]);
-    }
-
-    // 2. Delete incident record
-    const { error } = await supabase
-      .from("security_incidents")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
+    if (
+      status !== "PUBLISHED" &&
+      status !== "REJECTED"
+    ) {
       return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message ?? "Unable to delete safety incident." },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PATCH(
-  request: Request,
-  context: RouteContext
-) {
-  try {
-    const staff = await requireStaff();
-    const { id } = await context.params;
-    const body = await request.json();
-    const { status } = body;
-
-    if (!id || !status) {
-      return NextResponse.json(
-        { error: "Incident ID and status are required." },
+        { error: "Invalid incident status." },
         { status: 400 }
       );
     }
 
+    const reviewStatus: ReviewStatus = status;
     const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("security_incidents")
       .update({
-        status,
+        status: reviewStatus,
         reviewed_by: staff.id,
         reviewed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
+      .eq("status", "PENDING_REVIEW")
       .select("id, status")
       .maybeSingle();
 
@@ -98,10 +65,25 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ success: true, data });
-  } catch (error: any) {
+    if (!data) {
+      return NextResponse.json(
+        {
+          error:
+            "Incident not found or has already been reviewed.",
+        },
+        { status: 409 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data,
+    });
+  } catch {
+    const message = "Unable to update incident.";
+
     return NextResponse.json(
-      { error: error?.message ?? "Unable to update incident." },
+      { error: message },
       { status: 500 }
     );
   }

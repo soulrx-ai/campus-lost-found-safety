@@ -7,5 +7,5 @@ export default async function AdminLayout({
 }>) {
   await requireAdmin();
 
-  return children;
+  return <div data-accent="admin">{children}</div>;
 }

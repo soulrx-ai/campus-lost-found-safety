@@ -125,11 +125,11 @@ function AuthenticatedShell({ children, pathname }: {
                 return;
             }
 
-            const [{ data: profileData }, { data: notificationData, error: listError }, { count, error: countError }] =
+            const [{ data: profileData, error: profileError }, { data: notificationData, error: listError }, { count, error: countError }] =
                 await Promise.all([
                     supabase
                         .from("profiles")
-                        .select("id, full_name, role")
+                        .select("id, full_name, role, status")
                         .eq("id", user.id)
                         .single(),
 
@@ -150,7 +150,7 @@ function AuthenticatedShell({ children, pathname }: {
 
             if (!active) return;
 
-            setProfile((profileData as Profile | null) ?? null);
+            setProfile(!profileError && profileData?.status === "ACTIVE" ? profileData as Profile : null);
             setNotifications(
                 (notificationData as Notification[] | null) ?? []
             );
@@ -417,7 +417,7 @@ function AuthenticatedShell({ children, pathname }: {
                                                 {profile.full_name}
                                             </p>
                                             <p className="mt-1 text-xs font-semibold text-[var(--success)]">
-                                                <DisplayValue value={profile.role} />
+                                                <span className="role-badge rounded-full px-2 py-1" data-accent={profile.role.toLowerCase()}><DisplayValue value={profile.role} /></span>
                                             </p>
                                         </div>
                                         <Link
@@ -569,6 +569,11 @@ function AuthenticatedShell({ children, pathname }: {
                             {profile.role === "STAFF" && (
                                 <NavSection title="Staff">
                                     <SideLink
+                                        href="/staff"
+                                        label="Dashboard"
+                                        pathname={pathname}
+                                    />
+                                    <SideLink
                                         href="/staff/items"
                                         label="Review Items"
                                         pathname={pathname}
@@ -609,6 +614,11 @@ function AuthenticatedShell({ children, pathname }: {
                                         pathname={pathname}
                                     />
                                     <SideLink
+                                        href="/admin/items"
+                                        label="Item Management"
+                                        pathname={pathname}
+                                    />
+                                    <SideLink
                                         href="/admin/logs"
                                         label="Activity Logs"
                                         pathname={pathname}
@@ -623,7 +633,7 @@ function AuthenticatedShell({ children, pathname }: {
                                     {profile.full_name}
                                 </p>
                                 <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">
-                                    <DisplayValue value={profile.role} />
+                                    <span className="role-badge rounded-full px-2 py-1" data-accent={profile.role.toLowerCase()}><DisplayValue value={profile.role} /></span>
                                 </p>
                             </div>
                         </div>
@@ -642,8 +652,8 @@ function NavSection({
     children: React.ReactNode;
 }) {
     return (
-        <section className="mb-6 last:mb-0">
-            <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
+        <section className="mb-6 last:mb-0" data-accent={title === "Staff" ? "staff" : title === "Admin" ? "admin" : undefined}>
+            <p className="nav-section-title mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.14em]">
                 <UiText text={title} />
             </p>
             <div className="space-y-1">{children}</div>
@@ -671,14 +681,8 @@ function SideLink({
         <Link
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`block rounded-xl px-3 py-2.5 text-sm font-medium transition ${active
-                ? danger
-                    ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                    : "bg-[var(--primary-soft)] text-[var(--foreground)]"
-                : danger
-                    ? "text-[var(--danger)] hover:bg-[var(--danger-soft)]"
-                    : "text-[var(--foreground-muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground)]"
-                }`}
+            data-accent={danger || href.startsWith("/safety") || href.startsWith("/staff/safety") ? "safety" : undefined}
+            className="side-link block rounded-xl px-3 py-2.5 text-sm font-medium transition"
         >
             <UiText text={label} />
         </Link>

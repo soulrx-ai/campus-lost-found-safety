@@ -194,7 +194,7 @@ export default function ClaimForm({
       className="ui-card overflow-hidden"
     >
       <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-7">
-        <h2 className="font-semibold text-[var(--foreground)]">
+        <h2 className="font-semibold text-[var(--heading)]">
           <Text id="Ownership claim" />
         </h2>
 
@@ -209,7 +209,7 @@ export default function ClaimForm({
             htmlFor="claim-item-id"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            <Text id="Item ID *" />
+            <Text id="Item ID *" requiredIndicator />
           </label>
 
           <input
@@ -234,7 +234,7 @@ export default function ClaimForm({
             htmlFor="claim-reason"
             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
           >
-            <Text id="Claim reason *" />
+            <Text id="Claim reason *" requiredIndicator />
           </label>
 
           <textarea

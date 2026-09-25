@@ -127,7 +127,7 @@ export default function ActivityLogTable() {
 
       <div className="ui-card overflow-hidden">
         <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4">
-          <h2 className="font-semibold text-[var(--foreground)]">
+          <h2 className="font-semibold text-[var(--heading)]">
             <Text id="Recent activity" />
           </h2>
 

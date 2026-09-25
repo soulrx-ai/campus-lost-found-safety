@@ -1,13 +1,15 @@
 "use client";
 
-import { AppMessage, Text, UiText } from "@/components/i18n/Text";
+import { AppMessage, DisplayValue, Text, UiText } from "@/components/i18n/Text";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useCategories } from "@/components/categories/useCategories";
 
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function FoundReportForm() {
   const { t } = useLanguage();
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
     const supabase = createClient();
 
     const [name, setName] = useState("");
@@ -135,19 +137,19 @@ export default function FoundReportForm() {
             onSubmit={handleSubmit}
             className="ui-card overflow-hidden"
         >
-            <div className="border-b border-[var(--border)] bg-[var(--success-soft)] px-5 py-4 sm:px-6">
-                <p className="text-sm font-semibold text-[var(--success)]">
+            <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-7">
+                <h2 className="font-semibold text-[var(--heading)]">
                     <Text id="Found Item Information" />
-                </p>
+                </h2>
 
                 <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    <Text id="Fields marked with * are required." />
+                    <Text id="Fields marked with * are required." requiredIndicator />
                 </p>
             </div>
 
-            <div className="space-y-6 p-5 sm:p-6">
+            <div className="space-y-6 p-5 sm:p-7">
                 <div className="grid gap-5 sm:grid-cols-2">
-                    <Field label="Item Name *">
+                    <Field label="Item Name *" className="sm:col-span-2">
                         <input
                             required
                             type="text"
@@ -161,19 +163,23 @@ export default function FoundReportForm() {
                     <Field label="Category *">
                         <select
                             required
+                            disabled={categoriesLoading || Boolean(categoriesError) || categories.length === 0}
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             className="ui-input"
                         >
                             <option value=""><Text id="Select category" /></option>
-                            <option value="Electronics"><Text id="Electronics" /></option>
-                            <option value="Wallet"><Text id="Wallet" /></option>
-                            <option value="Bag"><Text id="Bag" /></option>
-                            <option value="Document"><Text id="Document" /></option>
-                            <option value="Clothing"><Text id="Clothing" /></option>
-                            <option value="Accessory"><Text id="Accessory" /></option>
-                            <option value="Other"><Text id="Other" /></option>
+                            {categories.map((itemCategory) => (
+                                <option key={itemCategory.id} value={itemCategory.name}>
+                                    <DisplayValue value={itemCategory.name} />
+                                </option>
+                            ))}
                         </select>
+                        {categoriesError && (
+                            <p role="alert" className="mt-1 text-xs text-[var(--danger)]">
+                                <AppMessage text={categoriesError} />
+                            </p>
+                        )}
                     </Field>
 
                     <Field label="Brand">
@@ -206,7 +212,7 @@ export default function FoundReportForm() {
                         />
                     </Field>
 
-                    <Field label="Location *">
+                    <Field label="Location *" className="sm:col-span-2">
                         <input
                             required
                             type="text"
@@ -216,53 +222,54 @@ export default function FoundReportForm() {
                             className="ui-input"
                         />
                     </Field>
+                    <Field label="Description" className="sm:col-span-2">
+                        <textarea
+                            rows={4}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder={t("Describe the found item")}
+                            className="ui-input min-h-28 resize-y"
+                        />
+                    </Field>
                 </div>
 
-                <Field label="Description">
-                    <textarea
-                        rows={4}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder={t("Describe the found item")}
-                        className="ui-input resize-y"
-                    />
-                </Field>
-
-                <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-strong)] bg-[var(--surface-soft)] p-4">
+                <div className="border-t border-[var(--border)] pt-6">
                     <label
                         htmlFor="found-image"
-                        className="mb-2 block text-sm font-semibold text-[var(--foreground)]"
+                        className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                     >
-                        <Text id="Item Image *" />
+                        <Text id="Item Image *" requiredIndicator />
                     </label>
 
-                    <input
-                        id="found-image"
-                        required
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        onChange={(e) =>
-                            setImage(e.target.files?.[0] ?? null)
-                        }
-                        className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-4 file:py-2 file:font-medium file:text-[var(--primary-contrast)]"
-                    />
+                    <div className="rounded-xl border border-dashed border-[var(--border-strong)] bg-[var(--surface-soft)] p-4">
+                        <input
+                            id="found-image"
+                            required
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={(e) =>
+                                setImage(e.target.files?.[0] ?? null)
+                            }
+                            className="block w-full text-sm text-[var(--foreground-muted)] file:mr-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[var(--primary-contrast)]"
+                        />
 
-                    <p className="mt-3 text-xs leading-5 text-[var(--foreground-muted)]">
-                        <Text id="JPG, PNG or WEBP · Maximum 5 MB. The image is kept private and is not displayed in public search." />
-                    </p>
+                        <p className="mt-3 text-xs leading-5 text-[var(--foreground-muted)]">
+                            <Text id="JPG, PNG or WEBP · Maximum 5 MB. The image is kept private and is not displayed in public search." />
+                        </p>
+                    </div>
                 </div>
 
                 {message && (
                     <div
                         role="status"
-                        className="rounded-[var(--radius-md)] bg-[var(--primary-soft)] p-4 text-sm text-[var(--foreground)]"
+                        className="rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm leading-6 text-[var(--foreground)]"
                     >
                         <AppMessage text={message} />
                     </div>
                 )}
 
-                <div className="flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs leading-5 text-[var(--foreground-muted)]">
+                <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs leading-5 text-[var(--foreground-muted)] sm:max-w-sm">
                         <Text id="Staff approval is required before this report is published." />
                     </p>
 
@@ -284,14 +291,16 @@ export default function FoundReportForm() {
 function Field({
     label,
     children,
+    className,
 }: {
     label: string;
     children: React.ReactNode;
+    className?: string;
 }) {
     return (
-        <div>
+        <div className={className}>
             <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">
-                <UiText text={label} />
+                <UiText text={label} requiredIndicator />
             </label>
             {children}
         </div>

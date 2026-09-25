@@ -260,7 +260,7 @@ export default function StaffClaimCard({
             <Text id="Claim" />
           </p>
 
-          <h2 className="mt-1 break-all font-semibold text-[var(--foreground)]">
+          <h2 className="mt-1 break-all font-semibold text-[var(--heading)]">
             {claim.id}
           </h2>
 
@@ -382,7 +382,7 @@ export default function StaffClaimCard({
 
         {claim.status === "APPROVED" && (
           <div className="rounded-xl border border-[var(--success)]/20 bg-[var(--success-soft)] p-4 sm:p-5">
-            <h3 className="font-semibold text-[var(--foreground)]">
+            <h3 className="font-semibold text-[var(--heading)]">
               <Text id="Record handover" />
             </h3>
 

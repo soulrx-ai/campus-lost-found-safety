@@ -1,31 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useLanguage } from "./LanguageProvider";
 
 type Theme = "light" | "dark";
 
+function readTheme(): Theme {
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+
+function subscribeTheme(onChange: () => void) {
+    const observer = new MutationObserver(onChange);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+}
+
 export default function AuthPreferences() {
     const { language, setLanguage } = useLanguage();
-    const [theme, setTheme] = useState<Theme>("light");
-
-    useEffect(() => {
-        let currentTheme: Theme = document.documentElement.classList.contains("dark")
-            ? "dark"
-            : "light";
-
-        try {
-            currentTheme =
-                localStorage.getItem("theme") === "dark" ? "dark" : "light";
-        } catch { }
-
-        document.documentElement.classList.toggle(
-            "dark",
-            currentTheme === "dark"
-        );
-
-        setTheme(currentTheme);
-    }, []);
+    const theme = useSyncExternalStore(subscribeTheme, readTheme, () => "light" as Theme);
 
     function changeTheme(nextTheme: Theme) {
         document.documentElement.classList.toggle(
@@ -33,7 +25,6 @@ export default function AuthPreferences() {
             nextTheme === "dark"
         );
 
-        setTheme(nextTheme);
 
         try {
             localStorage.setItem("theme", nextTheme);

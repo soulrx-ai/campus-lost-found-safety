@@ -228,7 +228,7 @@ export default function UserTable() {
         <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-semibold text-[var(--foreground)]">
+              <h2 className="font-semibold text-[var(--heading)]">
                 <Text id="Registered users" />
               </h2>
 
@@ -326,10 +326,25 @@ export default function UserTable() {
                         <button
                           type="button"
                           aria-label={t("Delete {name}", { name: user.full_name })}
+                          title={t("Delete {name}", { name: user.full_name })}
                           onClick={() => openDeleteModal(user)}
-                          className="rounded-md p-1.5 text-[var(--foreground-muted)] transition hover:bg-red-50 hover:text-red-600"
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--danger)]/30 text-[var(--danger)] transition hover:bg-[var(--danger-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--danger)]"
                         >
-                          🗑️
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-5 w-5"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M8 6V4h8v2" />
+                            <path d="m19 6-1 14H6L5 6" />
+                            <path d="M10 11v5M14 11v5" />
+                          </svg>
                         </button>
                       </div>
                     </div>
@@ -362,7 +377,7 @@ export default function UserTable() {
           <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 shadow-xl">
             <h2
               id="delete-user-title"
-              className="text-lg font-semibold text-[var(--foreground)]"
+              className="text-lg font-semibold text-[var(--heading)]"
             >
               <Text id="Delete account?" />
             </h2>
@@ -422,7 +437,7 @@ export default function UserTable() {
           <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 text-center shadow-xl">
             <h2
               id="delete-success-title"
-              className="text-lg font-semibold text-[var(--foreground)]"
+              className="text-lg font-semibold text-[var(--heading)]"
             >
               <Text id="Account deleted successfully" />
             </h2>
@@ -434,7 +449,7 @@ export default function UserTable() {
             <button
               type="button"
               onClick={() => setDeleteSuccess(false)}
-              className="ui-button-primary mt-6"
+              className="ui-button-secondary mt-6"
             >
               <Text id="OK" />
             </button>
@@ -452,7 +467,7 @@ export default function UserTable() {
           <div className="w-full max-w-md rounded-xl bg-[var(--background)] p-6 text-center shadow-xl">
             <h2
               id="delete-warning-title"
-              className="text-lg font-semibold text-[var(--foreground)]"
+              className="text-lg font-semibold text-[var(--heading)]"
             >
               <Text id="Cannot delete this account" />
             </h2>
@@ -464,7 +479,7 @@ export default function UserTable() {
             <button
               type="button"
               onClick={() => setDeleteWarning("")}
-              className="ui-button-primary mt-6"
+              className="ui-button-secondary mt-6"
             >
               <Text id="OK" />
             </button>

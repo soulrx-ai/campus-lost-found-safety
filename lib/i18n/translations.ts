@@ -2,6 +2,18 @@
 export type Language = "en" | "th";
 
 export const translations = {
+  "A Staff Note is required before resolving a ticket.": {
+    en: "A Staff Note is required before resolving a ticket.",
+    th: "กรุณาระบุบันทึกของเจ้าหน้าที่ก่อนปิดคำร้อง",
+  },
+  "Ticket resolved and Staff Note saved, but the notification could not be sent.": {
+    en: "Ticket resolved and Staff Note saved, but the notification could not be sent.",
+    th: "ปิดคำร้องและบันทึกคำแนะนำแล้ว แต่ไม่สามารถส่งการแจ้งเตือนได้",
+  },
+  "No safety reports have been submitted yet.": {
+    en: "No safety reports have been submitted yet.",
+    th: "ยังไม่มีการส่งรายงานความปลอดภัย",
+  },
   "+ Create Ticket": {
     "en": "+ Create Ticket",
     "th": "+ สร้างคำร้อง"
@@ -2214,6 +2226,10 @@ export const translations = {
     "en": "Inactive",
     "th": "ระงับการใช้งาน"
   },
+  "Inactive current value": {
+    en: "inactive; current value",
+    th: "ไม่ใช้งาน; ค่าเดิมของรายการนี้",
+  },
   "User": {
     "en": "User",
     "th": "ผู้ใช้"
@@ -2401,6 +2417,213 @@ export const translations = {
   "Phone number must be in the format 0xx-xxx-xxxx (e.g. 081-234-5478).": {
     en: "Phone number must be in the format 0xx-xxx-xxxx (e.g. 081-234-5478).",
     th: "เบอร์โทรศัพท์ต้องอยู่ในรูปแบบ 0xx-xxx-xxxx เช่น 081-234-5478",
+  },
+    "Item Management": { en: "Item Management", th: "จัดการรายการสิ่งของ" },
+  "Manage lost and found item reports.": {
+    en: "Manage lost and found item reports.",
+    th: "จัดการรายการของหายและของที่พบ",
+  },
+  "Lost and found items": {
+    en: "Lost and found items",
+    th: "รายการของหายและของที่พบ",
+  },
+  "Review and maintain item reports submitted by users.": {
+    en: "Review and maintain item reports submitted by users.",
+    th: "ตรวจสอบและจัดการรายการที่ผู้ใช้ส่งเข้ามา",
+  },
+  "Search item name": { en: "Search item name", th: "ค้นหาชื่อสิ่งของ" },
+  "Filter by category": { en: "Filter by category", th: "กรองตามหมวดหมู่" },
+  "Filter by location": { en: "Filter by location", th: "กรองตามสถานที่" },
+  "All report types": { en: "All report types", th: "ทุกประเภท" },
+  "All statuses": { en: "All statuses", th: "ทุกสถานะ" },
+  "Apply filters": { en: "Apply filters", th: "ใช้ตัวกรอง" },
+  "Type": { en: "Type", th: "ประเภท" },
+  "Actions": { en: "Actions", th: "จัดการ" },
+  "Loading items...": { en: "Loading items...", th: "กำลังโหลดรายการ..." },
+  "No items found.": { en: "No items found.", th: "ไม่พบรายการ" },
+  "Item image": { en: "Item image", th: "รูปสิ่งของ" },
+  "Edit": { en: "Edit", th: "แก้ไข" },
+  "Page {page} of {totalPages}": {
+    en: "Page {page} of {totalPages}",
+    th: "หน้า {page} จาก {totalPages}",
+  },
+  "Previous": { en: "Previous", th: "ก่อนหน้า" },
+  "Next": { en: "Next", th: "ถัดไป" },
+  "Edit item": { en: "Edit item", th: "แก้ไขรายการ" },
+  "Reporter, report type, status, and image are not changed here.": {
+    en: "Reporter, report type, status, and image are not changed here.",
+    th: "หน้านี้ไม่แก้ไขผู้รายงาน ประเภท สถานะ หรือรูปภาพ",
+  },
+  "Lost / found date and time": {
+    en: "Lost / found date and time",
+    th: "วันและเวลาที่ทำหายหรือพบ",
+  },
+  "Delete item": { en: "Delete item", th: "ลบรายการ" },
+  "Deleting is permanent. Items with claims cannot be deleted.": {
+    en: "Deleting is permanent. Items with claims cannot be deleted.",
+    th: "การลบเป็นการถาวร และไม่สามารถลบรายการที่มีข้อมูลการเคลมได้",
+  },
+  "Unable to delete item": {
+  en: "Unable to delete item",
+  th: "ไม่สามารถลบรายการได้",
+  },
+  "System Settings": {
+  en: "System Settings",
+  th: "ตั้งค่าระบบ",
+  },
+  "Configure matching and data retention.": {
+    en: "Configure matching and data retention.",
+    th: "กำหนดเกณฑ์การจับคู่และระยะเวลาเก็บข้อมูล",
+  },
+  "Matching percentage": {
+    en: "Matching percentage",
+    th: "เปอร์เซ็นต์ความตรงกัน",
+  },
+  "Matching Threshold": {
+    en: "Matching Threshold",
+    th: "เกณฑ์คะแนนการจับคู่",
+  },
+  "Minimum score to show as a potential match.": {
+    en: "Minimum score to show as a potential match.",
+    th: "คะแนนขั้นต่ำสำหรับแสดงว่าอาจเป็นรายการที่ตรงกัน",
+  },
+  "Data Retention Period": {
+    en: "Data Retention Period",
+    th: "ระยะเวลาเก็บข้อมูล",
+  },
+  "Configured retention period for Lost & Found records.": {
+    en: "Configured retention period for Lost & Found records.",
+    th: "ระยะเวลาที่กำหนดให้เก็บข้อมูลของหายและของที่พบ",
+  },
+  "This value is saved as policy; automatic deletion requires a separate scheduled job.": {
+    en: "This value is saved as policy; automatic deletion requires a separate scheduled job.",
+    th: "ค่านี้ใช้เป็นนโยบายการเก็บข้อมูล การลบอัตโนมัติต้องตั้งงานตามกำหนดเวลาแยกต่างหาก",
+  },
+  "Save settings": {
+    en: "Save settings",
+    th: "บันทึกการตั้งค่า",
+  },
+  "Saving settings...": {
+    en: "Saving settings...",
+    th: "กำลังบันทึกการตั้งค่า...",
+  },
+  "Settings saved.": {
+    en: "Settings saved.",
+    th: "บันทึกการตั้งค่าแล้ว",
+  },
+  "Loading system settings...": {
+    en: "Loading system settings...",
+    th: "กำลังโหลดการตั้งค่าระบบ...",
+  },
+  "days": {
+    en: "days",
+    th: "วัน",
+  },
+  "Category Management": {
+    en: "Category Management",
+    th: "จัดการหมวดหมู่",
+  },
+  "Item Management sections": {
+    en: "Item Management sections",
+    th: "ส่วนต่าง ๆ ของการจัดการรายการ",
+  },
+  "Add, rename, or delete categories used by item reports.": {
+    en: "Add, rename, or delete categories used by item reports.",
+    th: "เพิ่ม เปลี่ยนชื่อ หรือลบหมวดหมู่ที่ใช้ในรายการสิ่งของ",
+  },
+  "Categories": { en: "Categories", th: "หมวดหมู่" },
+  "Category name": { en: "Category name", th: "ชื่อหมวดหมู่" },
+  "Enter category name": { en: "Enter category name", th: "กรอกชื่อหมวดหมู่" },
+  "Add category": { en: "Add category", th: "เพิ่มหมวดหมู่" },
+  "Category added.": { en: "Category added.", th: "เพิ่มหมวดหมู่แล้ว" },
+  "Category updated.": { en: "Category updated.", th: "แก้ไขหมวดหมู่แล้ว" },
+  "Category deleted.": { en: "Category deleted.", th: "ลบหมวดหมู่แล้ว" },
+  "Loading categories...": { en: "Loading categories...", th: "กำลังโหลดหมวดหมู่..." },
+  "No categories found.": { en: "No categories found.", th: "ไม่พบหมวดหมู่" },
+  "Delete category?": { en: "Delete category?", th: "ลบหมวดหมู่นี้หรือไม่?" },
+  "Delete category {name}": {
+    en: "Delete category {name}",
+    th: "ลบหมวดหมู่ {name}",
+  },
+  "Deleting a category removes it from choices. Existing item records keep their saved category text.": {
+    en: "Deleting a category removes it from choices. Existing item records keep their saved category text.",
+    th: "การลบจะนำหมวดหมู่ออกจากตัวเลือก ส่วนรายการเดิมยังคงแสดงชื่อหมวดหมู่ที่บันทึกไว้",
+  },
+  "Match threshold guidance": {
+    en: "Items with a match score of {threshold}% or higher can proceed to the claim process for Staff review.",
+    th: "รายการที่มีคะแนนจับคู่ตั้งแต่ {threshold}% ขึ้นไปสามารถเข้าสู่ขั้นตอนเคลมเพื่อให้เจ้าหน้าที่ตรวจสอบ",
+  },
+  "Staff Dashboard": {
+    en: "Staff Dashboard",
+    th: "แดชบอร์ดเจ้าหน้าที่",
+  },
+  "Review current operational workload and open each Staff workflow.": {
+    en: "Review current operational workload and open each Staff workflow.",
+    th: "ตรวจสอบภาระงานปัจจุบันและเข้าสู่ขั้นตอนงานของเจ้าหน้าที่แต่ละส่วน",
+  },
+  "Current workload": {
+    en: "Current workload",
+    th: "ภาระงานปัจจุบัน",
+  },
+  "Live records currently requiring Staff attention.": {
+    en: "Live records currently requiring Staff attention.",
+    th: "รายการปัจจุบันที่ต้องได้รับการดำเนินการจากเจ้าหน้าที่",
+  },
+  "tasks requiring attention": {
+    en: "tasks requiring attention",
+    th: "งานที่ต้องดำเนินการ",
+  },
+  "Items pending review": {
+    en: "Items pending review",
+    th: "รายการสิ่งของที่รอตรวจสอบ",
+  },
+  "Claims waiting for review": {
+    en: "Claims waiting for review",
+    th: "คำขอเคลมที่รอตรวจสอบ",
+  },
+  "Approved claims waiting for handover": {
+    en: "Approved claims waiting for handover",
+    th: "คำขอเคลมที่อนุมัติแล้วและรอส่งมอบ",
+  },
+  "Safety incidents pending review": {
+    en: "Safety incidents pending review",
+    th: "เหตุการณ์ความปลอดภัยที่รอตรวจสอบ",
+  },
+  "Tickets open or in progress": {
+    en: "Tickets open or in progress",
+    th: "คำร้องที่เปิดอยู่หรือกำลังดำเนินการ",
+  },
+  "Unable to load count": {
+    en: "Unable to load count",
+    th: "ไม่สามารถโหลดจำนวนรายการได้",
+  },
+  "No pending Staff work": {
+    en: "No pending Staff work",
+    th: "ไม่มีงานของเจ้าหน้าที่ที่รอดำเนินการ",
+  },
+  "There are no items, claims, handovers, incidents, or tickets waiting for attention.": {
+    en: "There are no items, claims, handovers, incidents, or tickets waiting for attention.",
+    th: "ไม่มีรายการสิ่งของ คำขอเคลม การส่งมอบ เหตุการณ์ หรือคำร้องที่รอดำเนินการ",
+  },
+  "Staff workflows": {
+    en: "Staff workflows",
+    th: "ขั้นตอนงานของเจ้าหน้าที่",
+  },
+  "Review pending lost and found reports.": {
+    en: "Review pending lost and found reports.",
+    th: "ตรวจสอบรายงานของหายและของที่พบซึ่งกำลังรอการพิจารณา",
+  },
+  "Review pending campus safety incidents.": {
+    en: "Review pending campus safety incidents.",
+    th: "ตรวจสอบเหตุการณ์ความปลอดภัยภายในมหาวิทยาลัยที่รอการพิจารณา",
+  },
+  "Process open and in-progress service tickets.": {
+    en: "Process open and in-progress service tickets.",
+    th: "ดำเนินการคำร้องบริการที่เปิดอยู่และกำลังดำเนินการ",
+  },
+  "Loading Staff dashboard...": {
+    en: "Loading Staff dashboard...",
+    th: "กำลังโหลดแดชบอร์ดเจ้าหน้าที่...",
   },
 } as const satisfies Record<string, Record<Language, string>>;
 

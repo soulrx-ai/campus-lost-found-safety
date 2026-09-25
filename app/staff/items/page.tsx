@@ -19,7 +19,7 @@ export default async function StaffItemsPage() {
         <main className="page-shell">
             <div className="app-container">
                 <div className="mx-auto max-w-5xl">
-                    <header className="mb-7">
+                    <header className="page-header mb-7">
                         <p className="page-eyebrow"><Text id="Staff Operations" /></p>
 
                         <h1 className="page-title">
@@ -45,7 +45,7 @@ export default async function StaffItemsPage() {
                                 ✓
                             </div>
 
-                            <h2 className="mt-4 text-lg font-semibold text-[var(--foreground)]">
+                            <h2 className="mt-4 text-lg font-semibold text-[var(--heading)]">
                                 <Text id="No pending reports" />
                             </h2>
 

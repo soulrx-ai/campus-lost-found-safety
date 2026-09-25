@@ -1,13 +1,15 @@
 "use client";
 
-import { AppMessage, Text } from "@/components/i18n/Text";
+import { AppMessage, DisplayValue, Text } from "@/components/i18n/Text";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useCategories } from "@/components/categories/useCategories";
 
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LostReportForm() {
   const { t } = useLanguage();
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
     const supabase = createClient();
 
     const [name, setName] = useState("");
@@ -135,12 +137,12 @@ export default function LostReportForm() {
             className="ui-card overflow-hidden"
         >
             <div className="border-b border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4 sm:px-7">
-                <h2 className="font-semibold text-[var(--foreground)]">
+                <h2 className="font-semibold text-[var(--heading)]">
                     <Text id="Item information" />
                 </h2>
 
                 <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                    <Text id="Fields marked with * are required." />
+                    <Text id="Fields marked with * are required." requiredIndicator />
                 </p>
             </div>
 
@@ -151,7 +153,7 @@ export default function LostReportForm() {
                             htmlFor="lost-name"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            <Text id="Item name *" />
+                            <Text id="Item name *" requiredIndicator />
                         </label>
 
                         <input
@@ -170,25 +172,29 @@ export default function LostReportForm() {
                             htmlFor="lost-category"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            <Text id="Category *" />
+                            <Text id="Category *" requiredIndicator />
                         </label>
 
                         <select
                             id="lost-category"
                             required
+                            disabled={categoriesLoading || Boolean(categoriesError) || categories.length === 0}
                             value={category}
                             onChange={(event) => setCategory(event.target.value)}
                             className="ui-input"
                         >
                             <option value=""><Text id="Select category" /></option>
-                            <option value="Electronics"><Text id="Electronics" /></option>
-                            <option value="Wallet"><Text id="Wallet" /></option>
-                            <option value="Bag"><Text id="Bag" /></option>
-                            <option value="Document"><Text id="Document" /></option>
-                            <option value="Clothing"><Text id="Clothing" /></option>
-                            <option value="Accessory"><Text id="Accessory" /></option>
-                            <option value="Other"><Text id="Other" /></option>
+                            {categories.map((itemCategory) => (
+                                <option key={itemCategory.id} value={itemCategory.name}>
+                                    <DisplayValue value={itemCategory.name} />
+                                </option>
+                            ))}
                         </select>
+                        {categoriesError && (
+                            <p role="alert" className="mt-1 text-xs text-[var(--danger)]">
+                                <AppMessage text={categoriesError} />
+                            </p>
+                        )}
                     </div>
 
                     <div>
@@ -232,7 +238,7 @@ export default function LostReportForm() {
                             htmlFor="lost-date-time"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            <Text id="Date / time lost *" />
+                            <Text id="Date / time lost *" requiredIndicator />
                         </label>
 
                         <input
@@ -250,7 +256,7 @@ export default function LostReportForm() {
                             htmlFor="lost-location"
                             className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                         >
-                            <Text id="Location *" />
+                            <Text id="Location *" requiredIndicator />
                         </label>
 
                         <input
@@ -290,7 +296,7 @@ export default function LostReportForm() {
                         htmlFor="lost-image"
                         className="mb-1.5 block text-sm font-medium text-[var(--foreground)]"
                     >
-                        <Text id="Item image *" />
+                        <Text id="Item image *" requiredIndicator />
                     </label>
 
                     <div className="rounded-xl border border-dashed border-[var(--border-strong)] bg-[var(--surface-soft)] p-4">

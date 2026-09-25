@@ -162,7 +162,7 @@ export default async function Home() {
                   <Text id="Campus Services" />
                 </p>
 
-                <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--success)] [overflow-wrap:anywhere] sm:text-4xl">
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--heading)] [overflow-wrap:anywhere] sm:text-4xl">
                   <Text id="Welcome," /> {profile.full_name}
                 </h1>
 
@@ -171,61 +171,56 @@ export default async function Home() {
                 </p>
               </div>
 
-              <span className="w-fit shrink-0 rounded-full border border-[var(--success)]/25 bg-[var(--success)]/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--success)]">
+              <span data-accent={profile.role.toLowerCase()} className="role-badge w-fit shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold">
                 <DisplayValue value={profile.role} />
               </span>
             </div>
           </section>
 
-          {/* Safety + Quick Actions */}
-          <section className="grid items-start gap-5 lg:items-stretch lg:grid-cols-[minmax(0,1.65fr)_minmax(0,0.85fr)]">
-            <div className="relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--danger)]/20 bg-[var(--danger-soft)]">
-              <div
-                aria-hidden="true"
-                className="absolute -right-16 -top-16 h-52 w-52 rounded-full border-[28px] border-white/30"
-              />
-
-              <div className="relative flex min-w-0 flex-col p-5 sm:p-6 lg:h-full">
+          {/* Safety + My Activity */}
+          <section className="grid items-start gap-5 lg:items-stretch lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+            <div className="safety-banner">
+              <div className="safety-banner-content">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <SafetyIcon />
 
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--danger)]">
+                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-white">
                         <Text id="Safety Update" />
                       </p>
-                      <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">
+                      <p className="mt-0.5 text-xs text-white/85">
                         <Text id="Latest published campus incident" />
                       </p>
                     </div>
                   </div>
 
                   {latestIncident && (
-                    <span className="inline-flex shrink-0 rounded-full border border-[var(--danger)]/20 bg-[var(--surface)]/70 px-3 py-1 text-[11px] font-semibold text-[var(--danger)]">
+                    <span className="inline-flex shrink-0 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-semibold text-white">
                       <DisplayValue value="PUBLISHED" />
                     </span>
                   )}
                 </div>
 
-                <div className="my-5 border-t border-[var(--danger)]/15" />
+                <div className="my-5 border-t border-white/20" />
 
                 {latestIncident ? (
                   <div className="flex min-w-0 flex-col lg:flex-1">
-                    <h2 className="max-w-2xl [overflow-wrap:anywhere] text-xl font-bold text-[var(--foreground)] sm:text-2xl">
+                    <h2 className="max-w-2xl [overflow-wrap:anywhere] text-xl font-bold text-white sm:text-2xl">
                       {latestIncident.title}
                     </h2>
 
-                    <p className="mt-2 max-w-2xl [overflow-wrap:anywhere] text-sm leading-6 text-[var(--foreground-muted)]">
+                    <p className="mt-2 max-w-2xl [overflow-wrap:anywhere] text-sm leading-6 text-white/85">
                       {latestIncident.description}
                     </p>
 
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-[var(--surface)]/80 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-[var(--foreground-muted)]">
+                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-white/10 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-white/85">
                         <LocationIcon />
                         <span>{latestIncident.location}</span>
                       </div>
 
-                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-[var(--surface)]/80 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-[var(--foreground-muted)]">
+                      <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-white/10 [overflow-wrap:anywhere] [&>svg]:shrink-0 px-3 py-2 text-sm text-white/85">
                         <ClockIcon />
                         <span>
                           {new Date(
@@ -238,7 +233,7 @@ export default async function Home() {
                     <div className="mt-5 lg:mt-auto lg:pt-5">
                       <Link
                         href="/safety"
-                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--danger-solid)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                        className="safety-banner-cta"
                       >
                         <Text id="View safety details" />
                         <span className="ml-2" aria-hidden="true">
@@ -250,70 +245,75 @@ export default async function Home() {
                 ) : (
                   <div className="flex min-w-0 flex-col gap-5 lg:flex-1">
                     <div>
-                      <h2 className="text-xl font-bold text-[var(--foreground)]">
+                      <h2 className="text-xl font-bold text-white">
                         <Text id="No active safety incidents" />
                       </h2>
 
-                      <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
+                      <p className="mt-2 text-sm leading-6 text-white/85">
                         <Text id="There are currently no published safety incidents." />
                       </p>
                     </div>
 
                     <Link
                       href="/safety"
-                      className="ui-button-secondary w-fit lg:mt-auto"
+                      className="safety-banner-cta w-fit lg:mt-auto"
                     >
                       <Text id="View Safety" />
                     </Link>
                   </div>
                 )}
               </div>
+              <div className="safety-banner-image" aria-hidden="true" />
             </div>
 
-            <div className="ui-card p-5 sm:p-6">
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
-                  <Text id="Quick Actions" />
-                </p>
-                <h2 className="mt-1 text-xl font-bold text-[var(--foreground)]">
-                  <Text id="What do you need?" />
-                </h2>
+            {/* My Activity */}
+            <section className="ui-card min-w-0 p-5 sm:p-6">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <SectionHeading
+                  eyebrow="My Activity"
+                  title="Recent updates"
+                  description="Track your latest reports, claims and service requests."
+                />
+
+                {activities.length > 0 && (
+                  <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-semibold text-[var(--primary)]">
+                    <Text id="Latest" /> {activities.length}
+                  </span>
+                )}
               </div>
 
-              <div className="mt-5 grid gap-3">
-                <QuickAction
-                  href="/search"
-                  title="Search Items"
-                  description="Browse published reports"
-                  icon="search"
-                  tone="search"
-                />
+              <div className="mt-5">
+                {activities.length === 0 ? (
+                  <div className="border-l-4 border-l-[var(--success)]/40 px-5 py-4 sm:px-6 sm:py-5">
+                    <div className="flex max-w-2xl items-center gap-4">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--success)]/15 text-[var(--success)]">
+                        <ActivityIcon />
+                      </span>
 
-                <QuickAction
-                  href="/lost/report"
-                  title="Report Lost"
-                  description="Tell us what you lost"
-                  icon="lost"
-                  tone="lost"
-                />
+                      <div>
+                        <h3 className="font-semibold text-[var(--heading)]">
+                          <Text id="No activity yet" />
+                        </h3>
 
-                <QuickAction
-                  href="/found/report"
-                  title="Report Found"
-                  description="Submit a found item"
-                  icon="found"
-                  tone="found"
-                />
-
-                <QuickAction
-                  href="/safety/report"
-                  title="Report Safety"
-                  description="Report a hazard or incident"
-                  icon="safety"
-                  tone="safety"
-                />
+                        <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
+                          <Text id="Your reports, claims and service tickets will appear here after you submit them." />
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)]">
+                    {activities.map((activity, index) => (
+                      <ActivityRow
+                        key={activity.id}
+                        activity={activity}
+                        showBorder={index !== 0}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
+            </section>
           </section>
 
           {/* Lost & Found */}
@@ -393,55 +393,6 @@ export default async function Home() {
             </Link>
           </section>
 
-          {/* My Activity */}
-          <section className="mt-10">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <SectionHeading
-                eyebrow="My Activity"
-                title="Recent updates"
-                description="Track your latest reports, claims and service requests."
-              />
-
-              {activities.length > 0 && (
-                <span className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-semibold text-[var(--primary)]">
-                  <Text id="Latest" /> {activities.length}
-                </span>
-              )}
-            </div>
-
-            <div className="mt-5">
-              {activities.length === 0 ? (
-                <div className="ui-card border-l-4 border-l-[var(--success)]/40 px-5 py-4 sm:px-6 sm:py-5">
-                  <div className="flex max-w-2xl items-center gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--success)]/15 text-[var(--success)]">
-                      <ActivityIcon />
-                    </span>
-
-                    <div>
-                      <h3 className="font-semibold text-[var(--foreground)]">
-                        <Text id="No activity yet" />
-                      </h3>
-
-                      <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
-                        <Text id="Your reports, claims and service tickets will appear here after you submit them." />
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="ui-card overflow-hidden">
-                  {activities.map((activity, index) => (
-                    <ActivityRow
-                      key={activity.id}
-                      activity={activity}
-                      showBorder={index !== 0}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
           {/* Recovery & Support */}
           <section className="mt-10">
             <SectionHeading
@@ -482,16 +433,16 @@ export default async function Home() {
 
           {/* Role shortcuts */}
           {profile.role === "STAFF" && (
-            <section className="mt-8">
+            <section className="mt-8" data-accent="staff">
               <Link
                 href="/staff/claims"
                 className="ui-card flex flex-col gap-4 p-5 transition hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--success)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--heading)]">
                     <Text id="Staff" />
                   </p>
-                  <h2 className="mt-1 text-lg font-bold text-[var(--foreground)]">
+                  <h2 className="mt-1 text-lg font-bold text-[var(--heading)]">
                     <Text id="Staff Operations" />
                   </h2>
                   <p className="mt-1 text-sm text-[var(--foreground-muted)]">
@@ -507,16 +458,16 @@ export default async function Home() {
           )}
 
           {profile.role === "ADMIN" && (
-            <section className="mt-8">
+            <section className="mt-8" data-accent="admin">
               <Link
                 href="/admin"
                 className="ui-card flex flex-col gap-4 p-5 transition hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--info)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--heading)]">
                     <Text id="Admin" />
                   </p>
-                  <h2 className="mt-1 text-lg font-bold text-[var(--foreground)]">
+                  <h2 className="mt-1 text-lg font-bold text-[var(--heading)]">
                     <Text id="Admin Dashboard" />
                   </h2>
                   <p className="mt-1 text-sm text-[var(--foreground-muted)]">
@@ -547,70 +498,16 @@ function SectionHeading({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--success)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--heading)]">
         <UiText text={eyebrow} />
       </p>
-      <h2 className="mt-1 text-xl font-bold text-[var(--success)] sm:text-2xl">
+      <h2 className="mt-1 text-xl font-bold text-[var(--heading)] sm:text-2xl">
         <UiText text={title} />
       </h2>
       <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--foreground-muted)]">
         <UiText text={description} />
       </p>
     </div>
-  );
-}
-
-function QuickAction({
-  href,
-  title,
-  description,
-  icon,
-  tone,
-}: {
-  href: string;
-  title: string;
-  description: string;
-  icon: "search" | "lost" | "found" | "safety";
-  tone: "search" | "lost" | "found" | "safety";
-}) {
-  const toneClasses = {
-    search:
-      "bg-[var(--primary)]/20 text-[var(--primary)]",
-    lost:
-      "bg-[var(--warning)]/20 text-[var(--warning)]",
-    found:
-      "bg-[var(--success)]/20 text-[var(--success)]",
-    safety:
-      "bg-[var(--danger)]/20 text-[var(--danger)]",
-  }[tone];
-
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-soft)] p-3 transition hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
-    >
-      <span
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${toneClasses}`}
-      >
-        <MenuIcon name={icon} />
-      </span>
-
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold text-[var(--foreground)]">
-          <UiText text={title} />
-        </span>
-        <span className="mt-0.5 block text-xs text-[var(--foreground-muted)]">
-          <UiText text={description} />
-        </span>
-      </span>
-
-      <span
-        aria-hidden="true"
-        className="text-[var(--foreground-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--primary)]"
-      >
-        →
-      </span>
-    </Link>
   );
 }
 
@@ -677,7 +574,7 @@ function MenuCard({
       </div>
 
       <div className="mt-6">
-        <h3 className="text-lg font-bold text-[var(--foreground)]">
+        <h3 className="text-lg font-bold text-[var(--heading)]">
           <UiText text={title} />
         </h3>
 
@@ -709,10 +606,13 @@ function ActivityRow({
   return (
     <Link
       href={activity.href}
-      className={`grid gap-3 p-4 transition hover:bg-[var(--surface-soft)] sm:grid-cols-[9rem_minmax(0,1fr)_auto_auto] sm:items-center sm:px-5 ${showBorder ? "border-t border-[var(--border)]" : ""
+      className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4 transition hover:bg-[var(--surface-soft)] sm:px-5 ${showBorder ? "border-t border-[var(--border)]" : ""
         }`}
     >
-      <ActivityTypeBadge activity={activity} />
+      <div className="col-span-2 flex min-w-0 flex-wrap items-center gap-2">
+        <ActivityTypeBadge activity={activity} />
+        <StatusBadge status={activity.status} />
+      </div>
 
       <div className="min-w-0">
         <p className="truncate font-medium text-[var(--foreground)]">
@@ -724,11 +624,10 @@ function ActivityRow({
         </p>
       </div>
 
-      <StatusBadge status={activity.status} />
 
       <span
         aria-hidden="true"
-        className="hidden text-lg text-[var(--foreground-muted)] sm:block"
+        className="text-right text-lg text-[var(--foreground-muted)]"
       >
         →
       </span>
@@ -796,7 +695,7 @@ function StatusBadge({ status }: { status: string }) {
 
   return (
     <span
-      className={`w-fit whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold ${classes}`}
+      className={`w-fit max-w-full [overflow-wrap:anywhere] rounded-full px-2.5 py-1 text-[11px] font-semibold ${classes}`}
     >
       <DisplayValue value={status} />
     </span>
@@ -973,7 +872,7 @@ function LocationIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-4 w-4 shrink-0 text-[var(--danger)]"
+      className="h-4 w-4 shrink-0 text-inherit dark:text-[var(--danger)]"
       aria-hidden="true"
     >
       <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
@@ -991,7 +890,7 @@ function ClockIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-4 w-4 shrink-0 text-[var(--danger)]"
+      className="h-4 w-4 shrink-0 text-inherit dark:text-[var(--danger)]"
       aria-hidden="true"
     >
       <circle cx="12" cy="12" r="9" />

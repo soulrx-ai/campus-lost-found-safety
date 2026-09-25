@@ -16,7 +16,7 @@ export default async function NewClaimPage({
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-3xl">
-          <header className="mb-7">
+          <header className="page-header mb-7">
             <p className="page-eyebrow"><Text id="Lost & Found" /></p>
 
             <h1 className="page-title"><Text id="Submit a claim" /></h1>

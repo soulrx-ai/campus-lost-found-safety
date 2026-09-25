@@ -131,7 +131,7 @@ export default function LoginPage() {
 
             <div className="mb-7">
               <p className="text-sm font-medium text-[#187f7a]"><Text id="Welcome back" /></p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--heading)] sm:text-4xl">
                 <Text id="Sign in to your account" />
               </h1>
               <p className="mt-3 text-sm leading-6 text-[var(--foreground-muted)]">
@@ -195,7 +195,7 @@ export default function LoginPage() {
                 <Text id="Remember me" />
               </label>
 
-              <button type="submit" disabled={loading} className="w-full rounded-xl bg-[#187f7a] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#106661] focus:outline-none focus:ring-4 focus:ring-[#b9ddd5] disabled:cursor-not-allowed disabled:opacity-60">
+              <button type="submit" disabled={loading} className="ui-button-primary w-full shadow-sm">
                 {loading ? <Text id="Signing in..." /> : <Text id="Sign in" />}
               </button>
             </form>

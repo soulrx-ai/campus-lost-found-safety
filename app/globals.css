@@ -14,6 +14,13 @@
   --border: #e5e1d8;
   --border-strong: #d5cfc3;
 
+  --heading: #28543c;
+  --staff: #285f96;
+  --admin: #75449b;
+  --action: #356749;
+  --action-hover: #274f37;
+  --action-contrast: #ffffff;
+
   --primary: #514d3f;
   --primary-hover: #403d33;
   --primary-soft: #eeece5;
@@ -55,6 +62,13 @@ html.dark {
 
   --border: #38372f;
   --border-strong: #4a483e;
+
+  --heading: #a2d3b1;
+  --staff: #96bfee;
+  --admin: #c9a5e8;
+  --action: #8fc4a2;
+  --action-hover: #a9d8ba;
+  --action-contrast: #15251b;
 
   --primary: #d2cbb8;
   --primary-hover: #e3dcc8;
@@ -174,14 +188,14 @@ a {
 }
 
 .page-eyebrow {
-  color: var(--foreground-muted);
+  color: var(--heading);
   font-size: 0.875rem;
   font-weight: 500;
 }
 
 .page-title {
   margin-top: 0.25rem;
-  color: var(--foreground);
+  color: var(--heading);
   font-size: clamp(1.75rem, 4vw, 2.25rem);
   font-weight: 700;
   line-height: 1.2;
@@ -196,6 +210,96 @@ a {
 }
 
 /* ---------- Shared card ---------- */
+
+/* Inherits the existing general, Staff, Admin, or Safety heading accent. */
+.page-header {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid color-mix(in srgb, var(--heading) 22%, var(--border));
+  border-inline-start: 4px solid var(--heading);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--heading) 7%, var(--surface));
+  padding: clamp(1rem, 3vw, 1.75rem);
+  overflow-wrap: anywhere;
+}
+
+.page-header .page-title {
+  line-height: 1.4;
+}
+
+/* Home's Safety card keeps its own red identity in both themes. */
+.safety-banner {
+  --safety-banner-background: color-mix(in srgb, var(--danger-solid) 78%, #000);
+  --safety-banner-image: url('/images/auth-campus.jpg');
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-xl);
+  background: var(--safety-banner-background);
+  color: #fff;
+}
+
+html.dark .safety-banner {
+  --safety-banner-background: color-mix(in srgb, var(--danger-solid) 58%, #000);
+}
+
+.safety-banner-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: clamp(1.25rem, 2vw, 1.5rem);
+  overflow-wrap: anywhere;
+}
+
+.safety-banner-image {
+  min-height: 10rem;
+  background-image:
+    linear-gradient(to bottom, var(--safety-banner-background), transparent 65%),
+    var(--safety-banner-image);
+  background-position: center;
+  background-size: cover;
+}
+
+.safety-banner-cta {
+  display: inline-flex;
+  min-height: 2.75rem;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: var(--radius-md);
+  background: #fff;
+  padding: 0.625rem 1rem;
+  color: var(--danger-solid);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background-color 150ms ease;
+}
+
+.safety-banner-cta:hover {
+  background: color-mix(in srgb, var(--danger-solid) 12%, #fff);
+}
+
+.safety-banner-cta:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+@media (min-width: 640px) {
+  .safety-banner {
+    flex-direction: row;
+  }
+
+  .safety-banner-image {
+    flex: 0 0 28%;
+    background-image:
+      linear-gradient(to right, var(--safety-banner-background), transparent 85%),
+      var(--safety-banner-image);
+  }
+}
 
 .ui-card {
   border: 1px solid var(--border);
@@ -239,9 +343,9 @@ a {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-md);
-  background: var(--primary);
+  background: var(--action);
   padding: 0.625rem 1rem;
-  color: var(--primary-contrast);
+  color: var(--action-contrast);
   font-size: 0.875rem;
   font-weight: 500;
   transition:
@@ -249,11 +353,11 @@ a {
     transform 150ms ease;
 }
 
-.ui-button-primary:hover {
-  background: var(--primary-hover);
+.ui-button-primary:hover:not(:disabled) {
+  background: var(--action-hover);
 }
 
-.ui-button-primary:active {
+.ui-button-primary:active:not(:disabled) {
   transform: translateY(1px);
 }
 
@@ -274,7 +378,7 @@ a {
     border-color 150ms ease;
 }
 
-.ui-button-secondary:hover {
+.ui-button-secondary:hover:not(:disabled) {
   border-color: var(--border-strong);
   background: var(--surface-soft);
 }
@@ -301,4 +405,45 @@ a {
   .app-container {
     padding-inline: 2rem;
   }
+}
+/* Accents are independent of positive-action colors. */
+[data-accent="staff"] { --heading: var(--staff); }
+[data-accent="admin"] { --heading: var(--admin); }
+[data-accent="safety"] { --heading: var(--danger); }
+.required-indicator { color: var(--danger); }
+.role-badge {
+  color: var(--heading);
+  background: color-mix(in srgb, var(--heading) 12%, var(--surface));
+  border-color: color-mix(in srgb, var(--heading) 30%, var(--surface));
+}
+.nav-section-title {
+  border-inline-start: 3px solid var(--heading);
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, var(--heading) 9%, var(--surface));
+  padding-block: 0.5rem;
+  color: var(--heading);
+}
+.side-link {
+  border-inline-start: 3px solid transparent;
+  color: var(--foreground-muted);
+  overflow-wrap: anywhere;
+}
+.side-link:hover {
+  background: color-mix(in srgb, var(--heading) 10%, var(--surface));
+  color: var(--heading);
+}
+.side-link[aria-current="page"] {
+  border-inline-start-color: var(--heading);
+  background: color-mix(in srgb, var(--heading) 14%, var(--surface));
+  color: var(--heading);
+  font-weight: 700;
+}
+.side-link[aria-current="page"]:hover {
+  background: color-mix(in srgb, var(--heading) 18%, var(--surface));
+}
+.side-link:focus-visible { outline-color: var(--heading); }
+.ui-button-safety {
+  --action: var(--danger-solid);
+  --action-hover: #873630;
+  --action-contrast: #ffffff;
 }
