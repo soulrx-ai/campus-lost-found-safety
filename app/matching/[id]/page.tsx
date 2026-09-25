@@ -20,7 +20,7 @@ export default async function MatchDetailPage({
     const profile = await requireUser();
     const supabase = await createClient();
 
-    const { data: lostItem } = await supabase
+    const { data: lostItem, error: lostError } = await supabase
         .from("items")
         .select(
             "id, report_type, name, category, brand, color, location, date_time"
@@ -29,13 +29,14 @@ export default async function MatchDetailPage({
         .eq("reporter_id", profile.id)
         .eq("report_type", "LOST")
         .eq("status", "PUBLISHED")
-        .single();
+        .maybeSingle();
 
+    if (lostError) throw new Error("Unable to load lost report.");
     if (!lostItem) {
         notFound();
     }
 
-    const { data: foundItems } = await supabase
+    const { data: foundItems, error: foundError } = await supabase
         .from("items")
         .select(
             "id, report_type, name, category, brand, color, location, date_time"
@@ -43,10 +44,11 @@ export default async function MatchDetailPage({
         .eq("report_type", "FOUND")
         .eq("status", "PUBLISHED");
 
+    if (foundError) throw new Error("Unable to load found reports.");
     const admin = createAdminClient();
     const { data: settings, error: settingsError } = await admin.from("system_settings").select("matching_threshold").eq("id", "global").maybeSingle();
-    if (settingsError) throw new Error("Unable to load matching settings.");
-    const matchingThreshold = settings?.matching_threshold ?? 70;
+    if (settingsError || !settings || !Number.isInteger(settings.matching_threshold) || settings.matching_threshold < 0 || settings.matching_threshold > 100) throw new Error("Unable to load matching settings.");
+    const matchingThreshold = settings.matching_threshold;
 
     return (
         <main className="page-shell">

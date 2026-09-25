@@ -116,6 +116,12 @@ export async function GET(request: Request) {
 
       const claimFiles = (claims ?? []) as ClaimFileRow[];
 
+      const allPaths: Array<string | null> = [item.image_url, ...claimFiles.flatMap(claim => [claim.evidence, claim.handover_photo_url])];
+      if (allPaths.some(path => path && (/^[a-z][a-z0-9+.-]*:/i.test(path) || path.startsWith("/") || path.includes("\\") || path.split("/").some(part => part === ".." || part === ".")))) {
+        skipped.push({ itemId, reason: "Invalid Storage object path; no data deleted." });
+        continue;
+      }
+
       const evidencePaths = uniquePaths(
         claimFiles.map((claim) => claim.evidence),
       );

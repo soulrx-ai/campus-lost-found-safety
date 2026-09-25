@@ -55,6 +55,10 @@ export type Database = {
         Views: { [_ in never]: never }
 
         Functions: {
+            update_staff_ticket: {
+                Args: { p_ticket_id: string; p_status: string; p_staff_note?: string | null }
+                Returns: boolean
+            }
             get_my_role: {
                 Args: Record<PropertyKey, never>
                 Returns: string
