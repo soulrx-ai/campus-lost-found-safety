@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { AppMessage, Text } from "@/components/i18n/Text";
 
@@ -72,10 +72,38 @@ export default function SearchPage() {
             setMessage("No published items are available yet.");
         }
     }
+
     async function searchItems() {
         setLoading(true);
         setMessage("");
 
+        try {
+            const params = new URLSearchParams();
+            if (filters.name.trim()) params.set("q", filters.name.trim());
+            if (filters.category) params.set("category", filters.category);
+            if (filters.brand.trim()) params.set("brand", filters.brand.trim());
+            if (filters.color.trim()) params.set("color", filters.color.trim());
+            if (filters.location.trim()) params.set("location", filters.location.trim());
+            if (filters.reportType) params.set("report_type", filters.reportType);
+            if (filters.date) params.set("date", filters.date);
+
+            const res = await fetch(`/api/search?${params.toString()}`);
+            if (res.ok) {
+                const data = await res.json();
+                const results = (data.results ?? []) as SearchItem[];
+                setItems(results);
+                setLoading(false);
+
+                if (results.length === 0) {
+                    setMessage("No published items matched your search.");
+                }
+                return;
+            }
+        } catch {
+            // Fall through to fallback
+        }
+
+        // Fallback: standard database query
         let query = supabase
             .from("items")
             .select(
@@ -85,55 +113,32 @@ export default function SearchPage() {
             .order("date_time", { ascending: false });
 
         if (filters.name.trim()) {
-            query = query.ilike(
-                "name",
-                `%${filters.name.trim()}%`
-            );
+            query = query.ilike("name", `%${filters.name.trim()}%`);
         }
-
         if (filters.category) {
             query = query.eq("category", filters.category);
         }
-
         if (filters.brand.trim()) {
-            query = query.ilike(
-                "brand",
-                `%${filters.brand.trim()}%`
-            );
+            query = query.ilike("brand", `%${filters.brand.trim()}%`);
         }
-
         if (filters.color.trim()) {
-            query = query.ilike(
-                "color",
-                `%${filters.color.trim()}%`
-            );
+            query = query.ilike("color", `%${filters.color.trim()}%`);
         }
-
         if (filters.location.trim()) {
-            query = query.ilike(
-                "location",
-                `%${filters.location.trim()}%`
-            );
+            query = query.ilike("location", `%${filters.location.trim()}%`);
         }
-
         if (filters.reportType) {
-            query = query.eq(
-                "report_type",
-                filters.reportType
-            );
+            query = query.eq("report_type", filters.reportType);
         }
-
         if (filters.date) {
             const start = new Date(`${filters.date}T00:00:00`);
             const end = new Date(`${filters.date}T23:59:59.999`);
-
             query = query
                 .gte("date_time", start.toISOString())
                 .lte("date_time", end.toISOString());
         }
 
         const { data, error } = await query;
-
         setLoading(false);
 
         if (error) {
@@ -143,7 +148,6 @@ export default function SearchPage() {
         }
 
         const results = (data ?? []) as SearchItem[];
-
         setItems(results);
 
         if (results.length === 0) {
