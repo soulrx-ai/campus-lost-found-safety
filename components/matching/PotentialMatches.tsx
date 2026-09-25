@@ -59,6 +59,7 @@ export default function PotentialMatches({
             {matches.map(
                 ({
                     item,
+                    score,
                     isPotentialMatch,
                 }) => (
                     <article
@@ -75,6 +76,9 @@ export default function PotentialMatches({
                                     <h2 className="mt-3 break-words text-lg font-semibold text-[var(--heading)]">
                                         {item.name}
                                     </h2>
+                                    <p className="mt-2 font-semibold text-[var(--foreground)]">
+                                        <Text id="Matching percentage" />: {score}%
+                                    </p>
 
                                     <div className="mt-4 grid gap-2 text-sm text-[var(--foreground-muted)]">
                                         <p>

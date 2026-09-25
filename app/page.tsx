@@ -37,7 +37,7 @@ export default async function Home() {
    * Latest published campus safety incident.
    * Do not request image_url because safety images are private.
    */
-  const { data: latestIncident } = await supabase
+  const { data: latestIncident, error: incidentError } = await supabase
     .from("security_incidents")
     .select("id, title, description, location, incident_time")
     .eq("status", "PUBLISHED")
@@ -50,10 +50,10 @@ export default async function Home() {
    * RLS still decides which rows the current user can read.
    */
   const [
-    { data: myItems },
-    { data: myClaims },
-    { data: mySafetyReports },
-    { data: myTickets },
+    { data: myItems, error: itemsError },
+    { data: myClaims, error: claimsError },
+    { data: mySafetyReports, error: safetyError },
+    { data: myTickets, error: ticketsError },
   ] = await Promise.all([
     supabase
       .from("items")
@@ -145,6 +145,11 @@ export default async function Home() {
     <main className="page-shell">
       <div className="app-container">
         <div className="mx-auto max-w-6xl">
+          {(incidentError || itemsError || claimsError || safetyError || ticketsError) && (
+            <div role="alert" className="ui-card mb-6 p-4 text-[var(--danger)]">
+              <Text id="Something went wrong. Please try again." />
+            </div>
+          )}
           {/* Welcome */}
           <section className="relative mb-6 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--success)]/20 bg-[var(--surface)] px-6 py-5 shadow-[0_12px_36px_rgba(41,39,34,0.06)] sm:px-8 sm:py-6">
             <div

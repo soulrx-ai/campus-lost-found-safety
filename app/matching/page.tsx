@@ -7,7 +7,7 @@ export default async function MatchingPage() {
     const profile = await requireUser();
     const supabase = await createClient();
 
-    const { data: lostItems } = await supabase
+    const { data: lostItems, error } = await supabase
         .from("items")
         .select(
             "id, name, category, brand, color, location, date_time, status"
@@ -16,6 +16,8 @@ export default async function MatchingPage() {
         .eq("report_type", "LOST")
         .eq("status", "PUBLISHED")
         .order("created_at", { ascending: false });
+
+    if (error) throw new Error("Unable to load lost reports.");
 
     return (
         <main className="page-shell">

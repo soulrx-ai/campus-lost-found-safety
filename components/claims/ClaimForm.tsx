@@ -5,6 +5,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { cleanupUpload } from "@/lib/supabase/cleanup-upload";
 
 type Props = {
   initialItemId?: string;
@@ -147,15 +148,8 @@ export default function ClaimForm({
           });
 
       if (insertError) {
-        if (evidencePath) {
-          await supabase.storage
-            .from("claim-evidence")
-            .remove([evidencePath]);
-        }
-
-        setMessage(
-          `Unable to submit claim: ${insertError.message}`
-        );
+        const cleaned = !evidencePath || await cleanupUpload(supabase, "claim-evidence", evidencePath);
+        setMessage(`Unable to submit claim: ${insertError.message}${cleaned ? "" : " " + t("Uploaded file cleanup failed. Please contact Staff.")}`);
         return;
       }
 
@@ -174,15 +168,8 @@ export default function ClaimForm({
         "Claim submitted successfully and is waiting for Staff review."
       );
     } catch {
-      if (evidencePath) {
-        await supabase.storage
-          .from("claim-evidence")
-          .remove([evidencePath]);
-      }
-
-      setMessage(
-        "Something went wrong. Please try again."
-      );
+      const cleaned = !evidencePath || await cleanupUpload(supabase, "claim-evidence", evidencePath);
+      setMessage(cleaned ? "Something went wrong. Please try again." : t("Uploaded file cleanup failed. Please contact Staff."));
     } finally {
       setLoading(false);
     }

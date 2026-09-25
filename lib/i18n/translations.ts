@@ -2,6 +2,10 @@
 export type Language = "en" | "th";
 
 export const translations = {
+  "Uploaded file cleanup failed. Please contact Staff.": {
+    en: "Uploaded file cleanup failed. Please contact Staff.",
+    th: "ไม่สามารถลบไฟล์ที่อัปโหลดได้ กรุณาติดต่อเจ้าหน้าที่",
+  },
   "A Staff Note is required before resolving a ticket.": {
     en: "A Staff Note is required before resolving a ticket.",
     th: "กรุณาระบุบันทึกของเจ้าหน้าที่ก่อนปิดคำร้อง",
@@ -2474,6 +2478,10 @@ export const translations = {
   "Configure matching and data retention.": {
     en: "Configure matching and data retention.",
     th: "กำหนดเกณฑ์การจับคู่และระยะเวลาเก็บข้อมูล",
+  },
+  "Matching percentage": {
+    en: "Matching percentage",
+    th: "เปอร์เซ็นต์ความตรงกัน",
   },
   "Matching Threshold": {
     en: "Matching Threshold",

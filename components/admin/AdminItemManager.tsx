@@ -17,8 +17,6 @@ type Item = {
   description: string | null;
   location: string;
   date_time: string;
-  image_url: string;
-  image_preview_url?: string | null;
   status: string;
   created_at: string;
 };
@@ -111,6 +109,7 @@ export default function AdminItemManager() {
   const [deletingBusy, setDeletingBusy] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [settingsLoading, setSettingsLoading] = useState(true);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsError, setSettingsError] = useState("");
   const [settingsNotice, setSettingsNotice] = useState("");
@@ -140,6 +139,7 @@ export default function AdminItemManager() {
         }
 
         if (!cancelled) {
+          setSettingsLoaded(true);
           setSettingsDraft({
             matching_threshold: String(result.settings.matching_threshold),
             data_retention_days: String(result.settings.data_retention_days),
@@ -217,6 +217,7 @@ export default function AdminItemManager() {
 
   async function saveSettings(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!settingsLoaded) return;
     setSettingsSaving(true);
     setSettingsError("");
     setSettingsNotice("");
@@ -535,7 +536,7 @@ export default function AdminItemManager() {
 
               <button
                 type="submit"
-                disabled={settingsSaving}
+                disabled={settingsSaving || !settingsLoaded}
                 className={`ui-button-primary ${greenActionButtonClass} w-full disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto`}
               >
                 {settingsSaving ? (
@@ -688,16 +689,6 @@ export default function AdminItemManager() {
                 <tr key={item.id} className="align-top">
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
-                      {item.image_preview_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={item.image_preview_url}
-                          alt={t("Item image")}
-                          className="h-12 w-12 rounded-lg border border-[var(--border)] object-cover"
-                        />
-                      ) : (
-                        <div className="h-12 w-12 rounded-lg bg-[var(--surface-soft)]" />
-                      )}
                       <div>
                         <p className="font-medium text-[var(--foreground)]">
                           {item.name}

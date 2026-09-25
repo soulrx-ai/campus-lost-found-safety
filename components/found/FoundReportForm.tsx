@@ -6,6 +6,7 @@ import { useCategories } from "@/components/categories/useCategories";
 
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { cleanupUpload } from "@/lib/supabase/cleanup-upload";
 
 export default function FoundReportForm() {
   const { t } = useLanguage();
@@ -97,11 +98,8 @@ export default function FoundReportForm() {
                 });
 
             if (insertError) {
-                await supabase.storage
-                    .from("lost-found")
-                    .remove([filePath]);
-
-                setMessage(`Unable to submit report: ${insertError.message}`);
+                const cleaned = await cleanupUpload(supabase, "lost-found", filePath);
+                setMessage(`Unable to submit report: ${insertError.message}${cleaned ? "" : " " + t("Uploaded file cleanup failed. Please contact Staff.")}`);
                 return;
             }
 

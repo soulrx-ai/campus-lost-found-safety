@@ -6,6 +6,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { cleanupUpload } from "@/lib/supabase/cleanup-upload";
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -223,30 +224,17 @@ export default function StaffClaimCard({
         );
 
       if (handoverError) {
-        await supabase.storage
-          .from("handover")
-          .remove([filePath]);
-
+        const cleaned = await cleanupUpload(supabase, "handover", filePath);
         uploaded = false;
-
-        setErrorMessage(
-          handoverError.message
-        );
+        setErrorMessage(handoverError.message + (cleaned ? "" : " " + t("Uploaded file cleanup failed. Please contact Staff.")));
         return;
       }
 
       setHandoverPhoto(null);
       router.refresh();
     } catch {
-      if (uploaded) {
-        await supabase.storage
-          .from("handover")
-          .remove([filePath]);
-      }
-
-      setErrorMessage(
-        "Unable to complete handover. Please try again."
-      );
+      const cleaned = !uploaded || await cleanupUpload(supabase, "handover", filePath);
+      setErrorMessage(cleaned ? "Unable to complete handover. Please try again." : t("Uploaded file cleanup failed. Please contact Staff."));
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { cleanupUpload } from "@/lib/supabase/cleanup-upload";
 
 export default function SafetyReportForm() {
   const { t } = useLanguage();
@@ -92,13 +93,8 @@ export default function SafetyReportForm() {
         });
 
       if (insertError) {
-        await supabase.storage
-          .from("safety-incidents")
-          .remove([imagePath]);
-
-        setMessage(
-          `Unable to submit incident: ${insertError.message}`
-        );
+        const cleaned = await cleanupUpload(supabase, "safety-incidents", imagePath);
+        setMessage(`Unable to submit incident: ${insertError.message}${cleaned ? "" : " " + t("Uploaded file cleanup failed. Please contact Staff.")}`);
         return;
       }
 

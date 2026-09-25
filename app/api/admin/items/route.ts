@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     let query = admin
       .from("items")
       .select(
-        "id, reporter_id, report_type, name, category, brand, color, description, location, date_time, image_url, status, created_at",
+        "id, reporter_id, report_type, name, category, brand, color, description, location, date_time, status, created_at",
         { count: "exact" }
       )
       .order("created_at", { ascending: false })
@@ -61,24 +61,8 @@ export async function GET(request: Request) {
       );
     }
 
-    const items = await Promise.all(
-      (data ?? []).map(async (item) => {
-        const { data: signedImage, error: imageError } =
-          await admin.storage
-            .from("lost-found")
-            .createSignedUrl(item.image_url, 60 * 5);
-
-        return {
-          ...item,
-          image_preview_url: imageError
-            ? null
-            : signedImage?.signedUrl ?? null,
-        };
-      })
-    );
-
     return NextResponse.json({
-      items,
+      items: data ?? [],
       total: count ?? 0,
       page,
       pageSize: PAGE_SIZE,

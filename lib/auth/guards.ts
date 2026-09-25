@@ -15,10 +15,11 @@ export async function requireUser(): Promise<Profile> {
 
     const {
         data: { user },
+        error: authError,
     } = await supabase.auth.getUser();
 
     // ยังไม่ได้ Login
-    if (!user) {
+    if (authError || !user) {
         redirect("/login");
     }
 

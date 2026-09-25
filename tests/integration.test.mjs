@@ -90,15 +90,13 @@ for (const role of ["ADMIN", "USER", "STAFF"]) {
 
 function ticketHandler({ updateError = null, notificationError = null, denied = false, missing = false } = {}) {
   const writes = [];
-  const client = database((table, calls) => {
-    writes.push({ table, calls });
-    return { data: missing ? null : { id: "test-id", requester_id: "owner", subject: "Help" }, error: updateError };
-  });
-  const admin = database((table, calls) => { writes.push({ table, calls }); return { error: notificationError }; });
+  const client = { rpc: async (name, args) => {
+    writes.push({ name, args });
+    return { data: !missing, error: updateError || notificationError };
+  } };
   const handler = load("app/api/staff/tickets/[id]/route.ts", {
     "@/lib/auth/guards": { requireStaff: async () => { if (denied) throw new Error("denied"); return staff; } },
     "@/lib/supabase/server": { createClient: async () => client },
-    "@/lib/supabase/admin": { createAdminClient: () => admin },
   });
   return { ...handler, writes };
 }
@@ -111,16 +109,13 @@ test("ticket resolution rejects missing and whitespace-only notes before writing
   }
 });
 
-test("ticket resolution saves the trimmed note and timestamp before notifying the stored owner", async () => {
+test("ticket resolution sends only validated fields to the atomic RPC", async () => {
   const handler = ticketHandler();
   assert.equal((await handler.PATCH(request({ status: "RESOLVED", staff_note: "  Restart device  ", requester_id: "attacker" }), context)).status, 200);
-  assert.deepEqual(handler.writes.map(x => x.table), ["service_tickets", "notifications"]);
-  const update = handler.writes[0].calls.find(x => x[0] === "update")[1];
-  assert.equal(update.staff_note, "Restart device");
-  assert.ok(Number.isFinite(Date.parse(update.resolved_at)));
-  const notice = handler.writes[1].calls.find(x => x[0] === "insert")[1];
-  assert.equal(notice.user_id, "owner");
-  assert.equal(notice.message, "Restart device");
+  assert.equal(handler.writes.length, 1);
+  assert.equal(handler.writes[0].name, "update_staff_ticket");
+  assert.equal(handler.writes[0].args.p_staff_note, "Restart device");
+  assert.equal(handler.writes[0].args.requester_id, undefined);
 });
 
 test("failed ticket writes never retry without the note or insert notifications", async () => {
@@ -132,8 +127,8 @@ test("failed ticket writes never retry without the note or insert notifications"
 test("notification failure returns an error instead of success", async () => {
   const handler = ticketHandler({ notificationError: { message: "failed" } });
   const response = await handler.PATCH(request({ status: "RESOLVED", staff_note: "Fixed" }), context);
-  assert.equal(response.status, 502);
-  assert.match((await response.json()).error, /notification could not be sent/);
+  assert.equal(response.status, 500);
+  assert.match((await response.json()).error, /Unable to update ticket/);
 });
 
 test("ticket route rejects non-staff and stale updates", async () => {
@@ -191,11 +186,11 @@ test("Admin item handlers deny unauthorized access before creating a privileged 
   assert.equal((await handler.DELETE(request({}), context)).status, 401);
 });
 
-function cleanup({ dbError = false, deleted = true, storageError = false, retention = 30 } = {}) {
+function cleanup({ dbError = false, deleted = true, storageError = false, retention = 30, imagePath = "item.jpg" } = {}) {
   const events = [];
   const admin = database((table, calls) => {
     if (table === "system_settings") return { data: { data_retention_days: retention }, error: null };
-    if (table === "items") return { data: { id: "item", image_url: "item.jpg" }, error: null };
+    if (table === "items") return { data: { id: "item", image_url: imagePath }, error: null };
     const selected = calls.find(x => x[0] === "select")[1];
     return { data: selected === "item_id" ? [{ item_id: "item" }] : [{ evidence: "evidence.jpg", handover_photo_url: "handover.jpg" }], error: null };
   });
@@ -258,6 +253,7 @@ test("Admin settings are rendered in an expanded section with both inputs and a 
     return [node, ...nodes(node.props?.children)];
   }
   const tree = nodes(Manager());
+  assert.ok(tree.some(node => node.type === "button" && node.props.type === "submit" && node.props.disabled));
   assert.ok(tree.some(node => node.type === "section" && node.props["aria-labelledby"] === "system-settings-title"));
   assert.ok(!tree.some(node => node.type === "details" && !node.props.open));
   for (const id of ["System Settings", "Matching Threshold", "Data Retention Period", "Save settings"]) {
@@ -310,4 +306,65 @@ test("settings API reports validation and database errors without success", asyn
   assert.equal((await handler.PUT(request({ matching_threshold: 70, data_retention_days: 0 }))).status, 400);
   assert.equal(handler.writes(), 0);
   assert.equal((await handler.PUT(request({ matching_threshold: 80, data_retention_days: 60 }))).status, 500);
+});
+
+
+test("cleanup refuses URLs and traversal before database or storage deletion", async () => {
+  for (const imagePath of ["https://example.com/item.jpg", "../item.jpg", "/item.jpg"]) {
+    const handler = cleanup({ imagePath });
+    const result = await (await handler.GET(cleanupRequest("?dryRun=false"))).json();
+    assert.equal(result.deletedCount, 0);
+    assert.match(result.skipped[0].reason, /Invalid Storage/);
+    assert.deepEqual(handler.events, []);
+  }
+});
+
+test("Admin item list never selects or signs private images", async () => {
+  const admin = database((table, calls) => {
+    assert.equal(table, "items");
+    assert.ok(!calls.find(call => call[0] === "select")[1].includes("image"));
+    return { data: [{ id: "item", name: "Keys" }], count: 1, error: null };
+  });
+  const handler = load("app/api/admin/items/route.ts", {
+    "@/lib/auth/guards": { requireAdmin: async () => ({ role: "ADMIN", status: "ACTIVE" }) },
+    "@/lib/supabase/admin": { createAdminClient: () => admin },
+  });
+  const response = await handler.GET(new Request("https://test.invalid/api/admin/items"));
+  assert.equal(response.status, 200);
+  assert.ok(!(await response.text()).includes("image"));
+});
+
+test("matching weights and configured threshold change actual match eligibility", () => {
+  const { calculateMatch } = load("lib/matching/calculateMatch.ts");
+  const item = { name: "Phone", category: "Electronics", color: "Black", location: "Library", date_time: "2026-09-24" };
+  assert.equal(calculateMatch(item, item, 100).score, 100);
+  const other = { ...item, name: "Unrelated" };
+  assert.equal(calculateMatch(item, other, 70).score, 70);
+  assert.equal(calculateMatch(item, other, 70).isPotentialMatch, true);
+  assert.equal(calculateMatch(item, other, 80).isPotentialMatch, false);
+});
+
+test("matching component displays the calculated percentage and gates the claim link", () => {
+  const { default: Matches } = load("components/matching/PotentialMatches.tsx", {
+    "@/components/i18n/Text": { Text: ({ id }) => id, DisplayValue: ({ value }) => value },
+    "next/link": { default: "a" },
+    "@/lib/matching/calculateMatch": load("lib/matching/calculateMatch.ts"),
+  });
+  const item = { id: "found", report_type: "FOUND", name: "Phone", category: "Electronics", color: "Black", location: "Library", date_time: "2026-09-24" };
+  const render = threshold => require("react-dom/server").renderToStaticMarkup(Matches({ lostItem: item, foundItems: [{ ...item, name: "Unrelated" }], matchingThreshold: threshold }));
+  assert.match(render(70), /Matching percentage.*70%/);
+  assert.match(render(70), /claims\/new/);
+  assert.doesNotMatch(render(80), /claims\/new/);
+});
+
+test("inactive profiles and authentication errors fail all page guards", async () => {
+  for (const role of ["USER", "STAFF", "ADMIN"]) {
+    const client = database(() => ({ data: { id: "account", role, status: "INACTIVE" }, error: null }));
+    client.auth = { getUser: async () => ({ data: { user: { id: "account" } }, error: null }) };
+    const guards = load("lib/auth/guards.ts", {
+      "next/navigation": { redirect: () => { throw new Error("redirect"); } },
+      "@/lib/supabase/server": { createClient: async () => client },
+    });
+    for (const guard of [guards.requireUser, guards.requireStaff, guards.requireAdmin]) await assert.rejects(guard(), /redirect/);
+  }
 });
